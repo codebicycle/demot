@@ -40,7 +40,7 @@ Written in PHP 7 with only native code, no frameworks or libraries.
 
 ## Resources
 
-[PHP Mini][mini], simple MVC skeleton PHP aplication  
+[PHP Mini][mini], simple MVC skeleton PHP application  
 PHP [PSR-1][psr1] coding standard  
 
 [mini]:      https://github.com/panique/mini
