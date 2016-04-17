@@ -60,7 +60,8 @@ CREATE TABLE IF NOT EXISTS `inmates` (
   `Sentence` int(2) NOT NULL,
   `Crime` varchar(100) NOT NULL,
   `IncarcerationDate` date NOT NULL,
-  `ReleaseDate` date NOT NULL
+  `ReleaseDate` date NOT NULL,
+  PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
