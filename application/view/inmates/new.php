@@ -12,6 +12,7 @@
 
     <label for="DOB">Date Of Birth</label>
     <input type="date" name="DOB" id="DOB" placeholder="yyyy-mm-dd" pattern="\d{4}[/-]\d{1,2}[/-]\d{1,2}" required />
+  
 
     <label for="InstId">Institution Id</label>
     <input type="text" name="InstId" id="InstId" inputmode="numeric" required />
@@ -27,9 +28,17 @@
 
     <label for="ReleaseDate">Release Date</label>
     <input type="date" name="ReleaseDate" id="ReleaseDate" placeholder="yyyy-mm-dd" pattern="\d{4}[/-]\d{1,2}[/-]\d{1,2}" required />
+  
 
-    <label for="Lawyer">Lawyer</label>
-    <input type="text" name="Lawyer" id="Lawyer" />
+    <label for="LawyerFirstName">Lawyer First Name</label>
+    <input type="text" name="LawyerFirstName" id="LawyerFirstName" pattern="^[- a-zA-Z]{2,50}$" />
+
+    <label for="LawyerLastName">Lawyer Last Name</label>
+    <input type="text" name="LawyerLastName" id="LawyerLastName" pattern="^[- a-zA-Z]{3,50}$" />
+
+    <label for="LawyerCNP">Lawyer CNP</label>
+    <input type="text" name="LawyerCNP" id="LawyerCNP" inputmode="numeric" pattern="\d{13}" />
+    
 
     <label></label>
     <input type="submit" name="Create" value="Create" />
