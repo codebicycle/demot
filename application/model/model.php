@@ -24,15 +24,7 @@ class HomeModel extends Model {}
 class ErrorzModel extends Model {}
 
 class InmatesModel extends Model {
-    public $FirstName;
-    public $LastName;
-    public $CNP;
-    public $DOB;
-    public $IncarcerationDate;
-    public $ReleaseDate;
-    public $LawyerFirstName;
-    public $LawyerLastName;
-    public $LawyerCNP;
+    private $whitelist_fields = array('FirstName', 'LastName', 'CNP', 'DOB', 'IncarcerationDate', 'ReleaseDate', 'LawyerFirstName', 'LawyerLastName', 'LawyerCNP');
 
     public function getAllInmates() {
         $sql = "SELECT Id, FirstName, LastName, CNP, InstId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate FROM inmates";
@@ -43,30 +35,51 @@ class InmatesModel extends Model {
     }
 
     public function initialize($object) {
-        $this->FirstName = $object['FirstName'];
+        foreach ($this->whitelist_fields as $field) {
+            $this->$field = trim($object[$field]);
+        }
     }
 
     public function is_valid() {
-        $this->validate_name($this->FirstName,  'FirstName');
-        $this->validate_name($this->LastName, 'LastName');
-        $this->validate_cnp($this->CNP, 'CNP');
-        $this->validate_date($this->DOB, 'DOB');
-        $this->validate_date($this->IncarcerationDate, 'IncarcerationDate');
-        $this->validate_date($this->ReleaseDate, 'ReleaseDate');
-        $this->validate_name($this->LawyerFirstName, 'LawyerFirstName');
-        $this->validate_name($this->LawyerLastName, 'LawyerLastName');
-        $this->validate_cnp($this->LawyerCNP, 'LawyerCNP');
+        $this->validate_name('FirstName');
+        $this->validate_name('LastName');
+        $this->validate_cnp('CNP');
+        $this->validate_date('DOB');
+        $this->validate_date('IncarcerationDate');
+        $this->validate_date('ReleaseDate');
+        if (!empty($this->LawyerFirstName)) {
+            $this->validate_name('LawyerFirstName');
+            $this->validate_name('LawyerLastName');
+            $this->validate_cnp('LawyerCNP');
+        }
 
         return count($this->validation_errors) === 0;
     }
 
-    private function validate_name($input, $label) {
-        $this->validation_errors[$label] = "Only letters, spaces, minus and single quote characters are permitted. Must have two or more characters.";
+    private function validate($pattern, $message, $label) {
+        if(preg_match($pattern, $this->$label)){
+            unset($this->validation_errors[$label]);
+        }
+        else {
+            $this->validation_errors[$label] = $message;
+        }
     }
-    private function validate_cnp($input, $label) {
-        $this->validation_errors[$label] = "Please fill in a valid CNP.";
+
+    private function validate_name($label) {
+        $pattern = "/^[- 'a-zA-Z]{2,50}$/";
+        $message = "Only letters, spaces, minus and single quote characters are permitted. Must have two or more characters.";
+        $this->validate($pattern, $message, $label);
     }
-    private function validate_date($input, $label) {
-        $this->validation_errors[$label] = "Please fill in a valid date.";
+
+    private function validate_cnp($label) {
+        $pattern = '/\d{13}/';
+        $message = "Please fill in a valid CNP.";
+        $this->validate($pattern, $message, $label);
+
+    }
+    private function validate_date($label) {
+        $pattern = '/^(\d{4})-(\d{2})-(\d{2})$/';
+        $message = "Please fill in a valid date.";
+        $this->validate($pattern, $message, $label);
     }
 }
