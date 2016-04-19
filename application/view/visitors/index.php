@@ -1,118 +1,67 @@
 
 <div class="container">
 
-<h3>Register</h3> 
+<h3>Login</h3> 
 <br/>
 <br/>
-<form action="<?php echo URL; ?>visitors/index" method="POST" id="new-visitor-form">    
+
+
+<form action="<?php echo URL; ?>visitors/account" method="POST" id="login-form">    
 
 	<label for="Username">User Name</label>
-	<input type="text" name="UserName" id="UserName"  pattern="^[- a-zA-Z]{2,50}$" required autofocus />
+	<input type="text" name="UserName" id="UserName"   required autofocus />
 <br/>
-	<label for="FirstName">First Name</label>
-	<input type="text" name="FirstName" id="FirstName" pattern="^[- a-zA-Z]{2,50}$" required autofocus />
-<br/>
-	<label for="LastName">Last Name</label>
-	<input type="text" name="LastName" id="LastName" pattern="^[- a-zA-Z]{3,50}$" required />
-<br/>
-	<label for="CNP">CNP</label>
-	<input type="text" name="CNP" id="CNP" inputmode="numeric" pattern="\d{13}" required />
-<br/>
-	<label for="Email">E-mail</label>
-	<input type="text" name="Email" id="Email" pattern="^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$" required/>
-<br/>
+	
 	<label for="Password">Password:</label>
 	<input type="password"  name="Password" id="Password" required/>
 <br/>
 
-	<label for="RepeatPassword">Retipe Password:</label>
-	<input type="password"  name="RepeatPassword" id="RepeatPassword" required/>
-<br/>
-	<input name="submit" type="submit" Value="Register" />	
+	
+	<input name="submit" type="submit" Value="Login" />	
 
 </form>
 </div>
 
 <?php
-$UserName = @$_POST['UserName'];
-$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
-$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');
 
-$FirstName = @$_POST['FirstName'];
-$FirstName = mb_convert_encoding($FirstName, 'UTF-8','UTF-8');
-$FirstName =htmlentities($FirstName, ENT_QUOTES, 'UTF-8');
+if(loggedin()) {
 
+//echo 'Esti deja conectat.';
+//redirect catre pagina account
 
-$LastName = @$_POST['LastName'];
-$LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
-$LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
+//<?php echo URL; //incheiere php  //visitors/account
 
-$Email =@$_POST["Email"];
-$CNP=@$_POST['CNP'];
+<?php
 
-$Password = @$_POST['Password'];
-$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
-$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
-
-$RepeatPassword = @$_POST['RepeatPassword'];
-$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
-$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
-
-
-
-$submit = @$_POST['submit'];
-$encpassword = md5($Password);
-
-if($submit){
-	if($UserName==true){
-		if($FirstName==true){
-			if($LastName==true){
-			
-				if($Password==true){
-					if($Password==$RepeatPassword){
-						if(strlen($UserName)<=50){
-									
-							if(strlen($Password)<=20 || strlen($Password)>=3){
-								$query= "SELECT CNP FROM visitors WHERE CNP='$CNP'";
-								$query_run = mysql_query($query);
-						
-								if(mysql_num_rows($query_run)){
-									echo "The account CNP already exists.";
+} 
+else {
+		if(isset($_POST['UserName']) && isset($_POST['Password'])) {
+					$UserName = $_POST['UserName'];
+					$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');	//securizare sql injection
+					$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');		//securizare sql injection
+					$Password = $_POST['Password'];
+					$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
+					$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
+					$encpassword = md5($Password);
+					
+					if(!empty($UserName) && !empty($Password)) {
+						$query = "SELECT id FROM visitors WHERE UserName = '$UserName' AND Password = '$encpassword'";
+						if( $query_run = mysql_query($query)) {
+							$query_num_rows = mysql_num_rows($query_run);
+								if($query_num_rows == 0) {
+									echo $UserName;
+									echo $Password;
+									echo 'Invalid name/password.';
+								} else {
+									$user_id = mysql_result($query_run, 0, 'id');
+									$_SESSION['user_id'] = $user_id;
+									// redirect catre pagina account 
 								}
-								else{
-									$insert= mysql_query("INSERT INTO visitors VALUES ('','$FirstName','$LastName','$CNP','$UserName','$encpassword','$Email')") or die("Account creation error!");
-									echo "Registration successfull.";
-									}
-								}
-							else{
-								echo "The password has to be between 3 and 20 characters";
-							}
-						}
-						else{
-							echo "The maximum lenght for Username is 50 characters";
-						}
+						} 
+					} else {
+						echo 'You must provide a name and a password.';
 					}
-					else{
-						echo "Passwords do not match";
-					}
-				}
-				else{
-					echo "The Password field is empty";
-				}
-			}
-			else{
-				echo "The Last Name field is empty";
-			}
-			
 		}
-		else{
-			echo "The First Name field is empty";
-		}
-	}
-	else{
-		echo "The Username field is empty";
-	}
+
 }
 ?>
-
- </div>
