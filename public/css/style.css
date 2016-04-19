@@ -99,3 +99,8 @@ body {
 #inmates-new-form > input:last-child {
     width: initial;
 }
+
+.validation_error {
+    margin-bottom: 0;
+    color: tomato;
+}

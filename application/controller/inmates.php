@@ -17,8 +17,25 @@ class Inmates extends Controller {
   }
 
   public function create() {
+    // whitelist params
+    // send to model for validation
+
     require APP . 'view/_templates/header.php';
-    require APP . 'view/inmates/create.php';
+    if (isset($_POST['Create'])) {
+      $this->model->initialize($_POST);
+      if ($this->model->is_valid()) {
+        echo 'Everything is OK';
+      }
+      else {
+        echo 'Not Ok';
+        $validation_errors = $this->model->validation_errors;
+        require APP . 'view/inmates/new.php';
+      }
+    }
     require APP . 'view/_templates/footer.php';
+
+    // require APP . 'view/_templates/header.php';
+    // require APP . 'view/inmates/create.php';
+    // require APP . 'view/_templates/footer.php';
   }
 }
