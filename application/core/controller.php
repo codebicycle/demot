@@ -17,8 +17,12 @@ class Controller
      */
     function __construct()
     {
+        // get class name of the Controller who extends controller class
+        $class = get_called_class();
+        $model_name = $class . 'Model';
         $this->openDatabaseConnection();
-        $this->loadModel();
+        
+        $this->loadModel($model_name);
     }
 
     /**
@@ -37,14 +41,11 @@ class Controller
         $this->db = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, $options);
     }
 
-    /**
-     * Loads the "model".
-     * @return object model
-     */
-    public function loadModel()
+
+    public function loadModel($model_name)
     {
         require APP . 'model/model.php';
         // create new "model" (and pass the database connection)
-        $this->model = new Model($this->db);
+        $this->model =  new $model_name($this->db);
     }
 }
