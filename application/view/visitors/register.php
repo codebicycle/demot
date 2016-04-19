@@ -12,6 +12,7 @@
 	<label for="FirstName">First Name</label>
 	<input type="text" name="FirstName" id="FirstName" pattern="^[- a-zA-Z]{2,50}$" required autofocus />
 <br/>
+
 	<label for="LastName">Last Name</label>
 	<input type="text" name="LastName" id="LastName" pattern="^[- a-zA-Z]{3,50}$" required />
 <br/>
@@ -48,7 +49,11 @@ $LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
 $LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
 
 $Email =@$_POST["Email"];
+
 $CNP=@$_POST['CNP'];
+$CNP = mb_convert_encoding($CNP, 'UTF-8','UTF-8');
+$CNP =htmlentities($CNP, ENT_QUOTES, 'UTF-8');
+
 
 $Password = @$_POST['Password'];
 $Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
@@ -59,9 +64,16 @@ $RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
 $RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 
 
+//concatenare FirstName cu CNP
+$id=$FirstName;
+$id.=CNP;
 
 $submit = @$_POST['submit'];
 $encpassword = md5($Password);
+
+//creare hash id
+
+$encid=md5(id);
 
 if($submit){
 	if($UserName==true){
@@ -80,7 +92,7 @@ if($submit){
 									echo "The account CNP already exists.";
 								}
 								else{
-									$insert= mysql_query("INSERT INTO visitors VALUES ('','$FirstName','$LastName','$CNP','$UserName','$encpassword','$Email')") or die("Account creation error!");
+									$insert= mysql_query("INSERT INTO visitors VALUES ('$encid','$FirstName','$LastName','$CNP','$UserName','$encpassword','$Email')") or die("Account creation error!");
 									echo "Registration successfull.";
 									}
 								}
