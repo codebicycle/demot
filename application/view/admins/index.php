@@ -45,7 +45,7 @@ else {
 					$encpassword = md5($Password);
 					
 					if(!empty($UserName) && !empty($Password)) {
-						$query = "SELECT id FROM admins WHERE UserName = '$UserName' AND Password = '$encpassword'";
+						$query = "SELECT id FROM admins WHERE UserName = '$UserName' AND PwdHash = '$encpassword'";
 						if( $query_run = mysql_query($query)) {
 							$query_num_rows = mysql_num_rows($query_run);
 								if($query_num_rows == 0) {
