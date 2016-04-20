@@ -64,9 +64,11 @@ $RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
 $RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 
 
-//concatenare FirstName cu CNP
-$id=$FirstName;
-$id.=CNP;
+//concatenare LastName cu CNP
+
+$id=$CNP;
+$id.=$LastName;
+
 
 $submit = @$_POST['submit'];
 $encpassword = md5($Password);
