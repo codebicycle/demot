@@ -24,7 +24,7 @@ class HomeModel extends Model {}
 class ErrorzModel extends Model {}
 
 class InmatesModel extends Model {
-    private $whitelist_fields = array('FirstName', 'LastName', 'CNP', 'DOB', 'IncarcerationDate', 'ReleaseDate', 'LawyerFirstName', 'LawyerLastName', 'LawyerCNP');
+    private $whitelist_parameters = array('FirstName', 'LastName', 'CNP', 'DOB', 'IncarcerationDate', 'ReleaseDate', 'LawyerFirstName', 'LawyerLastName', 'LawyerCNP');
 
     public function getAllInmates() {
         $sql = "SELECT Id, FirstName, LastName, CNP, InstId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate FROM inmates";
@@ -35,7 +35,7 @@ class InmatesModel extends Model {
     }
 
     public function initialize($object) {
-        foreach ($this->whitelist_fields as $field) {
+        foreach ($this->whitelist_parameters as $field) {
             $this->$field = trim($object[$field]);
         }
     }
@@ -44,10 +44,13 @@ class InmatesModel extends Model {
         $this->validate_name('FirstName');
         $this->validate_name('LastName');
         $this->validate_cnp('CNP');
+        $this->validate_id('CNP');
         $this->validate_date('DOB');
         $this->validate_date('IncarcerationDate');
         $this->validate_date('ReleaseDate');
-        if (!empty($this->LawyerFirstName)) {
+        if (!empty($this->LawyerFirstName) ||
+            !empty($this->LawyerLastName)  ||
+            !empty($this->LawyerCNP)) {
             $this->validate_name('LawyerFirstName');
             $this->validate_name('LawyerLastName');
             $this->validate_cnp('LawyerCNP');
@@ -81,5 +84,23 @@ class InmatesModel extends Model {
         $pattern = '/^(\d{4})-(\d{2})-(\d{2})$/';
         $message = "Please fill in a valid date.";
         $this->validate($pattern, $message, $label);
+    }
+
+    private function validate_id($label) {
+        $id = md5($this->CNP . $this->LastName);
+        $sql = "SELECT 1 FROM inmates WHERE id=? LIMIT 1";
+        $query = $this->db->prepare($sql);
+        $query->bindValue(1, $id, PDO::PARAM_STR);
+        $query->execute();
+        $count = count($query->fetchAll());
+        if ($count === 0) {
+            // id not found (unique)
+            unset($this->validation_errors[$label]);
+            $this->Id = $id;
+        }
+        else {
+            $message = "Inmate already exists.";
+            $this->validation_errors[$label] = $message;
+        }
     }
 }
