@@ -66,8 +66,10 @@ $RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 
 //concatenare LastName cu CNP
 
-$id=$CNP;
-$id.=$LastName;
+
+$id=$CNP . $LastName;
+
+
 
 
 $submit = @$_POST['submit'];
@@ -75,7 +77,9 @@ $encpassword = md5($Password);
 
 //creare hash id
 
-$encid=md5(id);
+
+$encid=md5($id);
+
 
 if($submit){
 	if($UserName==true){
@@ -87,14 +91,19 @@ if($submit){
 						if(strlen($UserName)<=50){
 									
 							if(strlen($Password)<=20 || strlen($Password)>=3){
-								$query= "SELECT CNP FROM visitors WHERE CNP='$CNP'";
+
+								$sql= "SELECT CNP FROM visitors WHERE CNP='$CNP'";
+								$query= $this->db->prepare($sql);
+								$query->execute();
+								
+								
 								$query_run = mysql_query($query);
 						
-								if(mysql_num_rows($query_run)){
+								if(mysql_num_rows($query)){
 									echo "The account CNP already exists.";
 								}
 								else{
-									$insert= mysql_query("INSERT INTO visitors VALUES ('$encid','$FirstName','$LastName','$CNP','$UserName','$encpassword','$Email')") or die("Account creation error!");
+									$insert= "INSERT INTO visitors VALUES ('$encid','$FirstName','$LastName','$CNP','$UserName','$encpassword','$Email')";
 									echo "Registration successfull.";
 									}
 								}
