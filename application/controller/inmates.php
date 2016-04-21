@@ -10,7 +10,9 @@ class Inmates extends Controller {
     require APP . 'view/_templates/footer.php';
   }
 
+
   public function new_inmate() {
+
     require APP . 'view/_templates/header.php';
     require APP . 'view/inmates/new.php';
     require APP . 'view/_templates/footer.php';

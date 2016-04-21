@@ -66,7 +66,9 @@ $RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 
 //concatenare LastName cu CNP
 
+
 $id=$CNP . $LastName;
+
 
 
 
@@ -75,7 +77,9 @@ $encpassword = md5($Password);
 
 //creare hash id
 
+
 $encid=md5($id);
+
 
 if($submit){
 	if($UserName==true){
@@ -87,6 +91,7 @@ if($submit){
 						if(strlen($UserName)<=50){
 									
 							if(strlen($Password)<=20 || strlen($Password)>=3){
+
 								$sql= "SELECT CNP FROM visitors WHERE CNP='$CNP'";
 								$query= $this->db->prepare($sql);
 								$query->execute();
