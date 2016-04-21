@@ -11,7 +11,7 @@ class Inmates extends Controller {
   }
 
 
-  public function new_inmate() {
+  public function add() {
 
     require APP . 'view/_templates/header.php';
     require APP . 'view/inmates/new.php';
