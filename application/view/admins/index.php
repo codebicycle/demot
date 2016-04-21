@@ -1,67 +1,74 @@
-
-<div class="container">
-
-<h3>Login</h3> 
-<br/>
-<br/>
-
-
-<form action="<?php echo URL; ?>visitors/account" method="POST" id="login-form">    
-
-	<label for="Username">User Name</label>
-	<input type="text" name="UserName" id="UserName"   required autofocus />
-<br/>
-	
-	<label for="Password">Password:</label>
-	<input type="password"  name="Password" id="Password" required/>
-<br/>
-
-	
-	<input name="submit" type="submit" Value="Login" />	
-
-</form>
-</div>
-
 <?php
 
-if(true) {///functie care verifica daca esti logat
+session_start();
 
-//echo 'Esti deja conectat.';
-//redirect catre pagina account
-
-//<?php echo URL; //incheiere php  //admins/account
-
-
-
-} 
-else {
-		if(isset($_POST['UserName']) && isset($_POST['Password'])) {
-					$UserName = $_POST['UserName'];
-					$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');	//securizare sql injection
-					$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');		//securizare sql injection
-					$Password = $_POST['Password'];
-					$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
-					$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
-					$encpassword = md5($Password);
-					
-					if(!empty($UserName) && !empty($Password)) {
-						$query = "SELECT id FROM admins WHERE UserName = '$UserName' AND PwdHash = '$encpassword'";
-						if( $query_run = mysql_query($query)) {
-							$query_num_rows = mysql_num_rows($query_run);
-								if($query_num_rows == 0) {
-									echo $UserName;
-									echo $Password;
-									echo 'Invalid name/password.';
-								} else {
-									$user_id = mysql_result($query_run, 0, 'id');
-									$_SESSION['user_id'] = $user_id;
-									// redirect catre pagina account 
-								}
-						} 
-					} else {
-						echo 'You must provide a name and a password.';
-					}
-		}
-
+if(isset($_POST['login'])){
+    
+    //Retrieve the field values from our login form.
+    $username = !empty($_POST['username']) ? trim($_POST['username']) : null;
+    $passwordAttempt = !empty($_POST['password']) ? trim($_POST['password']) : null;
+    $passwordHash=md5($passwordAttempt);
+	
+    //Retrieve the user account information for the given username.
+    $sql = "SELECT Id, UserName, PwdHash FROM admins WHERE UserName = :username";
+    $stmt = $this->model->db->prepare($sql);
+    
+    //Bind value.
+    $stmt->bindValue(':username', $username);
+    
+    //Execute.
+    $stmt->execute();
+    
+    //Fetch row.
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    //If $row is FALSE.
+    if($user === false){
+        //Could not find a user with that username!
+        //PS: You might want to handle this error in a more user-friendly manner!
+        die('Incorrect username / password combination!');
+    } else{
+        //User account found. Check to see if the given password matches the
+        //password hash that we stored in our users table.
+        
+        //Compare the passwords.
+        //$validPassword = password_verify($passwordHash, $user['PwdHash']);
+        
+        //If $validPassword is TRUE, the login has been successful.
+        if($passwordHash==$user['PwdHash']){
+            
+            //Provide the user with a login session.
+            $_SESSION['user_id'] = $user['Id'];
+            $_SESSION['logged_in'] = time();
+            
+            //Redirect to our protected page, which we called home.php
+            require APP. 'view/admins/account.php';
+            exit;
+            
+        } else{
+            //$validPassword was FALSE. Passwords do not match.
+            die('Incorrect username / password combination!');
+        }
+    }
+    
 }
+ 
 ?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Login</title>
+    </head>
+    <body>
+	  
+        <h1>Login</h1>
+        <form  method="post">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password</label>
+            <input type="text" id="password" name="password"><br>
+            <input type="submit" name="login" value="Login">
+        </form>
+    </body>
+</html>

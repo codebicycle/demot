@@ -1,83 +1,83 @@
-
-<div class="container">
-
 <?php
 
-// verificare prin functie de login ... daca e loga face redirect catre pagina account
-//$logg=0;
-//if($logg==1) {
-//f	
-//require APP. 'view/visitors/register.php';
-//} 
-?>
+//login.php
 
-<h3>Login</h3> 
-<br/>
-<br/>
+/**
+ * Start the session.
+ */
+session_start();
 
 
-<form action="<?php echo URL; ?>visitors/index" method="POST" id="login-form">    
 
-	<label for="Username">User Name</label>
-	<input type="text" name="UserName" id="UserName"    autofocus />
-<br/>
+//If the POST var "login" exists (our submit button), then we can
+//assume that the user has submitted the login form.
+if(isset($_POST['login'])){
+    
+    //Retrieve the field values from our login form.
+    $username = !empty($_POST['username']) ? trim($_POST['username']) : null;
+    $passwordAttempt = !empty($_POST['password']) ? trim($_POST['password']) : null;
+    $passwordHash=md5($passwordAttempt);
 	
-	<label for="Password">Password:</label>
-	<input type="password"  name="Password" id="Password" />
-<br/>
-
-	
-	<input name="submit" type="submit" Value="Login" />	
-
-</form>
-</div>
-
-<?php
-//else daca nu e logat afiseaza pagina index pentru login.
-$logg=0;
-if($logg==0)
-	{
-		if(isset($_POST['UserName']) && isset($_POST['Password'])) 
-		{
-					$UserName = $_POST['UserName'];
-					$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');	//securizare sql injection
-					$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');		//securizare sql injection
-					
-					$Password = $_POST['Password'];
-					$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
-					$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
-					
-					$encpassword = md5($Password);
-					
-					if(!empty($UserName) && !empty($Password)) {
-						
-						//select in pdo
-						//luat de pe net
-						
-						$result = $this->model->db->prepare("SELECT Id FROM visitors WHERE UserName= :usr AND PwdHash= :pass");
-						$result->bindParam(':usr', $UserName);
-						$result->bindParam(':pass', $encpassword);
-						$result->execute();
-						$rows = $result->fetch(PDO::FETCH_OBJ);
-						
-						if($rows > 0)
-						{
-							require APP. 'view/visitors/account.php';
-						}
-					
-					else{
-						$errmsg_arr[] = 'Username and Password are not found';
-						$errflag = true;
-						}
-					if($errflag) {
-						$_SESSION['ERRMSG_ARR'] = $errmsg_arr;
-						session_write_close();
-						require APP. 'view/visitors/index.php';
-					exit();
-					}
-
-					}
-
-		}
-	}
+    //Retrieve the user account information for the given username.
+    $sql = "SELECT Id, UserName, PwdHash FROM visitors WHERE UserName = :username";
+    $stmt = $this->model->db->prepare($sql);
+    
+    //Bind value.
+    $stmt->bindValue(':username', $username);
+    
+    //Execute.
+    $stmt->execute();
+    
+    //Fetch row.
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    //If $row is FALSE.
+    if($user === false){
+        //Could not find a user with that username!
+        //PS: You might want to handle this error in a more user-friendly manner!
+        die('Incorrect username / password combination!');
+    } else{
+        //User account found. Check to see if the given password matches the
+        //password hash that we stored in our users table.
+        
+        //Compare the passwords.
+        //$validPassword = password_verify($passwordHash, $user['PwdHash']);
+        
+        //If $validPassword is TRUE, the login has been successful.
+        if($passwordHash==$user['PwdHash']){
+            
+            //Provide the user with a login session.
+            $_SESSION['user_id'] = $user['Id'];
+            $_SESSION['logged_in'] = time();
+            
+            //Redirect to our protected page, which we called home.php
+            require APP. 'view/visitors/account.php';
+            exit;
+            
+        } else{
+            //$validPassword was FALSE. Passwords do not match.
+            die('Incorrect username / password combination!');
+        }
+    }
+    
+}
+ 
 ?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Login</title>
+    </head>
+    <body>
+	  <a href="<?php echo URL; ?>visitors/register">Register</a>
+        <h1>Login</h1>
+        <form  method="post">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password</label>
+            <input type="text" id="password" name="password"><br>
+            <input type="submit" name="login" value="Login">
+        </form>
+    </body>
+</html>
