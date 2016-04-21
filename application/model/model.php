@@ -44,6 +44,7 @@ class InmatesModel extends Model {
         $this->validate_name('FirstName');
         $this->validate_name('LastName');
         $this->validate_cnp('CNP');
+        // Id not in inmates table
         $this->validate_id('CNP');
         $this->validate_date('DOB');
         $this->validate_date('IncarcerationDate');
@@ -54,6 +55,8 @@ class InmatesModel extends Model {
             $this->validate_name('LawyerFirstName');
             $this->validate_name('LawyerLastName');
             $this->validate_cnp('LawyerCNP');
+            // LawyerId not in inmates table
+            $this->validate_id('LawyerCNP');
         }
 
         return count($this->validation_errors) === 0;
@@ -99,7 +102,7 @@ class InmatesModel extends Model {
             $this->Id = $id;
         }
         else {
-            $message = "Inmate already exists.";
+            $message = "Credentials match an existing inmate.";
             $this->validation_errors[$label] = $message;
         }
     }
