@@ -14,5 +14,12 @@ class Model
         }
     }
 
-    
+    public function getAllInmates() {
+
+        $sql = "SELECT Id, FirstName, LastName, CNP, InstId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate FROM inmates";
+        $query = $this->db->prepare($sql);
+        $query->execute();
+
+        return $query->fetchAll();
+    }
 }

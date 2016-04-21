@@ -1,10 +1,10 @@
 
 <div class="container">
 
-<h3>Register</h3> 
+<h3>Add New Guard</h3> 
 <br/>
 <br/>
-<form action="<?php echo URL; ?>visitors/index" method="POST" id="new-visitor-form">    
+<form action="<?php echo URL; ?>admins/index" method="POST" id="add-new-guard-form">    
 
 	<label for="Username">User Name</label>
 	<input type="text" name="UserName" id="UserName"  pattern="^[- a-zA-Z]{2,50}$" required autofocus />
@@ -12,29 +12,20 @@
 	<label for="FirstName">First Name</label>
 	<input type="text" name="FirstName" id="FirstName" pattern="^[- a-zA-Z]{2,50}$" required autofocus />
 <br/>
-
-	<label for="LastName">Last Name</label>
-	<input type="text" name="LastName" id="LastName" pattern="^[- a-zA-Z]{3,50}$" required />
-<br/>
 	<label for="CNP">CNP</label>
 	<input type="text" name="CNP" id="CNP" inputmode="numeric" pattern="\d{13}" required />
-<br/>
-	<label for="Email">E-mail</label>
-	<input type="text" name="Email" id="Email" pattern="^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$" required/>
 <br/>
 	<label for="Password">Password:</label>
 	<input type="password"  name="Password" id="Password" required/>
 <br/>
 
-	<label for="RepeatPassword">Retipe Password:</label>
-	<input type="password"  name="RepeatPassword" id="RepeatPassword" required/>
-<br/>
-	<input name="submit" type="submit" Value="Register" />	
+	<input name="submit" type="submit" Value="Add Guard" />	
 
 </form>
 </div>
 
 <?php
+
 $UserName = @$_POST['UserName'];
 $UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
 $UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');
@@ -43,32 +34,25 @@ $FirstName = @$_POST['FirstName'];
 $FirstName = mb_convert_encoding($FirstName, 'UTF-8','UTF-8');
 $FirstName =htmlentities($FirstName, ENT_QUOTES, 'UTF-8');
 
-
-$LastName = @$_POST['LastName'];
-$LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
-$LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
-
-$Email =@$_POST["Email"];
-
 $CNP=@$_POST['CNP'];
 $CNP = mb_convert_encoding($CNP, 'UTF-8','UTF-8');
 $CNP =htmlentities($CNP, ENT_QUOTES, 'UTF-8');
-
 
 $Password = @$_POST['Password'];
 $Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
 $Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
 
-$RepeatPassword = @$_POST['RepeatPassword'];
-$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
-$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 
+//concatenare FirstName cu CNP
 
-//concatenare LastName cu CNP
+$id=$CNP;
+$id.=$FirstName;
+$Rank=2;
 
-$id=$CNP . $LastName;
+//$instid=id institutie
 
-
+$query= "SELECT instid FROM admins WHERE id='$session_id'";//// selectez id-ul institutiei dupa id-ul sesiunii adminului. 
+$instid = mysql_query($query);
 
 $submit = @$_POST['submit'];
 $encpassword = md5($Password);
@@ -80,25 +64,19 @@ $encid=md5($id);
 if($submit){
 	if($UserName==true){
 		if($FirstName==true){
-			if($LastName==true){
 			
 				if($Password==true){
-					if($Password==$RepeatPassword){
 						if(strlen($UserName)<=50){
 									
 							if(strlen($Password)<=20 || strlen($Password)>=3){
-								$sql= "SELECT CNP FROM visitors WHERE CNP='$CNP'";
-								$query= $this->db->prepare($sql);
-								$query->execute();
-								
-								
+								$query= "SELECT id FROM admins WHERE id='$encid'";
 								$query_run = mysql_query($query);
 						
-								if(mysql_num_rows($query)){
-									echo "The account CNP already exists.";
+								if(mysql_num_rows($query_run)){
+									echo "An account already exists for this person.";
 								}
 								else{
-									$insert= "INSERT INTO visitors VALUES ('$encid','$FirstName','$LastName','$CNP','$UserName','$encpassword','$Email')";
+									$insert= mysql_query("INSERT INTO admins VALUES ('$encid','$instid','$UserName','$encpassword','$Rank')") or die("Account creation error!");
 									echo "Registration successfull.";
 									}
 								}
@@ -109,20 +87,12 @@ if($submit){
 						else{
 							echo "The maximum lenght for Username is 50 characters";
 						}
-					}
-					else{
-						echo "Passwords do not match";
-					}
 				}
 				else{
 					echo "The Password field is empty";
 				}
-			}
-			else{
-				echo "The Last Name field is empty";
-			}
-			
 		}
+			
 		else{
 			echo "The First Name field is empty";
 		}

@@ -6,7 +6,7 @@ Sa se dezvolte o aplicatie Web pentru gestiunea vizitelor de care beneficiaza pe
 
 <b>Schedule inmate visits (the easy way). Easy for the visitor, easy for the institution.</b>
           
-DeMoT follows the Model View Controller pattern, has clean RESTful urls and a simple structure inspired by [PHP Mini][mini].  
+DeMoT follows the Model View Controller pattern, has clean URLs and a simple structure inspired by [PHP Mini][mini].  
 Written in PHP 7 with only native code, no frameworks or libraries.
 
 
@@ -62,3 +62,16 @@ Once a pull request is accepted, you need to make sure your local dev branch is 
 https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow
 
 http://nvie.com/posts/a-successful-git-branching-model/
+
+
+### URL Structure Sample
+
+| Path                  | Controller#Action | Used for                                          |
+|---                    |---                |---                                                |
+| /inmates              | inmates#index     | display a list of inmates                         |
+| /inmates/new          | inmates#new       | return an HTML form for creating a new inmate     |
+| /inmates/create       | inmates#create    | create a new inmate                               |
+| /inmates/show/:id     | inamtes#show(id)  | display a specific inmate                         |
+| /inamtes/edit/:id     | inmates#edit(id)  | return a HTML form for editing a specific inmate  |
+| /inmates/update/:id   | inmates#update(id)| update specific inmate                            |
+| /inmates/delete/:id   | inmates#delete(id)| delete a specific inmate                          |
