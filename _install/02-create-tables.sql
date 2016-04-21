@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `inmates` (
 
 DROP TABLE IF EXISTS `institutions`;
 CREATE TABLE IF NOT EXISTS `institutions` (
-  `Id` int(2) NOT NULL,
+  `Id` int(2) NOT NULL AUTO_INCREMENT,
   `Name` varchar(100) NOT NULL,
   `Location` varchar(50) NOT NULL,
   PRIMARY KEY (`Id`)
