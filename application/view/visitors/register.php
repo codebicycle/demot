@@ -1,120 +1,165 @@
 <?php
 
-//register.php
 
-/**
- * Start the session.
- */
 session_start();
+if(isset($_POST['submit'])){
+    
+    
+    
+	$UserName = @$_POST['UserName'];
+	$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
+	$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');
+
+	$FirstName = @$_POST['FirstName'];
+	$FirstName = mb_convert_encoding($FirstName, 'UTF-8','UTF-8');
+	$FirstName =htmlentities($FirstName, ENT_QUOTES, 'UTF-8');
 
 
-//If the POST var "register" exists (our submit button), then we can
-//assume that the user has submitted the registration form.
-if(isset($_POST['register'])){
-    
-    //Retrieve the field values from our registration form.
-    
-	$firstname = !empty($_POST['firstname']) ? trim($_POST['firstname']) : null;
-	$lastname = !empty($_POST['lastname']) ? trim($_POST['lastname']) : null;
-	$cnp = !empty($_POST['cnp']) ? trim($_POST['cnp']) : null;
+	$LastName = @$_POST['LastName'];
+	$LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
+	$LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
+
+	$Email =@$_POST["Email"];
+
+	$CNP=@$_POST['CNP'];
+	$CNP = mb_convert_encoding($CNP, 'UTF-8','UTF-8');
+	$CNP =htmlentities($CNP, ENT_QUOTES, 'UTF-8');
+
+
+	$Password = @$_POST['Password'];
+	$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
+	$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
 	
-	$username = !empty($_POST['username']) ? trim($_POST['username']) : null;
-    $pass = !empty($_POST['password']) ? trim($_POST['password']) : null;
+	$PasswordLength=strlen($Password);
 	
-	$email = !empty($_POST['email']) ? trim($_POST['email']) : null;
+	$RepeatPassword = @$_POST['RepeatPassword'];
+	$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
+	$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
+
+
+//concatenare LastName cu CNP
+	$Id=$CNP . $LastName;
     	
-	$passwordHash = md5($pass);
-	$Id=$lastname . $cnp;
+	$PasswordHash = md5($Password);
+	$RepeatPasswordHash=md5($RepeatPassword);
+	
 	$IdHash=md5($Id);
 	
-    //TO ADD: Error checking (username characters, password length, etc).
-    //Basically, you will need to add your own error checking BEFORE
-    //the prepared statement is built and executed.
+if($UserName==true)
+{
+		if($FirstName==true)
+		{
+			if($LastName==true)
+			{
+			
+				if($Password==true)
+				{
+					if($PasswordHash==$RepeatPasswordHash)
+					{	
+						if(strlen($UserName)<=50)
+						{			
+							$sql = "SELECT COUNT(UserName) AS num FROM visitors WHERE UserName = :UserName";
+							$stmt = $this->model->db->prepare($sql);
+   							$stmt->bindValue(':UserName', $UserName);
+							$stmt->execute();
     
-    //Now, we need to check if the supplied username already exists.
+							$row = $stmt->fetch(PDO::FETCH_ASSOC);
+   							if($row['num'] > 0)
+							{
+							die('That username already exists!');
+							}
     
-    //Construct the SQL statement and prepare it.
-	
-    $sql = "SELECT COUNT(UserName) AS num FROM visitors WHERE UserName = :username";
-    $stmt = $this->model->db->prepare($sql);
+							$sql = "INSERT INTO visitors (Id, FirstName, LastName, CNP, UserName, PwdHash, Email) VALUES (:IdHash, :FirstName, :LastName, :CNP, :UserName, :Password, :Email)";
+							$stmt = $this->model->db->prepare($sql);
+    						$stmt->bindValue(':IdHash', $IdHash);
+							$stmt->bindValue(':FirstName', $FirstName);
+							$stmt->bindValue(':LastName', $LastName);
+							$stmt->bindValue(':CNP', $CNP);
+							$stmt->bindValue(':UserName', $UserName);
+							$stmt->bindValue(':Password', $PasswordHash);
+							$stmt->bindValue(':Email', $Email);
+							$result = $stmt->execute();
     
-    //Bind the provided username to our prepared statement.
-	
-    $stmt->bindValue(':username', $username);
-    
-    //Execute.
-    $stmt->execute();
-    
-    //Fetch the row.
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    //If the provided username already exists - display error.
-    //TO ADD - Your own method of handling this error. For example purposes,
-    //I'm just going to kill the script completely, as error handling is outside
-    //the scope of this tutorial.
-    if($row['num'] > 0){
-        die('That username already exists!');
-    }
-    
-    //Hash the password as we do NOT want to store our passwords in plain text.
-    
-    //Prepare our INSERT statement.
-    //Remember: We are inserting a new row into our users table.
-    $sql = "INSERT INTO visitors (Id, FirstName, LastName, CNP, UserName, PwdHash, Email) VALUES (:IdHash, :firstname, :lastname, :cnp, :username, :password, :email)";
-    $stmt = $this->model->db->prepare($sql);
-    
-    //Bind our variables.
-	
-	$stmt->bindValue(':IdHash', $IdHash);
-	$stmt->bindValue(':firstname', $firstname);
-	$stmt->bindValue(':lastname', $lastname);
-	$stmt->bindValue(':cnp', $cnp);
-    $stmt->bindValue(':username', $username);
-    $stmt->bindValue(':password', $passwordHash);
-	$stmt->bindValue(':email', $email);
+							if($result)
+							{
+								$_SESSION['user_id'] = $IdHash;           
+								require APP. 'view/visitors/account.php';
+								exit; 
+							}
+							else 
+							{
+								echo "Couldn`t register";
+							}
+								
+						}
+						
+						else
+						{
+							echo "The maximum lenght for Username is 50 characters";
+						}
+					}
+							
+					else 
+					{
+						echo "Password doesn`t match";
+					}
+				}
+				else
+				{
+					echo "The Password field is empty";
+				}
+			}
+			else
+			{
+				echo "The Last Name field is empty";
+			}
+			
+		}
+		else
+		{
+			echo "The First Name field is empty";
+		}
+	}
+	else
+	{
+		echo "The Username field is empty";
+	}
+}	
 
-    //Execute the statement and insert the new account.
-    $result = $stmt->execute();
-    
-    //If the signup process is successful.
-    if($result){
-        //What you do here is up to you!
-        echo 'Thank you for registering with our website.';
-		require APP. 'view/visitors/account.php';
-    }
-    
-}
 
 ?>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Register</title>
-    </head>
-    <body>
-        <h1>Register</h1>
-        <form action="<?php echo URL; ?>visitors/account" method="post">
-            
-		
-			<label for="firstname">FirstName</label>
-            <input type="text" id="firstname" name="firstname"><br>
-		
-			<label for="lastname">LastName</label>
-            <input type="text" id="lastname" name="lastname"><br>
-            <label for="cnp">CNP</label>
-            <input type="text" id="cnp" name="cnp"><br>
-			
-			<label for="username">Username</label>
-        	<input type="text" id="username" name="username"><br>
-			
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password"><br>
-			
-			<label for="email">Email</label>
-        	<input type="text" id="email" name="email"><br>
-			
-            <input type="submit" name="register" value="Register"></button>
-        </form>
-    </body>
-</html>
+<div class="container">
+
+<h3>Register</h3> 
+<br/>
+<br/>
+<form method="POST" id="new-visitor-form">    
+
+	<label for="Username">User Name</label>
+	<input type="text" name="UserName" id="UserName"  pattern="^[- a-zA-Z]{2,50}$" required autofocus />
+<br/>
+
+	<label for="FirstName">First Name</label>
+	<input type="text" name="FirstName" id="FirstName" pattern="^[- a-zA-Z]{2,50}$" required autofocus />
+<br/>
+
+	<label for="LastName">Last Name</label>
+	<input type="text" name="LastName" id="LastName" pattern="^[- a-zA-Z]{3,50}$" required />
+<br/>
+	<label for="CNP">CNP</label>
+	<input type="text" name="CNP" id="CNP" inputmode="numeric" pattern="\d{13}" required />
+<br/>
+	<label for="Email">E-mail</label>
+	<input type="text" name="Email" id="Email" pattern="^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$" required/>
+<br/>
+	<label for="Password">Password:</label>
+	<input type="password"  name="Password" id="Password" required/>
+<br/>
+
+	<label for="RepeatPassword">Retipe Password:</label>
+	<input type="password"  name="RepeatPassword" id="RepeatPassword" required/>
+<br/>
+	<input name="submit" type="submit" Value="Register" />	
+
+</form>
+</div>

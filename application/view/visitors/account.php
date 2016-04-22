@@ -1,12 +1,21 @@
 <?php
-//in principiu asta ar trebui sa fie pe fiecare pagina dar imi da eroare
-// session_start();
 
+ session_start();
 
-if(!isset($_SESSION['user_id']) || !isset($_SESSION['logged_in'])){
-    //User not logged in. Redirect them back to the login.php page.
-    //header('Location:login.php');
-    exit;
+if(!isset($_SESSION['user_id']))
+{
+	require APP. 'view/visitors/index.php';
+	exit;
 }
 
-echo 'Congratulations! You are logged in!';
+
+$Id=$_SESSION['user_id'];
+$sql = "SELECT UserName FROM visitors WHERE Id = :Id";
+$stmt = $this->model->db->prepare($sql);
+$stmt->bindValue(':Id', $Id);
+$stmt->execute(); 
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+echo 'Welcome ';
+echo $user['UserName'];
+echo ', you are now in your account!';
+		

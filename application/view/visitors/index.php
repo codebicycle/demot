@@ -41,9 +41,7 @@ if(isset($_POST['submit']))
 		{
 			if($encpassword==$user['PwdHash'])
 			{
-				$_SESSION['user_id'] = $user['Id'];
-				$_SESSION['logged_in'] = time();
-           
+				$_SESSION['user_id'] = $user['Id'];           
 				require APP. 'view/visitors/account.php';
 				exit; 
 			}
