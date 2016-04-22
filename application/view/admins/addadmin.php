@@ -1,54 +1,77 @@
 <?php
 session_start();
 
-if(isset($_POST['addadmin'])){
-    
-    
-	$instid = !empty($_POST['instid']) ? trim($_POST['instid']) : null;
+if(isset($_POST['submit']))
+{
+	$UserName = @$_POST['UserName'];
+	$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
+	$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');
+
+	$LastName = @$_POST['LastName'];
+	$LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
+	$LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
+
+	$CNP=@$_POST['CNP'];
+	$CNP = mb_convert_encoding($CNP, 'UTF-8','UTF-8');
+	$CNP =htmlentities($CNP, ENT_QUOTES, 'UTF-8');
+
+	$Password = @$_POST['Password'];
+	$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
+	$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
 	
-	$lastname = !empty($_POST['lastname']) ? trim($_POST['lastname']) : null;
-	$cnp = !empty($_POST['cnp']) ? trim($_POST['cnp']) : null;
+	$RetipePassword = @$_POST['RetipePassword'];
+	$RetipePassword = mb_convert_encoding($RetipePassword, 'UTF-8','UTF-8');
+	$RetipePassword =htmlentities($RetipePassword, ENT_QUOTES, 'UTF-8');
+
+	//concatenare CNP cu  LastName
+	$Id=$CNP . $LastName;
 	
-	// trebuie facut drop down menu. momentan e hard coded
-	$username = !empty($_POST['username']) ? trim($_POST['username']) : null;
-    $pass = !empty($_POST['password']) ? trim($_POST['password']) : null;
+	//Rank e 1 pentru ca e admin simplu
+	$Rank=1;
+
+	$option_chosen=$_POST['option_chosen'];
+	$option_chosen = mb_convert_encoding($option_chosen, 'UTF-8','UTF-8');
+	$option_chosen =htmlentities($option_chosen, ENT_QUOTES, 'UTF-8');
 	
-	//rank 1 adica e admin simplu.
-	$rank =1;
-    	
-	$passwordHash = md5($pass);
-	$Id=$lastname . $cnp;
-	$IdHash=md5($Id);
-	
-    //trebuie verificate datele
-	
-	
-    //verific daca username-ul este in baza de date
-    $sql = "SELECT COUNT(UserName) AS num FROM admins WHERE UserName = :username";
+	///Sql pentru a selecta idul institutiei
+	$sql = "SELECT Id FROM institutions WHERE Name = :Name";
     $stmt = $this->model->db->prepare($sql);
  
-    $stmt->bindValue(':username', $username);
+    $stmt->bindValue(':Name', $option_chosen);
+
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+	$InstId= $row['Id'];
+		
+	$PwdHash = md5($Password);
+	
+	$Id=$LastName . $CNP;
+	
+	$IdHash=md5($Id);
+	
+    $sql = "SELECT COUNT(UserName) AS num FROM admins WHERE UserName = :UserName";
+    $stmt = $this->model->db->prepare($sql);
+ 
+    $stmt->bindValue(':UserName', $UserName);
     
     $stmt->execute();
     
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    //daca exista adunci crapa
-    if($row['num'] > 0){
+	if($row['num'] > 0){
         die('That username already exists!');
     }
-    //adaugam in tabela admins
-    $sql = "INSERT INTO admins (Id, InstId, UserName, PwdHash, Rank) VALUES (:IdHash, :instid, :username, :password, :rank)";
+    
+	$sql = "INSERT INTO admins (Id, InstId, UserName, PwdHash, Rank) VALUES (:IdHash, :InstId, :UserName, :Password, :Rank)";
     $stmt = $this->model->db->prepare($sql);
     
   
 	$stmt->bindValue(':IdHash', $IdHash);
-	$stmt->bindValue(':instid', $instid);
-    $stmt->bindValue(':username', $username);
-    $stmt->bindValue(':password', $passwordHash);
-	$stmt->bindValue(':rank', $rank);
+	$stmt->bindValue(':InstId', $InstId);
+    $stmt->bindValue(':UserName', $UserName);
+    $stmt->bindValue(':Password', $PwdHash);
+	$stmt->bindValue(':Rank', $Rank);
 
-   
     $result = $stmt->execute();
     
     if($result){
@@ -63,32 +86,53 @@ if(isset($_POST['addadmin'])){
 }
 
 ?>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Add Admin</title>
-    </head>
-    <body>
-        <h1>Add Admin</h1>
-        <form  method="post">
-            
-			<label for="instid">Idinstitutie</label>
-            <input type="text" id="instid" name="instid"><br>
-		
-			<label for="lastname">LastName</label>
-            <input type="text" id="lastname" name="lastname"><br>
-            <label for="cnp">CNP</label>
-            <input type="text" id="cnp" name="cnp"><br>
-			
-			<label for="username">Username</label>
-        	<input type="text" id="username" name="username"><br>
-			
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password"><br>
-			
-			
-            <input type="submit" name="addadmin" value="Register"></button>
-        </form>
-    </body>
-</html>
+
+
+
+<div class="container">
+
+<h3>Add New Admin</h3> 
+<br/>
+<br/>
+<form method="POST" id="add-new-admin-form">    
+
+	<label for="Username">User Name</label>
+	<input type="text" name="UserName" id="UserName"  pattern="^[- a-zA-Z]{2,50}$" required autofocus />
+<br/>
+	<label for="LastName">First Name</label>
+	<input type="text" name="LastName" id="LastName" pattern="^[- a-zA-Z]{2,50}$" required autofocus />
+<br/>
+	<label for="CNP">CNP</label>
+	<input type="text" name="CNP" id="CNP" inputmode="numeric" pattern="\d{13}" required />
+<br/>
+	<label for="Password">Password:</label>
+	<input type="password"  name="Password" id="Password" required/>
+<br/>
+	<label for="RetipePassword">RetipePassword:</label>
+	<input type="password"  name="RetipePassword" id="RetipePassword" required/>
+<br/>
+
+<label for="Institution">Institution</label>
+<?php
+	$sql = "SELECT Name FROM institutions";
+    $stmt = $this->model->db->prepare($sql);
+    $stmt->execute();
+	$data =$stmt->fetchAll();
+	
+	?>
+	
+	<select name="option_chosen">
+<?php foreach ($data as $row): $Name=$row->Name; ?>		
+    <option><?=$Name?></option>
+<?php endforeach ?>
+</select>
+
+
+
+
+<br/>
+<br/>
+<input name="submit" type="submit" Value="Add Admin"/>	
+
+</form>
+</div>
