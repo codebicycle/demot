@@ -69,7 +69,7 @@ http://nvie.com/posts/a-successful-git-branching-model/
 | Path                  | Controller#Action | Used for                                          |
 |---                    |---                |---                                                |
 | /inmates              | inmates#index     | display a list of inmates                         |
-| /inmates/new          | inmates#new       | return an HTML form for creating a new inmate     |
+| /inmates/add          | inmates#add       | return an HTML form for creating a new inmate     |
 | /inmates/create       | inmates#create    | create a new inmate                               |
 | /inmates/show/:id     | inamtes#show(id)  | display a specific inmate                         |
 | /inamtes/edit/:id     | inmates#edit(id)  | return a HTML form for editing a specific inmate  |

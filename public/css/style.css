@@ -80,23 +80,23 @@ body {
     color: #fff;
 }
 
-#inmates-new-form {
+#inmates-add-form {
     width: 27em;
 }
 
-#inmates-new-form label {
+#inmates-add-form label {
     display: inline-block;
     width: 10em;
     text-align: right;
 }
 
-#inmates-new-form input {
+#inmates-add-form input {
     display: inline-block;
     width: 10em;
     margin-bottom: .5em;
 }
 
-#inmates-new-form > input:last-child {
+#inmates-add-form > input:last-child {
     width: initial;
 }
 

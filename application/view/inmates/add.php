@@ -5,7 +5,7 @@
 
 <div class="container">
   <h3>Add new inmate</h3>
-  <form action="<?php echo URL; ?>inmates/create" method="POST" id="inmates-new-form">
+  <form action="<?php echo URL; ?>inmates/create" method="POST" id="inmates-add-form">
     <?php validation_hint($validation_errors['FirstName'] ?? null) ?>
     <label for="FirstName">First Name</label>
     <input type="text" name="FirstName" id="FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('FirstName') ?>" required />

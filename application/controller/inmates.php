@@ -10,9 +10,9 @@ class Inmates extends Controller {
     require APP . 'view/_templates/footer.php';
   }
 
-  public function new() {
+  public function add() {
     require APP . 'view/_templates/header.php';
-    require APP . 'view/inmates/new.php';
+    require APP . 'view/inmates/add.php';
     require APP . 'view/_templates/footer.php';
   }
 
@@ -34,12 +34,12 @@ class Inmates extends Controller {
         echo 'Not Ok';
         // redisplay filled form and validation hints
         $validation_errors = $this->model->validation_errors;
-        require APP . 'view/inmates/new.php';
+        require APP . 'view/inmates/add.php';
       }
     }
     else {
       // not a POST request ...
-      require APP . 'view/inmates/new.php';
+      require APP . 'view/inmates/add.php';
     }
     
     require APP . 'view/_templates/footer.php';
