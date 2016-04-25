@@ -22,4 +22,15 @@ class Model
 
         return $query->fetchAll();
     }
+	
+	public function getAllVisits() {
+
+        $sql = "SELECT Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, RecivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState FROM visits";
+        $query = $this->db->prepare($sql);
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+	
+	
 }

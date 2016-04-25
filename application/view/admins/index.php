@@ -2,7 +2,14 @@
 
 session_start();
 
-if(isset($_POST['submit']))
+session_start();
+if(isset($_SESSION['user_id']))
+{
+	require APP. 'view/admins/account.php';
+	exit;
+}
+
+else if(isset($_POST['submit']))
 {
 	$UserName = $_POST['UserName'];
 	$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');	//securizare sql injection

@@ -99,7 +99,7 @@ if(isset($_POST['submit']))
 	<label for="Username">User Name</label>
 	<input type="text" name="UserName" id="UserName"  pattern="^[- a-zA-Z]{2,50}$" required autofocus />
 <br/>
-	<label for="LastName">First Name</label>
+	<label for="LastName">Last Name</label>
 	<input type="text" name="LastName" id="LastName" pattern="^[- a-zA-Z]{2,50}$" required autofocus />
 <br/>
 	<label for="CNP">CNP</label>

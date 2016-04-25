@@ -23,6 +23,13 @@ class visitors extends Controller {
     require APP . 'view/_templates/footer.php';
   }
  
+  public function appointments() {
+    require APP . 'view/_templates/header.php';
+    require APP . 'view/visitors/appointments.php';
+    require APP . 'view/_templates/footer.php';
+  }
+ 
+ 
  
  }
 
