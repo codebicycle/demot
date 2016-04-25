@@ -9,6 +9,7 @@ if(!isset($_SESSION['user_id']))
 }
 
 
+
 $Id=$_SESSION['user_id'];
 $sql = "SELECT UserName FROM visitors WHERE Id = :Id";
 $stmt = $this->model->db->prepare($sql);
@@ -19,12 +20,15 @@ echo 'Welcome ';
 echo $user['UserName'];
 echo ', you are now in your account!';
 
-$State=3;
-		///state v-a fi valoarea data de butonul selectat din left side menu. 
+if(isset($_POST['submit']))
+	$State=$_POST['visits'];
+else $State=0;
+	///state este valoarea data de optiunea selectata din drop down menu. 
 		//0 pentru accepted
 		//1 pentru pending
-		//2pentru efectuate
-		//eventual 3 pentru refuzate
+		//2 pentru efectuate
+		//eventual 3 pentru refuzate aici trebuie vazut cum facem... ori facem un camp nou in appointments unde setam ceva cand vizita este respinsa automat
+		//  si bagam un motiv cand este respinsa de gardian / admin sau alta modalitate prin care sa spunem ca a fost respinsa si de ce.
 		
 		
 ?>	
@@ -42,12 +46,18 @@ $State=3;
 
 
 <h3>THIS IS YOUR LEFT SIDE MENU: </h3>
+
+<form method="POST">    
+<select name="visits" id="visits">
+<option value="0">Accepted appointments</option>
+<option value="1">Pending appointments</option>
+<option value="2">Done visits</option>
+<option value="3">Rejected appointments</option>
+</select>
 <br/>
-<a>ACCEPTED</a>	
 <br/>
-<a>PENDING</a>
-<br/>
-<a>DONE</a> 
+<input name="submit" type="submit" Value="Select Type"/>	
+</form>
 <br/>
 
 <div class="container">
