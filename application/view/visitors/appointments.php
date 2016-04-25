@@ -38,7 +38,7 @@ else $State=0;
 <br/>
 <a href="<?php echo URL; ?>visitors/account">New Appointment</a>	
 <br/>
-<a href="<?php echo URL; ?>visitors/edit">Edit Account</a>
+<a href="<?php echo URL; ?>visitors/editaccount">Edit Account</a>
 <br/>
 <a href="<?php echo URL; ?>visitors/logout">LOGOUT</a> 
 <br/>
