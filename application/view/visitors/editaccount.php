@@ -60,10 +60,9 @@ if($UserName==true)
 						{			
 							
 							
-							$sql = "UPDATE `visitors` SET `Id`=:IdHash,`FirstName`=:FirstName,`LastName`=:LastName,`CNP`=:CNP,`UserName`=:UserName,`PwdHash`=:PwdHash,`Email`=:Email WHERE Id=:Id";
+							$sql = "UPDATE `visitors` SET `FirstName`=:FirstName,`LastName`=:LastName,`CNP`=:CNP,`UserName`=:UserName,`PwdHash`=:PwdHash,`Email`=:Email WHERE Id=:Id";
 							$stmt = $this->model->db->prepare($sql);
     						
-							$stmt->bindValue(':IdHash', $IdHash);
 							$stmt->bindValue(':FirstName', $FirstName);
 							$stmt->bindValue(':LastName', $LastName);
 							$stmt->bindValue(':CNP', $CNP);
@@ -75,7 +74,7 @@ if($UserName==true)
 							
 							if($result)
 							{
-								$_SESSION['user_id']=$IdHash;
+								
 								echo "Your account was updated!" ;
 							}
 							else 
