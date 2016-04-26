@@ -33,36 +33,67 @@ class Model
     }
 
 
-	public function download_json_results($json_data, $name)
+	public function download_json_results($visits)
 		{
-			if( ! $name)
-			{
-				$name = md5(uniqid() . microtime(TRUE) . mt_rand()). '.json';
-			}	
-
-			$fp = fopen($name, 'w');
-			fwrite($fp, json_encode($json_data));
-			fclose($fp);
-
-		}
-	
-	
-	
-	
-	public function download_csv_results($visits, $name)
-		{
-			if( ! $name)
-			{
-				$name = md5(uniqid() . microtime(TRUE) . mt_rand()). '.csv';
-			}	
-
-			$fp = fopen($name, "w");
-			foreach ($visits as $visit) 
-			{
-				fputcsv($fp, $visit);
+			
+			$name = 'JSONExport';
+			$filelocation = '';
+			$filename     = $name.date('Y-m-d H.i.s').'.json';
+			$file_export  =  $filelocation . $filename;
+			$data = fopen($file_export, 'w');
+			$json_data=array();  
+		
+			foreach($visits as $visit)
+			{  
+				$json_array['Id']=$visit->Id;  
+				$json_array['AppointmentId']=$visit->AppointmentId; 
+				$json_array['SecondVisitor']=$visit->SecondVisitor;  
+				$json_array['ThirdVisitor']=$visit->ThirdVisitor;  
+				$json_array['GivenObjects']=$visit->GivenObjects;  
+				$json_array['RecivedObjects']=$visit->RecivedObjects;  
+				$json_array['Relationship']=$visit->Relationship;  
+				$json_array['Motive']=$visit->Motive;  
+				$json_array['Comments']=$visit->Comments;  
+				$json_array['Duration']=$visit->Duration;  
+				$json_array['InmatePhisicalState']=$visit->InmatePhisicalState;  
+				$json_array['InmateEmotionalState']=$visit->InmateEmotionalState;  
+			
+				array_push($json_data,$json_array);  
+  
 			}
 
-			fclose($fp);	
+			fwrite($data, json_encode($json_data));
+			fclose($data);
+
+		}
+
+	public function download_csv_results($visits)
+		{
+			$name = 'CSVExport';
+			$filelocation = '';
+			$filename     = $name.date('Y-m-d H.i.s').'.csv';
+			$file_export  =  $filelocation . $filename;
+			$data = fopen($file_export, 'w');
+			$csv_data=array();  
+		
+			foreach($visits as $visit)
+			{  
+				$csv_data['Id']=$visit->Id;  
+				$csv_data['AppointmentId']=$visit->AppointmentId; 
+				$csv_data['SecondVisitor']=$visit->SecondVisitor;  
+				$csv_data['ThirdVisitor']=$visit->ThirdVisitor;  
+				$csv_data['GivenObjects']=$visit->GivenObjects;  
+				$csv_data['RecivedObjects']=$visit->RecivedObjects;  
+				$csv_data['Relationship']=$visit->Relationship;  
+				$csv_data['Motive']=$visit->Motive;  
+				$csv_data['Comments']=$visit->Comments;  
+				$csv_data['Duration']=$visit->Duration;  
+				$csv_data['InmatePhisicalState']=$visit->InmatePhisicalState;  
+				$csv_data['InmateEmotionalState']=$visit->InmateEmotionalState;  
+			
+				fputcsv($data, $csv_data);
+  
+			}
 		}
 			
 	
