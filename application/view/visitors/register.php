@@ -36,7 +36,8 @@ if(isset($_POST['submit'])){
 	$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
 	$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 
-
+	
+	
 //concatenare LastName cu CNP
 	$Id=$CNP . $LastName;
     	
@@ -133,7 +134,7 @@ if($UserName==true)
 <h3>Register</h3> 
 <br/>
 <br/>
-<form method="POST" id="new-visitor-form">    
+<form method="POST" id="new-visitor-form" enctype="multipart/form-data">    
 
 	<label for="Username">User Name</label>
 	<input type="text" name="UserName" id="UserName"  pattern="^[- a-zA-Z]{2,50}$" required autofocus />
@@ -159,6 +160,9 @@ if($UserName==true)
 	<label for="RepeatPassword">Retipe Password:</label>
 	<input type="password"  name="RepeatPassword" id="RepeatPassword" required/>
 <br/>
+	
+
+
 	<input name="submit" type="submit" Value="Register" />	
 
 </form>

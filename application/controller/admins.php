@@ -3,6 +3,7 @@
 class admins extends Controller {
 
  
+ 
   public function index() {
 	  $visits = $this->model->getAllVisits();
     require APP . 'view/_templates/header.php';
@@ -11,13 +12,8 @@ class admins extends Controller {
   }
   
   
-   public function register() {
-    require APP . 'view/_templates/header.php';
-    require APP . 'view/admins/register.php';
-    require APP . 'view/_templates/footer.php';
-  }
-  
     public function account() {	
+	$visits = $this->model->getAllVisits();
     require APP . 'view/_templates/header.php';
     require APP . 'view/admins/account.php';
     require APP . 'view/_templates/footer.php';
@@ -39,7 +35,8 @@ class admins extends Controller {
     require APP . 'view/admins/deleteadmin.php';
     require APP . 'view/_templates/footer.php';
   }
-	 public function logout() {	
+  public function logout() {	
+	$visits = $this->model->getAllVisits();
     require APP . 'view/_templates/header.php';
     require APP . 'view/admins/logout.php';
     require APP . 'view/_templates/footer.php';
