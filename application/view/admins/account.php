@@ -6,14 +6,14 @@
 
  session_start();
 
-if(!isset($_SESSION['user_id']))
+if(!isset($_SESSION['admin_id']))
 {
 	require APP. 'view/admins/index.php';
 	exit;
 }
 
 
-$Id=$_SESSION['user_id'];
+$Id=$_SESSION['admin_id'];
 $sql = "SELECT UserName, Rank FROM admins WHERE Id = :Id";
 $stmt = $this->model->db->prepare($sql);
 $stmt->bindValue(':Id', $Id);

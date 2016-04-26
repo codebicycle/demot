@@ -31,7 +31,7 @@ if(isset($_POST['submit'])){
 	$sql = "SELECT InstId FROM admins WHERE Id = :Id";
     $stmt = $this->model->db->prepare($sql);
  
-    $stmt->bindValue(':Id', $_SESSION['user_id']);
+    $stmt->bindValue(':Id', $_SESSION['admin_id']);
     
     $stmt->execute();
     

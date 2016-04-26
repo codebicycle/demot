@@ -3,7 +3,7 @@
 session_start();
 
 session_start();
-if(isset($_SESSION['user_id']))
+if(isset($_SESSION['admin_id']))
 {
 	require APP. 'view/admins/account.php';
 	exit;
@@ -47,7 +47,7 @@ else if(isset($_POST['submit']))
 
 			if($encpassword==$user['PwdHash'])
 			{
-				$_SESSION['user_id'] = $user['Id'];         
+				$_SESSION['admin_id'] = $user['Id'];         
 				require APP. 'view/admins/account.php';
 				exit;
 			}
