@@ -31,6 +31,39 @@ class Model
 
         return $query->fetchAll();
     }
+
+
+	public function download_json_results($json_data, $name)
+		{
+			if( ! $name)
+			{
+				$name = md5(uniqid() . microtime(TRUE) . mt_rand()). '.json';
+			}	
+
+			$fp = fopen($name, 'w');
+			fwrite($fp, json_encode($json_data));
+			fclose($fp);
+
+		}
 	
+	
+	
+	
+	public function download_csv_results($visits, $name)
+		{
+			if( ! $name)
+			{
+				$name = md5(uniqid() . microtime(TRUE) . mt_rand()). '.csv';
+			}	
+
+			$fp = fopen($name, "w");
+			foreach ($visits as $visit) 
+			{
+				fputcsv($fp, $visit);
+			}
+
+			fclose($fp);	
+		}
+			
 	
 }

@@ -88,14 +88,40 @@ if($exp)
 	if($ext=="csv")
 	{
 		
-		echo "EXPORT CSV";
+		$this->model->download_csv_results($visits, 'Export.csv');
 		
 	}
 		
 if($ext=="json")
 	{
-		echo "EXPORT JSON";
 		
+		$json_data=array();  
+		
+		foreach($visits as $visit)
+		{  
+			$json_array['Id']=$visit->Id;  
+			$json_array['AppointmentId']=$visit->AppointmentId; 
+			$json_array['SecondVisitor']=$visit->SecondVisitor;  
+			$json_array['ThirdVisitor']=$visit->ThirdVisitor;  
+			$json_array['GivenObjects']=$visit->GivenObjects;  
+			$json_array['RecivedObjects']=$visit->RecivedObjects;  
+			$json_array['Relationship']=$visit->Relationship;  
+			$json_array['Motive']=$visit->Motive;  
+			$json_array['Comments']=$visit->Comments;  
+			$json_array['Duration']=$visit->Duration;  
+			$json_array['InmatePhisicalState']=$visit->InmatePhisicalState;  
+			$json_array['InmateEmotionalState']=$visit->InmateEmotionalState;  
+			//here pushing the values in to an array  
+			array_push($json_data,$json_array);  
+  
+		}  
+  
+  
+		$this->model->download_json_results($json_data,'Export.json');
+		//built in PHP function to encode the data in to JSON format  
+		//echo json_encode($json_data);  
+  
+  
 	}
 	
 }
@@ -244,9 +270,27 @@ if($exp)
 	
 	if($ext=="csv")
 	{
-		
-		echo "EXPORT CSV";
-		
+		function download_csv_results($visits, $name = NULL)
+		{
+			if( ! $name)
+			{
+				$name = md5(uniqid() . microtime(TRUE) . mt_rand()). '.csv';
+			}	
+
+			header('Content-Type: text/csv');
+			header('Content-Disposition: attachment; filename='. $name);
+			header('Pragma: no-cache');
+			header("Expires: 0");
+
+			$outstream = fopen("php://output", "w");
+
+			foreach($visits as $visit)
+			{
+				fputcsv($outstream, $visit);
+			}
+
+		fclose($outstream);	
+		}
 	}
 		
 if($ext=="json")
