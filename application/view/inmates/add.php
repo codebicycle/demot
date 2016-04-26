@@ -6,6 +6,7 @@
 <div class="container">
   <h3>Add new inmate</h3>
   <form action="<?php echo URL; ?>inmates/create" method="POST" id="inmates-add-form" novalidate >
+    <?php validation_hint($validation_errors, 'Id') ?>
     <?php validation_hint($validation_errors, 'FirstName') ?>
     <label for="FirstName">First Name</label>
     <input type="text" name="FirstName" id="FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('FirstName') ?>" required />
@@ -43,7 +44,7 @@
     <label for="ReleaseDate">Release Date</label>
     <input type="date" name="ReleaseDate" id="ReleaseDate" placeholder="yyyy-mm-dd" pattern="\d{4}[/-]\d{1,2}[/-]\d{1,2}" value="<?php cached_value('ReleaseDate') ?>" required />
   
-
+    <?php validation_hint($validation_errors, 'LawyerId') ?>
     <?php validation_hint($validation_errors, 'LawyerFirstName') ?>
     <label for="LawyerFirstName">Lawyer First Name</label>
     <input type="text" name="LawyerFirstName" id="LawyerFirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('LawyerFirstName') ?>" />
