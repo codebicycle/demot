@@ -62,3 +62,7 @@
     <input type="submit" name="Create" value="Create" />
   </form>
 </div>
+
+<pre>
+    <?php print_r($inmate); ?>
+</pre>
