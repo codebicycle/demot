@@ -27,5 +27,15 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 echo 'Welcome ';
 echo $user['UserName'];
 echo ', you are now in your account!';
+
+
+
+
+
+
+
+
+
+
 		
 ?>

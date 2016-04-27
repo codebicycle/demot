@@ -5,7 +5,7 @@ class admins extends Controller {
  
  
   public function index() {
-	  $visits = $this->model->getAllVisits();
+	$visits = $this->model->getAllVisits();
     require APP . 'view/_templates/header.php';
     require APP . 'view/admins/index.php';
     require APP . 'view/_templates/footer.php';
@@ -13,7 +13,7 @@ class admins extends Controller {
   
   
     public function account() {	
-	$visits = $this->model->getAllVisits();
+	
     require APP . 'view/_templates/header.php';
     require APP . 'view/admins/account.php';
     require APP . 'view/_templates/footer.php';
@@ -36,7 +36,7 @@ class admins extends Controller {
     require APP . 'view/_templates/footer.php';
   }
   public function logout() {	
-	$visits = $this->model->getAllVisits();
+	
     require APP . 'view/_templates/header.php';
     require APP . 'view/admins/logout.php';
     require APP . 'view/_templates/footer.php';

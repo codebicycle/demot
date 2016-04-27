@@ -53,51 +53,10 @@ if($Rank==0)
 
 <p>Selectati formatul pentru export: </p></br>
 <?php 
-echo "<form name=\"export\" method=\"post\" enctype=\"multipart/form-data\">";
+	$visits=$this->model->getAllVisits();
+	$this->model->export_form();
+	$this->model->export_visits($visits);
 
-echo "<tr>";
-	
-	echo "<td>";
-	echo "<select name=\"extension\">";
-	echo "<option value=\"html\">HTML</option>";
-	echo "<option value=\"csv\">CSV</option>";
-	echo "<option value=\"json\">JSON</option>";
-	echo "</select>";
-	echo "</td>";
-echo "</tr>";
-
-
-echo "<tr>";
-echo "<td><input name=\"export_press\" type=\"submit\" value=\"Export\"></td><td></td>";
-echo "</tr>";
-echo "</table>";	
-echo "</form>";
-echo "</br>";
-
-$exp=$_POST['export_press']??NULL;
-$ext=$_POST['extension']??NULL;
-
-if($exp)
-{
-	
-	if($ext=="html")
-	{
-			echo "EXPORT HTML";
-	}
-	
-	
-	
-	if($ext=="csv")
-	{
-		$this->model->download_csv_results($visits);		
-	}
-		
-if($ext=="json")
-	{
-		$this->model->download_json_results($visits);
-	}
-	
-}
 ?>
 
 
@@ -202,60 +161,17 @@ if($Rank==1)
 <br/>
 
 
-<br/>
-<br/>
-
 <p>Selectati formatul pentru export: </p></br>
 <?php 
-echo "<form name=\"export\" method=\"post\" enctype=\"multipart/form-data\">";
-
-echo "<tr>";
 	
-	echo "<td>";
-	echo "<select name=\"extension\">";
-	echo "<option value=\"html\">HTML</option>";
-	echo "<option value=\"csv\">CSV</option>";
-	echo "<option value=\"json\">JSON</option>";
-	echo "</select>";
-	echo "</td>";
-echo "</tr>";
+	$visits=$this->model->getAllVisits();
+	$this->model->export_form();
+	$this->model->export_visits($visits);
 
-
-echo "<tr>";
-echo "<td><input name=\"export_press\" type=\"submit\" value=\"Export\"></td><td></td>";
-echo "</tr>";
-echo "</table>";	
-echo "</form>";
-echo "</br>";
-
-$exp=$_POST['export_press']??NULL;
-$ext=$_POST['extension']??NULL;
-
-if($exp)
-{
 	
-	if($ext=="html")
-	{
-			echo "EXPORT HTML";
-	}
-	
-	
-	
-	if($ext=="csv")
-	{
-		$this->model->download_csv_results($visits);		
-	}
-		
-if($ext=="json")
-	{
-		$this->model->download_json_results($visits);
-	}
-	
-}
+	?>
 
 
-
-?>
 
 
 </div>

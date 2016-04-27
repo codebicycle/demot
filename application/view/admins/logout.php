@@ -2,6 +2,6 @@
 	session_start();
 	session_destroy();
 
-	header('location: '.URL. 'admins/index');
+	header('location: '.URL. 'admins/');
 	exit;
 ?>
