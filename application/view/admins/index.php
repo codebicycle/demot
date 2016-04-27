@@ -2,7 +2,7 @@
 
 session_start();
 
-session_start();
+
 if(isset($_SESSION['admin_id']))
 {
 	require APP. 'view/admins/account.php';

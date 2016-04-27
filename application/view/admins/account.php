@@ -4,7 +4,7 @@
 
 <?php
 
- session_start();
+
 
 if(!isset($_SESSION['admin_id']))
 {
@@ -72,8 +72,8 @@ echo "</table>";
 echo "</form>";
 echo "</br>";
 
-$exp=$_POST['export_press'];
-$ext= @$_POST['extension'];
+$exp=$_POST['export_press']??NULL;
+$ext=$_POST['extension']??NULL;
 
 if($exp)
 {
@@ -271,6 +271,9 @@ if($ext=="json")
 	}
 	
 }
+
+
+
 ?>
 
 
