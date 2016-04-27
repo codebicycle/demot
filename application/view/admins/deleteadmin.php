@@ -1,15 +1,28 @@
 <?php
 
 
-if(isset($_POST['submit']))
+
+if(!isset($_SESSION)) 
+    { 
+        session_start(); 
+    } 
+
+
+if(!isset($_SESSION['admin_id']))
+{
+	require APP. 'view/admins/index.php';
+	exit;
+}
+
+else if(isset($_POST['submit']))
 {
 	
 	
-	$UserName=@$_POST['UserName'];
+	$UserName=$_POST['UserName']??NULL;
 	$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
 	$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');
 
-	$option_chosen=$_POST['option_chosen'];
+	$option_chosen=$_POST['option_chosen']??NULL;
 	$option_chosen = mb_convert_encoding($option_chosen, 'UTF-8','UTF-8');
 	$option_chosen =htmlentities($option_chosen, ENT_QUOTES, 'UTF-8');
 	

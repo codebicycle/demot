@@ -1,7 +1,9 @@
 <?php
 
-
-session_start();
+if(!isset($_SESSION)) 
+    { 
+        session_start(); 
+    } 
 if(isset($_POST['submit'])){
     
     $visId=$_SESSION['user_id'];
@@ -20,33 +22,33 @@ if(isset($_POST['submit'])){
 			
 			
     
-	$UserName = @$_POST['UserName'];
+	$UserName = $_POST['UserName']??NULL;
 	$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
 	$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');
 
-	$FirstName = @$_POST['FirstName'];
+	$FirstName = $_POST['FirstName']??NULL;
 	$FirstName = mb_convert_encoding($FirstName, 'UTF-8','UTF-8');
 	$FirstName =htmlentities($FirstName, ENT_QUOTES, 'UTF-8');
 
 
-	$LastName = @$_POST['LastName'];
+	$LastName =$_POST['LastName']??NULL;
 	$LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
 	$LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
 
-	$Email =@$_POST["Email"];
+	$Email =$_POST["Email"]??NULL;
 
-	$CNP=@$_POST['CNP'];
+	$CNP=$_POST['CNP']??NULL;
 	$CNP = mb_convert_encoding($CNP, 'UTF-8','UTF-8');
 	$CNP =htmlentities($CNP, ENT_QUOTES, 'UTF-8');
 
 
-	$Password = @$_POST['Password'];
+	$Password = $_POST['Password']??NULL;
 	$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
 	$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
 	
 	$PasswordLength=strlen($Password);
 	
-	$RepeatPassword = @$_POST['RepeatPassword'];
+	$RepeatPassword = $_POST['RepeatPassword']??NULL;
 	$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
 	$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 	

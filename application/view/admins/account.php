@@ -4,8 +4,10 @@
 
 <?php
 
-
-
+if(!isset($_SESSION)) 
+    { 
+        session_start(); 
+    } 
 if(!isset($_SESSION['admin_id']))
 {
 	require APP. 'view/admins/index.php';
@@ -226,8 +228,8 @@ echo "</table>";
 echo "</form>";
 echo "</br>";
 
-$exp=$_POST['export_press'];
-$ext= @$_POST['extension'];
+$exp=$_POST['export_press']??NULL;
+$ext=$_POST['extension']??NULL;
 
 if($exp)
 {
@@ -241,33 +243,12 @@ if($exp)
 	
 	if($ext=="csv")
 	{
-		function download_csv_results($visits, $name = NULL)
-		{
-			if( ! $name)
-			{
-				$name = md5(uniqid() . microtime(TRUE) . mt_rand()). '.csv';
-			}	
-
-			header('Content-Type: text/csv');
-			header('Content-Disposition: attachment; filename='. $name);
-			header('Pragma: no-cache');
-			header("Expires: 0");
-
-			$outstream = fopen("php://output", "w");
-
-			foreach($visits as $visit)
-			{
-				fputcsv($outstream, $visit);
-			}
-
-		fclose($outstream);	
-		}
+		$this->model->download_csv_results($visits);		
 	}
 		
 if($ext=="json")
 	{
-		echo "EXPORT JSON";
-		
+		$this->model->download_json_results($visits);
 	}
 	
 }
