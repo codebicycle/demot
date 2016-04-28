@@ -64,5 +64,5 @@
 </div>
 
 <pre>
-    <?php print_r($inmate); ?>
+    <?php print_r($inmate??NULL); ?>
 </pre>
