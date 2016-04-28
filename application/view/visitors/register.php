@@ -38,7 +38,9 @@ if(isset($_POST['submit'])){
 	$RepeatPassword = $_POST['RepeatPassword']??NULL;
 	$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
 	$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
-
+	
+	$uploadImage=$_POST['uploadImage']??NULL;
+	
 	
 	
 //concatenare LastName cu CNP
@@ -48,6 +50,7 @@ if(isset($_POST['submit'])){
 	$RepeatPasswordHash=md5($RepeatPassword);
 	
 	$IdHash=md5($Id);
+	
 	
 if($UserName==true)
 {
@@ -86,6 +89,10 @@ if($UserName==true)
     
 							if($result)
 							{
+								if($uploadImage)
+								{
+								$this->model->uploadPicture($IdHash);
+								}
 								$_SESSION['user_id'] = $IdHash;           
 								require APP. 'view/visitors/account.php';
 								exit; 
@@ -163,8 +170,9 @@ if($UserName==true)
 	<label for="RepeatPassword">Retipe Password:</label>
 	<input type="password"  name="RepeatPassword" id="RepeatPassword" required/>
 <br/>
-	
-
+	<label for="uploadpicture">Upload Picture:</label>
+	<input type="file" name="uploadImage" id="uploadImage">
+<br/>
 
 	<input name="submit" type="submit" Value="Register" />	
 

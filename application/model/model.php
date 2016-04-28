@@ -135,6 +135,7 @@ class Model
       }
       public function getAppointments($state)
       {
+
         if($state==0)
         {
           echo "<h3>ACCEPTED APPOINTMENTS: </h3>";
@@ -287,6 +288,21 @@ class Model
       echo"</table>";
         
       }
+	  public function uploadPicture($id)
+	  {
+			$name = 'Image';
+            $filelocation = 'uploadimg/';
+            $filename=date('Y-m-d.H.i.s').$_FILES["uploadImage"]["name"];
+			
+			move_uploaded_file($_FILES["uploadImage"]["tmp_name"] , "$filelocation"."$filename");
+			$location="$filelocation"."$filename";
+			
+			$sql = "INSERT INTO pictures (UserId, Location) VALUES ( :UserId, :Location)";
+			$stmt = $this->db->prepare($sql);
+    		$stmt->bindValue(':UserId', $id);
+			$stmt->bindValue(':Location', $location);
+			$stmt->execute();
+	  }
 }
 
 // Model naming convention: Controller_name + 'Model'
