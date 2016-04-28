@@ -1,8 +1,8 @@
 <div class="container">
-  <a href="<?php echo URL; ?>inmates/new">New Inmate</a>
 
- <h3>Inmates List</h3>
-
+  <a href="<?php echo URL; ?>inmates/add">Add Inmate</a>
+  <h3>Inmates List</h3>
+  
   <table>
     <thead style="background-color: #ddd; font-weight: bold;">
       <tr>

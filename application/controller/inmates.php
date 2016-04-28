@@ -2,25 +2,40 @@
 
 class Inmates extends Controller {
 
-  public function index() {
+    public function index() {
+        $inmates = $this->model->getAllInmates();
+        require APP . 'view/_templates/header.php';
+        require APP . 'view/inmates/index.php';
+        require APP . 'view/_templates/footer.php';
+    }
 
-    $inmates = $this->model->getAllInmates();
-    require APP . 'view/_templates/header.php';
-    require APP . 'view/inmates/index.php';
-    require APP . 'view/_templates/footer.php';
-  }
+    public function add() {
+        require APP . 'view/_templates/header.php';
+        require APP . 'view/inmates/add.php';
+        require APP . 'view/_templates/footer.php';
+    }
 
+    public function create() {
+        if(!$_POST || !isset($_POST['Create'])) {
+            header('location: ' . URL . 'inmates/add');
+            return;
+        }
 
-  public function add() {
+        require APP . 'view/_templates/header.php';
 
-    require APP . 'view/_templates/header.php';
-    require APP . 'view/inmates/new.php';
-    require APP . 'view/_templates/footer.php';
-  }
+        $inmate = $this->model;
+        $inmate->initialize($_POST);
+        $success = $inmate->save();
 
-  public function create() {
-    require APP . 'view/_templates/header.php';
-    require APP . 'view/inmates/create.php';
-    require APP . 'view/_templates/footer.php';
-  }
+        if ($success) {
+            require APP . 'view/inmates/create.php';
+        }
+        else {
+            // redisplay filled form and validation hints
+            $validation_errors = $inmate->validation_errors;
+            require APP . 'view/inmates/add.php';
+        }
+
+        require APP . 'view/_templates/footer.php';
+    }
 }
