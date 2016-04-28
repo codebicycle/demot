@@ -20,7 +20,12 @@ if(isset($_POST['submit'])){
 			$oldEmail=$visitor['Email'];
 			$oldPwdHash=$visitor['PwdHash'];
 			
-			
+			$sql="SELECT Location FROM pictures WHERE UserId=:VisitorId";
+			$query = $this->db->prepare($sql);
+			$query->bindValue(':VisitorId',$visId);
+			$query->execute();
+			$picture = $query->fetch(PDO::FETCH_ASSOC);
+			$oldPictureLocation=$picture['Location'];
     
 	$UserName = $_POST['UserName']??NULL;
 	$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
@@ -52,14 +57,14 @@ if(isset($_POST['submit'])){
 	$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
 	$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 	
-
-//concatenare LastName cu CNP
-	$Id=$CNP . $LastName;
+	
+	
+	$uploadImage=$_FILES['uploadImage']??NULL;
     	
 	$PasswordHash = md5($Password);
 	$RepeatPasswordHash=md5($RepeatPassword);
 	
-	$IdHash=md5($Id);
+	$IdHash=$_SESSION['user_id'];
 	
 if($UserName==false)
 {
@@ -84,7 +89,7 @@ if($Email==false)
 	$Email=$oldEmail;
 }
 
-if($Password==false)
+if($Password==false&&$RepeatPassword==false)
 {		
 	if(strlen($UserName)<=50)
 	{			
@@ -99,12 +104,15 @@ if($Password==false)
 		$stmt->bindValue(':UserName', $UserName);
 		$stmt->bindValue(':PwdHash', $oldPwdHash);
 		$stmt->bindValue(':Email', $Email);
-		$stmt->bindValue(':Id', $_SESSION['user_id']);
+		$stmt->bindValue(':Id', $IdHash);
 		$result = $stmt->execute();
 							
 		if($result)
 		{
-						
+			if($uploadImage)
+			{	
+				$this->model->uploadPicture($IdHash,"update");
+			}
 			echo "Your account was updated!" ;
 		}
 		else 
@@ -130,11 +138,16 @@ else if($PasswordHash==$RepeatPasswordHash)
 	$stmt->bindValue(':UserName', $UserName);
 	$stmt->bindValue(':PwdHash', $PasswordHash);
 	$stmt->bindValue(':Email', $Email);
-	$stmt->bindValue(':Id', $_SESSION['user_id']);
+	$stmt->bindValue(':Id', $IdHash);
 	$result = $stmt->execute();
 							
 	if($result)
 	{
+		
+		if($uploadImage)
+			{
+				$this->model->uploadPicture($IdHash,"update");
+			}
 		echo "Your account was updated!" ;
 	}
 	else 
@@ -180,9 +193,16 @@ else
 			$oldEmail=$visitor['Email'];
 			$oldPwdHash=$visitor['PwdHash'];
 			
+			$sql="SELECT Location FROM pictures WHERE UserId=:VisitorId";
+			$query = $this->db->prepare($sql);
+			$query->bindValue(':VisitorId',$visId);
+			$query->execute();
+			$picture = $query->fetch(PDO::FETCH_ASSOC);
+			$oldPictureLocation=$picture['Location'];
+			
 ?>
 
-<form method="POST" id="new-visitor-form">    
+<form method="POST" id="new-visitor-form"  enctype="multipart/form-data">    
 
 <table>
 <thead style="background-color: #ddd; font-weight: bold;">
@@ -207,7 +227,16 @@ else
     </tr>
 	<tr>
 		<td><label for="RepeatPassword">Retipe Password:</label></td> <td>************</td><td><input type="password"  name="RepeatPassword" id="RepeatPassword" /></td>
-    </tr>	  
+    </tr>	
+	<tr>
+		<td><label for="uploadImage">Upload Picture:</label></td> 
+		<td>
+			<?php
+				if($oldPictureLocation==NULL)
+					echo"No Picture";
+				else ?><img src="<?php echo URL . $oldPictureLocation;?>"  width="100" height="100">
+				</td><td><input type="file" name="uploadImage" id="uploadImage"/></td>
+    </tr>
 </thead>
 	<td></td><td></td><td><input name="submit" type="submit" Value="Update" />	</td>
 </table>

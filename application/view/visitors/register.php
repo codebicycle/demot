@@ -39,7 +39,7 @@ if(isset($_POST['submit'])){
 	$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
 	$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 	
-	$uploadImage=$_FILES['uploadImage'];
+	$uploadImage=$_FILES['uploadImage']??NULL;
 	
 //concatenare LastName cu CNP
 	$Id=$CNP . $LastName;
@@ -89,7 +89,7 @@ if($UserName==true)
 							{
 								if($uploadImage)
 								{
-								$this->model->uploadPicture($IdHash);
+									$this->model->uploadPicture($IdHash,"create");
 								}
 								$_SESSION['user_id'] = $IdHash;           
 								require APP. 'view/visitors/account.php';

@@ -288,8 +288,9 @@ class Model
       echo"</table>";
         
       }
-	  public function uploadPicture($id)
+	  public function uploadPicture($id,$type)
 	  {
+		  
 			$name = 'Image';
             $filelocation = 'uploadimg/';
             $filename=date('Y-m-d.H.i.s').$_FILES["uploadImage"]["name"];
@@ -297,11 +298,19 @@ class Model
 			move_uploaded_file($_FILES["uploadImage"]["tmp_name"] , "$filelocation"."$filename");
 			$location="$filelocation"."$filename";
 			
-			$sql = "INSERT INTO pictures (UserId, Location) VALUES ( :UserId, :Location)";
+			if($type=="create")
+			{
+				$sql = "INSERT INTO pictures (UserId, Location) VALUES ( :UserId, :Location)";
+			}
+			else if($type=="update")
+			{
+				$sql = "UPDATE `pictures` SET `Location`=:Location WHERE UserId=:UserId";	
+			}
 			$stmt = $this->db->prepare($sql);
     		$stmt->bindValue(':UserId', $id);
 			$stmt->bindValue(':Location', $location);
 			$stmt->execute();
+			
 	  }
 }
 
