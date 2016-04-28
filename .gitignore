@@ -1,1 +1,5 @@
-public/export/
+# ignore public/export folder's content but keep the folder
+public/export/*
+!public/export/.keep
+
+.fuse_hidden*
