@@ -64,7 +64,7 @@ class Model
 			if($ext=="csv")
 			{
 				$name = 'CSVExport';
-				$filelocation = '';
+				$filelocation = 'export/';
 				$filename     = $name.date('Y-m-d H.i.s').'.csv';
 				$file_export  =  $filelocation . $filename;
 				$data = fopen($file_export, 'w');
@@ -92,7 +92,7 @@ class Model
 			if($ext=="json")
 			{
 				$name = 'JSONExport';
-				$filelocation = '';
+				$filelocation = 'export/';
 				$filename     = $name.date('Y-m-d H.i.s').'.json';
 				$file_export  =  $filelocation . $filename;
 				$data = fopen($file_export, 'w');
