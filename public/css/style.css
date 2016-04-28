@@ -61,11 +61,13 @@ body {
     border: 0;
     padding: 5px 10px;
 }
-.container input[type="submit"] {
+.container input[type="submit"],
+.container input[type="button"] {
     background-color: #ccc;
     cursor: pointer;
 }
-.container input[type="submit"]:hover {
+.container input[type="submit"]:hover,
+.container input[type="button"]:hover  {
     background-color: #222;
     color: #fff;
 }
@@ -80,23 +82,24 @@ body {
     color: #fff;
 }
 
-#inmates-add-form {
+#demot-form {
     width: 27em;
 }
 
-#inmates-add-form label {
+#demot-form label {
     display: inline-block;
-    width: 10em;
+    width: 11em;
     text-align: right;
 }
 
-#inmates-add-form input {
+#demot-form input {
     display: inline-block;
     width: 10em;
     margin-bottom: .5em;
 }
 
-#inmates-add-form > input:last-child {
+#demot-form > input[type="button"],
+#demot-form > input[type="submit"] {
     width: initial;
 }
 
