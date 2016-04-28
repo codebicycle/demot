@@ -440,7 +440,7 @@ class InmatesModel extends Model {
     }
 }
 
-
+class AdminsModel extends Model {}
 
 // Model helpers
 function clean($arr, $key) {
