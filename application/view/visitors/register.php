@@ -39,9 +39,7 @@ if(isset($_POST['submit'])){
 	$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
 	$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 	
-	$uploadImage=$_POST['uploadImage']??NULL;
-	
-	
+	$uploadImage=$_FILES['uploadImage'];
 	
 //concatenare LastName cu CNP
 	$Id=$CNP . $LastName;
@@ -170,8 +168,8 @@ if($UserName==true)
 	<label for="RepeatPassword">Retipe Password:</label>
 	<input type="password"  name="RepeatPassword" id="RepeatPassword" required/>
 <br/>
-	<label for="uploadpicture">Upload Picture:</label>
-	<input type="file" name="uploadImage" id="uploadImage">
+	<label for="uploadImage">Upload Picture:</label>
+	<input type="file" name="uploadImage" id="uploadImage"/>
 <br/>
 
 	<input name="submit" type="submit" Value="Register" />	
