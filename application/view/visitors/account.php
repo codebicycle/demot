@@ -63,7 +63,7 @@ if(isset($_POST['search_dob']))
 		if($row['num']==1)
 		{
 			$_SESSION['post_data']=$_POST;
-			header('location: '.URL. 'visitors/appointments');
+			header('location: '.URL. 'appointments/add');
 		}
 		else if ($row['num']>1)
 		{
@@ -141,7 +141,7 @@ if(isset($_POST['search_dob']))
 	if($row['num']==1)
 	{
 			$_SESSION['post_data']=$_POST;
-			header('location: '.URL. 'visitors/appointments');
+			header('location: '.URL. 'appointments/add');
 	}
 	if($row['num'] ==0)
 	{
