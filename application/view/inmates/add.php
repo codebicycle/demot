@@ -5,7 +5,7 @@
 
 <div class="container">
   <h3>Add new inmate</h3>
-  <form action="<?php echo URL; ?>inmates/create" method="POST" id="inmates-add-form" novalidate >
+  <form action="<?php echo URL; ?>inmates/create" method="POST" id="demot-form" novalidate >
     <?php validation_hint($validation_errors, 'Id') ?>
     <?php validation_hint($validation_errors, 'FirstName') ?>
     <label for="FirstName">First Name</label>
@@ -56,13 +56,11 @@
     <?php validation_hint($validation_errors, 'LawyerCNP') ?>
     <label for="LawyerCNP">Lawyer CNP</label>
     <input type="text" name="LawyerCNP" id="LawyerCNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('LawyerCNP') ?>" />
-    
 
-    <label></label>
     <input type="submit" name="Create" value="Create" />
   </form>
 </div>
 
 <pre>
-    <?php print_r($inmate??NULL); ?>
+    <?php print_r($inmate ?? null); ?>
 </pre>

@@ -466,7 +466,12 @@ class InmatesModel extends Model {
 }
 
 class AdminsModel extends Model {}
+
 class VisitorsModel extends Model {}
+
+class AppointmentsModel extends Model {}
+
+
 // Model helpers
 function clean($arr, $key) {
     if (isset($arr[$key])) {
