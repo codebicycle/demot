@@ -47,10 +47,10 @@ if(isset($_POST['search_dob']))
 
 		$InstId=$_POST['Institution']??NULL;
 		
-		echo $InstId;
+		
 		
 		$dob=$_POST['dob']??NULL;
-		echo $dob;
+	
 		 $sql = "SELECT COUNT(Id) as num FROM inmates WHERE FirstName = :FirstName AND LastName=:LastName AND InstId=:InstId AND DOB=:dob" ;
 		 
 		$query = $this->model->db->prepare($sql);
@@ -62,10 +62,12 @@ if(isset($_POST['search_dob']))
 		$row = $query->fetch(PDO::FETCH_ASSOC);
 		if($row['num']==1)
 		{
+			$_SESSION['post_data']=$_POST;
 			header('location: '.URL. 'visitors/appointments');
 		}
 		else if ($row['num']>1)
 		{
+			
 			echo "There are more inmates with the same Name and date of birth at this institution";
 		}
 		else if ($row['num']==0)
@@ -98,8 +100,11 @@ if(isset($_POST['search_dob']))
  
     $stmt->bindValue(':Name', $option_chosen);
 
-    $result=$stmt->execute();
-   
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+	$InstId= $row['Id'];
+	
+	
 	
 	
     $sql = "SELECT COUNT(Id) as num FROM inmates WHERE FirstName = :FirstName AND LastName=:LastName AND InstId=:InstId";
@@ -107,11 +112,11 @@ if(isset($_POST['search_dob']))
  
     $query->bindValue(':FirstName', $FirstName);
 	$query->bindValue(':LastName', $LastName);
-	$query->bindValue(':InstId', $result);
+	$query->bindValue(':InstId', $InstId);
 	$query->execute();
     
     $row = $query->fetch(PDO::FETCH_ASSOC);
- 	
+
 	if($row['num'] > 1)
 	{
    	 	?>
@@ -122,7 +127,7 @@ if(isset($_POST['search_dob']))
 			<form method="POST" id="add-form">    
 				<input  type="hidden" name="FirstName" id="FirstName" Value="<?php echo $FirstName?>"/>		
 				<input  type="hidden" name="LastName" id="LastName" Value="<?php echo $LastName?>"/>
-				<input type="hidden" name="Institution" id="Institution" Value="<?php echo $result?>" />
+				<input type="hidden" name="Institution" id="Institution" Value="<?php echo $InstId?>" />
 				
 				<label for="dob"> Date of Birth</label>
 				<input type="text" name="dob" id="dob" required autofocus />
@@ -135,6 +140,7 @@ if(isset($_POST['search_dob']))
     }
 	if($row['num']==1)
 	{
+			$_SESSION['post_data']=$_POST;
 			header('location: '.URL. 'visitors/appointments');
 	}
 	if($row['num'] ==0)
