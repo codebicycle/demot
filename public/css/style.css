@@ -1,5 +1,5 @@
-body {
-    font-family: Arial;
+html {
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
     box-sizing: border-box;
 }
@@ -83,27 +83,42 @@ body {
 }
 
 #demot-form {
-    width: 27em;
+    width: 24rem;
 }
 
 #demot-form label {
     display: inline-block;
-    width: 11em;
+    width: 11rem;
     text-align: right;
 }
 
 #demot-form input {
-    display: inline-block;
-    width: 10em;
+    width: 10rem;
     margin-bottom: .5em;
 }
 
 #demot-form > input[type="button"],
 #demot-form > input[type="submit"] {
     width: initial;
+    margin-left: 11.2rem;
 }
 
 .validation_error {
     margin-bottom: 0;
     color: tomato;
+}
+
+.remove {
+    display: none;
+}
+
+fieldset {
+    margin: 1em 0;
+    padding-left: 0;
+    border: 1px solid #ccc;
+    display: initial;
+}
+
+legend {
+    margin-left: .5em;
 }

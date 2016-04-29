@@ -1,65 +1,100 @@
 <?php
-  require APP . 'libs/helpers.php';
-  $validation_errors = $validation_errors ?? null;
+    require APP . 'libs/helpers.php';
+    $validation_errors = $validation_errors ?? null;
 ?>
 
 <div class="container">
-  <h3>Add new appointment</h3>
-  <form action="<?php echo URL; ?>appointments/create" method="POST" id="demot-form" novalidate >
-    <?php validation_hint($validation_errors, 'FirstName') ?>
-    <label for="FirstName">First Name</label>
-    <input type="text" name="FirstName" id="FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="Jane" required disabled />
-    
-    <?php validation_hint($validation_errors, 'LastName') ?>
-    <label for="LastName">Last Name</label>
-    <input type="text" name="LastName" id="LastName" pattern="^[- 'a-zA-Z]{2,50}$" value="Doe" required  disabled/>
-    
+    <h3>Add new appointment</h3>
 
-    <?php validation_hint($validation_errors, 'DateOfAppointment') ?>
-    <label for="DateOfAppointment">Date</label>
-    <input type="date" name="DateOfAppointment" id="DateOfAppointment" placeholder="yyyy-mm-dd" pattern="\d{4}[/-]\d{1,2}[/-]\d{1,2}" value="<?php cached_value('DateOfAppointment') ?>" required />
+    <form action="<?php echo URL; ?>appointments/create" method="POST" id="demot-form" novalidate >        
+        <?php validation_hint($validation_errors, 'FirstName') ?>
+        <label for="FirstName">Inmate First Name</label>
+        <input type="text" name="FirstName" id="FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="Jane" required />
 
-    <?php validation_hint($validation_errors, 'TimeOfAppointment') ?>
-    <label for="TimeOfAppointment">Time</label>
-    <input type="time" name="TimeOfAppointment" id="TimeOfAppointment" value="<?php cached_value('TimeOfAppointment') ?>" required />
+        <?php validation_hint($validation_errors, 'LastName') ?>
+        <label for="LastName">Inmate Last Name</label>
+        <input type="text" name="LastName" id="LastName" pattern="^[- 'a-zA-Z]{2,50}$" value="Doe" required />
 
-    <div>
-        <?php validation_hint($validation_errors, 'Visitor2FirstName') ?>
-        <label for="Visitor2FirstName">First Name (2nd visitor)</label>
-        <input type="text" name="Visitor2FirstName" id="Visitor2FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('Visitor2FirstName') ?>" />
-        
-        <?php validation_hint($validation_errors, 'Visitor2LastName') ?>
-        <label for="Visitor2LastName">Last Name(2nd visitor)</label>
-        <input type="text" name="Visitor2LastName" id="Visitor2LastName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('Visitor2LastName') ?>" />
+        <?php validation_hint($validation_errors, 'InstId') ?>
+        <label for="InstId">Institution Id</label>
+        <input type="text" name="InstId" id="InstId" inputmode="numeric" value="1" required />
 
-         <?php validation_hint($validation_errors, 'Visitor2CNP')  ?>
-        <label for="Visitor2CNP">CNP (2nd visitor)</label>
-        <input type="text" name="Visitor2CNP" id="Visitor2CNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('Visitor2CNP') ?>" />
-    </div>
 
-    <div>
-        <?php validation_hint($validation_errors, 'Visitor3FirstName') ?>
-        <label for="Visitor3FirstName">First Name (3rd visitor)</label>
-        <input type="text" name="Visitor3FirstName" id="Visitor3FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('Visitor3FirstName') ?>" />
-        
-        <?php validation_hint($validation_errors, 'Visitor3LastName') ?>
-        <label for="Visitor3LastName">Last Name(3rd visitor)</label>
-        <input type="text" name="Visitor3LastName" id="Visitor3LastName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('Visitor3LastName') ?>" />
+        <?php validation_hint($validation_errors, 'DateOfAppointment') ?>
+        <label for="DateOfAppointment">Date</label>
+        <input type="date" name="DateOfAppointment" id="DateOfAppointment" placeholder="yyyy-mm-dd" pattern="\d{4}[/-]\d{1,2}[/-]\d{1,2}" value="<?php cached_value('DateOfAppointment') ?>" required />
 
-        <?php validation_hint($validation_errors, 'Visitor2CNP')  ?>
-        <label for="Visitor3CNP">CNP (3rd visitor)</label>
-        <input type="text" name="Visitor3CNP" id="Visitor3CNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('Visitor3CNP') ?>" />
-    </div>
+        <?php validation_hint($validation_errors, 'TimeOfAppointment') ?>
+        <label for="TimeOfAppointment">Time</label>
+        <input type="time" name="TimeOfAppointment" id="TimeOfAppointment" value="<?php cached_value('TimeOfAppointment') ?>" required />
 
-  
-    <label></label>
-    <input type="button" id="add-visitor" value="Add Visitor" />
 
-    <label></label>
-    <input type="submit" name="Create" value="Create" />
-  </form>
+        <fieldset id="second-visitor">
+            <legend>Accompanying Visitor</legend>
+
+            <?php validation_hint($validation_errors, 'Visitor2FirstName') ?>
+            <label for="Visitor2FirstName">First Name</label>
+            <input type="text" name="Visitor2FirstName" id="Visitor2FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('Visitor2FirstName') ?>" />
+
+            <?php validation_hint($validation_errors, 'Visitor2LastName') ?>
+            <label for="Visitor2LastName">Last Name</label>
+            <input type="text" name="Visitor2LastName" id="Visitor2LastName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('Visitor2LastName') ?>" />
+
+            <?php validation_hint($validation_errors, 'Visitor2CNP')  ?>
+            <label for="Visitor2CNP">CNP</label>
+            <input type="text" name="Visitor2CNP" id="Visitor2CNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('Visitor2CNP') ?>" />
+        </fieldset>
+
+        <fieldset id="third-visitor">
+            <legend>Second Accompanying Visitor</legend>
+
+            <?php validation_hint($validation_errors, 'Visitor3FirstName') ?>
+            <label for="Visitor3FirstName">First Name </label>
+            <input type="text" name="Visitor3FirstName" id="Visitor3FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('Visitor3FirstName') ?>" />
+
+            <?php validation_hint($validation_errors, 'Visitor3LastName') ?>
+            <label for="Visitor3LastName">Last Name</label>
+            <input type="text" name="Visitor3LastName" id="Visitor3LastName" pattern="^[- 'a-zA-Z]{2,50}$" value="<?php cached_value('Visitor3LastName') ?>" />
+
+            <?php validation_hint($validation_errors, 'Visitor2CNP')  ?>
+            <label for="Visitor3CNP">CNP </label>
+            <input type="text" name="Visitor3CNP" id="Visitor3CNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('Visitor3CNP') ?>" />
+        </fieldset>
+        <input type="submit" name="Create" value="Make Appointment" />
+    </form>
 </div>
 
 <pre>
     <?php print_r($appointment ?? null); ?>
 </pre>
+
+<script>
+window.onload = function () {
+    // hide form fields
+    var second = document.getElementById('second-visitor');
+    var third = document.getElementById('third-visitor');
+    second.classList.toggle('remove');
+    third.classList.toggle('remove');
+
+    // accompanying visitor button
+    var button = document.createElement('input');
+    button.setAttribute('type', 'button');
+    button.setAttribute('value', 'Accompanying Visitor');
+    var form = document.getElementById('demot-form')
+    form.insertBefore(button, form.lastElementChild);
+
+    var visitor_click_count = 0;
+    button.addEventListener("click", click_handler, false);
+
+    function click_handler( event ) {
+        visitor_click_count += 1;
+        if (visitor_click_count === 1) {
+            second.classList.toggle('remove');
+        }
+        else if (visitor_click_count === 2) {
+            third.classList.toggle('remove');
+            button.classList.toggle('remove');
+        }
+    }
+};
+</script>

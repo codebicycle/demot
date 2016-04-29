@@ -56,9 +56,7 @@
     <?php validation_hint($validation_errors, 'LawyerCNP') ?>
     <label for="LawyerCNP">Lawyer CNP</label>
     <input type="text" name="LawyerCNP" id="LawyerCNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('LawyerCNP') ?>" />
-    
 
-    <label></label>
     <input type="submit" name="Create" value="Create" />
   </form>
 </div>
