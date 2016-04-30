@@ -296,54 +296,182 @@ class HomeModel extends Model {}
 class ErrorzModel extends Model {}
 
 class Validator {
-    private static function validate($model, $key, $pattern, $err_label, $message) {
-        if(preg_match($pattern, $model->$key)) {
-            unset($model->validation_errors[$err_label]);
-        }
-        else {
-            $model->validation_errors[$err_label] = $message;
+
+    private static function validate($model, $key, $pattern, $message, $err_label) {
+        if(!preg_match($pattern, $model->$key)) {
+            $model->validation_errors[$err_label ?? $key] = $message;
         }
     }
 
-    public static function validate_name($model, $key, $err_label) {
+    public static function validate_name($model, $key, $err_label=null) {
         $pattern = "/^[- 'a-zA-Z]{2,50}$/";
         $message = "Only letters, spaces, minus and single quote characters are permitted. Must have two or more characters.";
-        Validator::validate($model, $key, $pattern, $err_label, $message);
+        Validator::validate($model, $key, $pattern, $message, $err_label);
     }
 
-    public static function validate_cnp($model, $key, $err_label) {
+    public static function validate_cnp($model, $key, $err_label=null) {
         $pattern = "/\d{13}/";
         $message = "Please fill in a valid CNP.";
-        Validator::validate($model, $key, $pattern, $err_label, $message);
+        Validator::validate($model, $key, $pattern, $message, $err_label);
     }
 
-    public static function validate_date($model, $key, $err_label) {
+    private static function is_valid_date($input) {
         $pattern = "/^(\d{4})[-\/ .]?(\d{1,2})[-\/ .]?(\d{1,2})$/";
-        $message = "Please fill in a valid date.";
-        if (preg_match($pattern, $model->$key, $matches)) {
+        if (preg_match($pattern, $input, $matches)) {
             if(checkdate($matches[2], $matches[3], $matches[1])) {
-                unset($model->validation_errors[$err_label]);
                 return true;
             }
         }
-        $model->validation_errors[$err_label] = $message;
         return false;
     }
 
-    public static function validate_exists($model, $key, $err_label) {
-        $pattern = "/.+/";
-        $message = "Field can not be empty.";
-        Validator::validate($model, $key, $pattern, $err_label, $message);
+    public static function validate_date($model, $key, $err_label=null) {
+        $message = "Please fill in a valid date.";
+        if (Validator::is_valid_date($model->$key))
+            return;
+        $model->validation_errors[$err_label ?? $key] = $message;
     }
 
-    public static function validate_sentence($model, $key, $err_label) {
+    public static function validate_date_not_in_future ($model, $key, $err_label=null) {
+        $message = "Date can not be in the future.";
+        $date = $model->$key;
+        if(Validator::is_valid_date($date) &&
+            strtotime($date) < time() )
+            return;
+        $model->validation_errors[$err_label ?? $key] = $message;
+    }
+
+    public static function is_date1_before_date2($date1, $date2) {
+        return strtotime($date1) <= strtotime($date2);
+    }
+
+    public static function validate_dates_in_order($model, $key1, $key2) {
+      $message = 'Time flows in one direction. Check the order of dates.';
+      if (!Validator::is_date1_before_date2($model->$key1, $model->$key2)) {
+        $model->validation_errors[$key1] = $message;
+        $model->validation_errors[$key2] = $message;
+      }
+    }
+
+    public static function validate_not_empty($model, $key, $err_label=null) {
+        $pattern = "/.+/";
+        $message = "Field can not be empty.";
+        Validator::validate($model, $key, $pattern, $message, $err_label);
+    }
+
+    public static function validate_sentence($model, $key, $err_label=null) {
         $pattern = "/\d{1,2}/";
         $message = "Between 1 and 99.";
-        Validator::validate($model, $key, $pattern, $err_label, $message);
+        Validator::validate($model, $key, $pattern, $message, $err_label);
+    }
+
+    public static function validate_no_inmate_with_id($model, $key, $err_label=null) {
+        $message = "Credentials match an existing inmate.";
+        $exists = Validator::inmateId_exists($model, $model->$key);
+        if ($exists) {
+            $model->validation_errors[$err_label ?? $key] = $message;
+        }
+    }
+
+    public static function validate_institutionId_exists($model, $key, $err_label=null) {
+        $exists = Validator::instId_exists($model, $model->$key);
+        if (!$exists) {
+            $message = "Not a valid Institution id.";
+            $model->validation_errors[$err_label ?? $key] = $message; 
+        }
+    }
+
+    private static function instId_exists($model, $id) {
+        $sql = "SELECT Id FROM institutions WHERE id=:id LIMIT 1";
+        $query = $model->db->prepare($sql);
+        $query->bindValue(':id', $id, PDO::PARAM_INT);
+        $query->execute();
+        $count = count($query->fetchAll());
+        if ($count === 0)
+            return false;
+        return true;
+    }
+
+    private static function inmateId_exists($model, $id) {
+        $sql = "SELECT 1 FROM inmates WHERE id=:id LIMIT 1";
+        $stmt = $model->db->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_STR);
+        $stmt->execute();
+        $count = count($stmt->fetchAll());
+        if($count === 0)
+            return false;
+        return true;
     }
 }
 
 class InmatesModel extends Model {
+    public $id;
+    public $firstName;
+    public $lastName;
+    public $CNP;
+    public $DOB;
+    public $instId;
+    public $crime;
+    public $sentence;
+    public $incarcerationDate;
+    public $releaseDate;
+    public $lawyerFirstName;
+    public $lawyerLastName;
+    public $lawyerCNP;
+    public $lawyerId;
+
+    public function initialize($firstName, $lastName, $CNP, $DOB, 
+            $instId, $crime, $sentence, $incarcerationDate, $releaseDate, 
+            $lawyerFirstName, $lawyerLastName, $lawyerCNP) {
+        $this->firstName            = $firstName;
+        $this->lastName             = $lastName;
+        $this->CNP                  = $CNP;
+        $this->DOB                  = $DOB;
+        $this->instId               = $instId;
+        $this->crime                = $crime;
+        $this->sentence             = $sentence;
+        $this->incarcerationDate    = $incarcerationDate;
+        $this->releaseDate          = $releaseDate;
+        $this->lawyerFirstName      = $lawyerFirstName;
+        $this->lawyerLastName       = $lawyerLastName;
+        $this->lawyerCNP            = $lawyerCNP;
+        $this->id       = ($this->CNP && $this->lastName) 
+                            ? md5($this->CNP . $this->lastName) 
+                            : null;
+        $this->lawyerId = ($this->lawyerCNP && $this->lawyerLastName) 
+                            ? md5($this->lawyerCNP . $this->lawyerLastName) 
+                            : null;
+    }
+
+    private function is_valid() {
+        Validator::validate_name($this, 'firstName');
+        Validator::validate_name($this, 'lastName');
+        Validator::validate_cnp($this, 'CNP');
+        // Id not in inmates table
+        Validator::validate_no_inmate_with_id($this, 'id');
+        Validator::validate_institutionId_exists($this, 'instId');
+        Validator::validate_date_not_in_future($this, 'DOB');
+        Validator::validate_date_not_in_future($this, 'incarcerationDate');
+        Validator::validate_date($this, 'releaseDate');
+        if (!isset($this->validation_errors['incarcerationDate']) &&
+            !isset($this->validation_errors['releaseDate'])) {
+            Validator::validate_dates_in_order($this, 'incarcerationDate', 
+                'releaseDate');
+        }
+        Validator::validate_not_empty($this, 'crime');
+        Validator::validate_sentence($this, 'sentence');
+        if (!empty($this->lawyerFirstName) ||
+            !empty($this->lawyerLastName)  ||
+            !empty($this->lawyerCNP)) {
+            Validator::validate_name($this, 'lawyerFirstName');
+            Validator::validate_name($this, 'lawyerLastName');
+            Validator::validate_cnp($this, 'lawyerCNP');
+            // lawyerId not in inmates table
+            Validator::validate_no_inmate_with_id($this,'lawyerId');
+        }
+
+        return count($this->validation_errors) === 0;
+    }
 
     public function getAllInmates() {
         $sql = "SELECT Id, FirstName, LastName, CNP, InstId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate FROM inmates";
@@ -353,91 +481,13 @@ class InmatesModel extends Model {
         return $query->fetchAll();
     }
 
-    public function initialize($arr) {
-        $this->FirstName          = clean($arr, 'FirstName');
-        $this->LastName           = clean($arr, 'LastName');
-        $this->CNP                = clean($arr, 'CNP');
-        $this->Id                 = ($this->CNP && $this->LastName) 
-                                        ? md5($this->CNP . $this->LastName) 
-                                        : null;
-        $this->DOB                = clean($arr, 'DOB');
-        $this->InstId             = clean($arr, 'InstId');
-        $this->Crime              = clean($arr, 'Crime');
-        $this->Sentence           = clean($arr, 'Sentence');
-        $this->IncarcerationDate  = clean($arr, 'IncarcerationDate');
-        $this->ReleaseDate        = clean($arr, 'ReleaseDate');
-        $this->LawyerFirstName    = clean($arr, 'LawyerFirstName');
-        $this->LawyerLastName     = clean($arr, 'LawyerLastName');
-        $this->LawyerCNP          = clean($arr, 'LawyerCNP');
-        $this->LawyerId           = ($this->LawyerCNP && $this->LawyerLastName) 
-                                        ? md5($this->LawyerCNP . $this->LawyerLastName) 
-                                        : null;
-    }
-
     public function save() {
         $valid = $this->is_valid();
         if (!$valid)
             return false;
         // save to database
         return true;
-    }
-
-    private function is_valid() {
-        Validator::validate_name($this, 'FirstName', 'FirstName');
-        Validator::validate_name($this, 'LastName',  'LastName');
-        Validator::validate_cnp($this, 'CNP', 'CNP');
-        // Id not in inmates table
-        $this->validate_id('Id');
-        $this->validate_institution('InstId');
-        Validator::validate_date($this, 'DOB', 'DOB');
-        Validator::validate_date($this, 'IncarcerationDate', 'IncarcerationDate');
-        Validator::validate_date($this, 'ReleaseDate', 'ReleaseDate');
-        Validator::validate_exists($this, 'Crime', 'Crime');
-        Validator::validate_sentence($this, 'Sentence', 'Sentence');
-        if (!empty($this->LawyerFirstName) ||
-            !empty($this->LawyerLastName)  ||
-            !empty($this->LawyerCNP)) {
-            Validator::validate_name($this, 'LawyerFirstName', 'LawyerFirstName');
-            Validator::validate_name($this, 'LawyerLastName',  'LawyerLastName');
-            Validator::validate_cnp($this, 'LawyerCNP', 'LawyerCNP');
-            // LawyerId not in inmates table
-            $this->validate_id('LawyerId');
-        }
-
-        return count($this->validation_errors) === 0;
-    }
-    
-    private function validate_institution($label) {
-        $sql = "SELECT Id FROM institutions WHERE id=:id LIMIT 1";
-        $query = $this->db->prepare($sql);
-        $query->bindValue(':id', $this->$label, PDO::PARAM_INT);
-        $query->execute();
-        $count = count($query->fetchAll());
-        if ($count === 0) {
-            // Institution not found
-            $message = "Not a valid Institution id.";
-            $this->validation_errors[$label] = $message;
-        }
-        else {
-            unset($this->validation_errors[$label]);
-        }
-    }
-
-    private function validate_id($label) {
-        $sql = "SELECT 1 FROM inmates WHERE id=:id LIMIT 1";
-        $query = $this->db->prepare($sql);
-        $query->bindValue(':id', $this->$label, PDO::PARAM_STR);
-        $query->execute();
-        $count = count($query->fetchAll());
-        if ($count === 0) {
-            // id not found (unique)
-            unset($this->validation_errors[$label]);
-        }
-        else {
-            $message = "Credentials match an existing inmate.";
-            $this->validation_errors[$label] = $message;
-        }
-    }
+    }    
 }
 
 class AdminsModel extends Model {}
@@ -445,11 +495,3 @@ class AdminsModel extends Model {}
 class VisitorsModel extends Model {}
 
 class AppointmentsModel extends Model {}
-
-
-// Model helpers
-function clean($arr, $key) {
-    if (isset($arr[$key])) {
-        return trim(strip_tags($arr[$key]));
-    }
-}
