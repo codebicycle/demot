@@ -1,25 +1,29 @@
 <?php
+
+if(!isset($_SESSION)) 
+    { 
+        session_start(); 
+    } 
+if(!isset($_SESSION['user_id']))
+{
+	require APP. 'view/visitors/index.php';
+	exit;
+}
+
+
+
+
+
     require APP . 'libs/helpers.php';
     $validation_errors = $validation_errors ?? null;
+	
 ?>
 
 <div class="container">
     <h3>Add new appointment</h3>
 
     <form action="<?php echo URL; ?>appointments/create" method="POST" id="demot-form" novalidate >        
-        <?php validation_hint($validation_errors, 'FirstName') ?>
-        <label for="FirstName">Inmate First Name</label>
-        <input type="text" name="FirstName" id="FirstName" pattern="^[- 'a-zA-Z]{2,50}$" value="Jane" required />
-
-        <?php validation_hint($validation_errors, 'LastName') ?>
-        <label for="LastName">Inmate Last Name</label>
-        <input type="text" name="LastName" id="LastName" pattern="^[- 'a-zA-Z]{2,50}$" value="Doe" required />
-
-        <?php validation_hint($validation_errors, 'InstId') ?>
-        <label for="InstId">Institution Id</label>
-        <input type="text" name="InstId" id="InstId" inputmode="numeric" value="1" required />
-
-
+     
         <?php validation_hint($validation_errors, 'DateOfAppointment') ?>
         <label for="DateOfAppointment">Date</label>
         <input type="date" name="DateOfAppointment" id="DateOfAppointment" placeholder="yyyy-mm-dd" pattern="\d{4}[/-]\d{1,2}[/-]\d{1,2}" value="<?php cached_value('DateOfAppointment') ?>" required />
