@@ -78,9 +78,32 @@ if(!isset($_SESSION['user_id']))
 		$InmateId=$Inmate['Id'];
 		$VisitorId=$_SESSION['user_id'];
 		//pana aici am selectat datele de care am nevoie pentru insert urmeaza sa fac insert
-	}
 	
-      print_r($_POST); print_r($this->model);
+	$State=1;
+	$profile = true ;//check_profile($_SESSION['user_id'])// trebuie o functe pentru a verifica daca profilul este complet
+	
+	if($profile==true)
+	{
+		$sql = "INSERT INTO appointments (VisitorId, DateOfAppointment , TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor3FirstName, Visitor3LastName, Visitor3CNP, State, InmateId) VALUES (:VisitorId, :DateOfAppointment, :TimeOfAppointment, :Visitor2FirstName, :Visitor2LastName, :Visitor2CNP, :Visitor3FirstName, :Visitor3LastName, :Visitor3CNP, :State, :InmateId)";
+		$query = $this->model->db->prepare($sql);
+		$query->bindValue(':VisitorId', $_SESSION['user_id']);
+		$query->bindValue(':DateOfAppointment', $DateOfAppointment);
+		$query->bindValue(':TimeOfAppointment', $TimeOfAppointment);
+		$query->bindValue(':Visitor2FirstName', $Visitor2FirstName);
+		$query->bindValue(':Visitor2LastName', $Visitor2LastName);
+		$query->bindValue(':Visitor2CNP', $Visitor2CNP);
+		$query->bindValue(':Visitor3FirstName', $Visitor3FirstName);
+		$query->bindValue(':Visitor3LastName', $Visitor3LastName);
+		$query->bindValue(':Visitor3CNP', $Visitor3CNP)	;
+		$query->bindValue(':State', $State);
+		$query->bindValue(':InmateId', $InmateId);
+		$query->execute();
+		header('location: '.URL. 'visitors/appointments');
+	}
+	else echo "You can`t make an appointment because your profile isn`t complete.  ";
+	
+	}		
+      
     ?>
   </pre>
 </div>
