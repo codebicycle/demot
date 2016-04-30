@@ -2,7 +2,7 @@
 
 class Model
 {
-    private $validation_errors = array();
+    public $validation_errors = array();
 
     /**
      * @param object $db A PDO database connection
@@ -386,10 +386,10 @@ class Validator {
         $query = $model->db->prepare($sql);
         $query->bindValue(':id', $id, PDO::PARAM_INT);
         $query->execute();
-        $count = count($query->fetchAll());
-        if ($count === 0)
-            return false;
-        return true;
+        $exists = $query->fetchColumn();
+        if ($exists)
+            return true;
+        return false;
     }
 
     private static function inmateId_exists($model, $id) {
@@ -397,10 +397,10 @@ class Validator {
         $stmt = $model->db->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_STR);
         $stmt->execute();
-        $count = count($stmt->fetchAll());
-        if($count === 0)
-            return false;
-        return true;
+        $exists = $stmt->fetchColumn();
+        if($exists)
+            return true;
+        return false;
     }
 }
 
@@ -474,7 +474,8 @@ class InmatesModel extends Model {
     }
 
     public function getAllInmates() {
-        $sql = "SELECT Id, FirstName, LastName, CNP, InstId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate FROM inmates";
+        $sql = "SELECT Id, FirstName, LastName, CNP, InstId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate 
+                FROM inmates";
         $query = $this->db->prepare($sql);
         $query->execute();
 
@@ -486,6 +487,21 @@ class InmatesModel extends Model {
         if (!$valid)
             return false;
         // save to database
+        $sql = "INSERT INTO inmates(Id, FirstName, LastName, CNP, DOB, InstId, Crime, Sentence, IncarcerationDate, ReleaseDate, LawyerId) 
+                VALUES(:id, :firstName, :lastName, :CNP, :DOB, :instId, :crime, :sentence, :incarcerationDate, :releaseDate, :lawyerId)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $this->id);
+        $stmt->bindValue('firstName', $this->firstName);
+        $stmt->bindValue('lastName', $this->lastName);
+        $stmt->bindValue('CNP', $this->CNP);
+        $stmt->bindValue('DOB', $this->DOB);
+        $stmt->bindValue('instId', $this->instId, PDO::PARAM_INT);
+        $stmt->bindValue('crime', $this->crime);
+        $stmt->bindValue('sentence', $this->sentence);
+        $stmt->bindValue('incarcerationDate', $this->incarcerationDate);
+        $stmt->bindValue('releaseDate', $this->releaseDate);
+        $stmt->bindValue('lawyerId', $this->lawyerId);
+        $stmt->execute();
         return true;
     }    
 }
