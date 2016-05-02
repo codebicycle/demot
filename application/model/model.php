@@ -644,7 +644,43 @@ class AppointmentsModel extends Model
 	}
 	public function getAppointment($Id)
 	{
-		
+		$sql = "SELECT VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP,Visitor3FirstName, Visitor3LastName, Visitor3CNP, State, InmateId 
+				FROM appointments 
+				WHERE Id =:Id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('Id', $Id);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}
+	public function getInmate($Id)
+	{
+		$sql = "SELECT FirstName, LastName, CNP, InstId, LawyerId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate
+				FROM Inmates 
+				WHERE Id =:Id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('Id', $Id);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}
+	public function getVisitor($Id)
+	{
+		$sql = "SELECT FirstName, LastName, CNP, Email
+				FROM visitors 
+				WHERE Id =:Id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('Id', $Id);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}
+	public function getPicture($Id)
+	{
+		$sql = "SELECT Location
+				FROM pictures 
+				WHERE UserId =:Id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('Id', $Id);
+		$stmt->execute();
+		return $stmt->fetchAll();
 	}
 	
 }

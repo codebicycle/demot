@@ -49,9 +49,12 @@ class Appointments extends Controller {
 		header('location: ' . URL . 'admins'); 
 		die();
 	}
-	public function show($id)
+	public function show($Id)
 	{
-		$appointment = $this->model->getAppointment($id);
+		$appointment = $this->model->getAppointment($Id);
+		$visitor = $this->model->getVisitor($appointment[0]->VisitorId);
+		$inmate=$this->model->getInmate($appointment[0]->InmateId);
+		$picture=$this->model->getPicture($appointment[0]->VisitorId) ;
 		require APP . 'view/_templates/header.php';
         require APP . 'view/appointments/show.php';
         require APP . 'view/_templates/footer.php';
