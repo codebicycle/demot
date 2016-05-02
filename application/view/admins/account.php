@@ -184,15 +184,12 @@ if($Rank==1)
 	
 if($Rank==2)
 {
-	echo 'Welcome ';
-	echo $UserName;
-	echo ', you are using a GUARD account';
-
+	require APP. 'view/admins/viewguard.php';
+	
+	
+	
 	
 ?>	
-<br/>
-<br/>
-<h3>WALK AWAY:</h3>
 
 <?php
 }	

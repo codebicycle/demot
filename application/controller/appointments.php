@@ -35,5 +35,27 @@ class Appointments extends Controller {
         }
 
         require APP . 'view/_templates/footer.php';
-    }
+    
+	}
+	public function approve($id)
+	{
+		$this->model->approve_appointment($id);
+		header('location: ' . URL . 'admins'); 
+		die();
+	}
+	public function reject($id)
+	{
+		$this->model->reject_appointment($id);
+		header('location: ' . URL . 'admins'); 
+		die();
+	}
+	public function show($id)
+	{
+		$appointment = $this->model->getAppointment($id);
+		require APP . 'view/_templates/header.php';
+        require APP . 'view/appointments/show.php';
+        require APP . 'view/_templates/footer.php';
+		 
+		
+	}
 }

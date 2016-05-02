@@ -589,8 +589,62 @@ class InmatesModel extends Model {
     }
 }
 
-class AdminsModel extends Model {}
+class AdminsModel extends Model {
+	
+	
+	public function getPendingAppointments()
+	{
+		
+		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId FROM appointments 
+				WHERE State = 1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+	return $stmt->fetchAll();
+	}
+	public function getApprovedAppointments() 
+	{
+		
+		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId 
+				FROM appointments 
+				WHERE State = 0 AND DateOfAppointment>=CURDATE()";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+	return $stmt->fetchAll();
+	}
+	
+	
+	
+}
 
 class VisitorsModel extends Model {}
 
-class AppointmentsModel extends Model {}
+class AppointmentsModel extends Model 
+{
+	
+	public function approve_appointment($Id)
+	{
+		$sql="UPDATE appointments
+			  SET State= 0
+			  WHERE	Id=:id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $Id);
+		$stmt->execute();
+		
+	}
+	public function reject_appointment($Id)
+	{
+		$sql="UPDATE appointments
+			  SET State= 3
+			  WHERE	Id=:id"; // eventual motiv pentru respingere
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $Id);
+		
+		$stmt->execute();
+		
+	}
+	public function getAppointment($Id)
+	{
+		
+	}
+	
+}
