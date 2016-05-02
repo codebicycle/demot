@@ -111,7 +111,10 @@ if($Password==false&&$RepeatPassword==false)
 		{
 			if($uploadImage)
 			{	
-				$this->model->uploadPicture($IdHash,"update");
+				if($oldPictureLocation==NULL)
+					$this->model->uploadPicture($IdHash,"create");
+				
+				else $this->model->uploadPicture($IdHash,"update");
 			}
 			echo "Your account was updated!" ;
 		}
@@ -146,7 +149,9 @@ else if($PasswordHash==$RepeatPasswordHash)
 		
 		if($uploadImage)
 			{
-				$this->model->uploadPicture($IdHash,"update");
+				if($oldPictureLocation==NULL)
+					$this->model->uploadPicture($IdHash,"create");
+				else $this->model->uploadPicture($IdHash,"update");
 			}
 		echo "Your account was updated!" ;
 	}
@@ -233,9 +238,17 @@ else
 		<td>
 			<?php
 				if($oldPictureLocation==NULL)
+				{
 					echo"No Picture";
-				else ?><img src="<?php echo URL . $oldPictureLocation;?>"  width="100" height="100">
-				</td><td><input type="file" name="uploadImage" id="uploadImage"/></td>
+				}
+				else
+				{?>
+					<img src="<?php echo URL . $oldPictureLocation;?>"  width="100" height="100">				
+				<?php
+				}?>
+		</td>
+				
+		<td><input type="file" name="uploadImage" id="uploadImage"/></td>
     </tr>
 </thead>
 	<td></td><td></td><td><input name="submit" type="submit" Value="Update" />	</td>
