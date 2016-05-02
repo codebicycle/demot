@@ -7,7 +7,7 @@
 --
 -- Table structure for table `inmates`
 --
-
+DROP TABLE IF EXISTS `inmates`;
 CREATE TABLE `inmates` (
   `Id` varchar(32) NOT NULL,
   `FirstName` varchar(50) NOT NULL,

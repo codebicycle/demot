@@ -54,9 +54,23 @@ if(!isset($_SESSION['user_id']))
 		$Visitor3CNP =htmlentities($Visitor3CNP, ENT_QUOTES, 'UTF-8');
 		
 		$_POST=$_SESSION['post_data'];
+		
+		print_r($_POST);
+
 		$InmateFirstName = $_POST['FirstName']??NULL;
-		$InmateLastName = $_POST['LastName']??NULL;
-		$InstId=$_POST['Institution'];
+		$InmateLastName = $_POST['LastName']??NULL;	
+		
+		$sql = "SELECT Id FROM institutions WHERE Name = :Name";
+		$stmt = $this->model->db->prepare($sql);
+ 
+		$stmt->bindValue(':Name', $_POST['option_chosen']);
+
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$InstId= $row['Id'];
+		
+		
+		echo $InstId;
 		
 		$ok=0;
 		if(isset($_POST['dob']))

@@ -140,6 +140,7 @@ if(isset($_POST['search_dob']))
     }
 	if($row['num']==1)
 	{
+			
 			$_SESSION['post_data']=$_POST;
 			header('location: '.URL. 'appointments/add');
 	}
