@@ -1,8 +1,10 @@
 <?php
 
-function cached_value($label) {
+function cached_value($label, $data=null) {
     if (isset($_POST[$label]))
         echo htmlentities($_POST[$label]);
+    else if (isset($data[$label]))
+        echo htmlentities($data[$label]);
 }
 
 function validation_hint($errors, $label) {
