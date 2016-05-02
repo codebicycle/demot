@@ -17,6 +17,7 @@
         <td>Incarceration Date</td>
         <td>Release Date</td>
         <td>Lawyer</td>
+        <td></td>
       </tr>
     </thead>
     <tbody>
@@ -63,8 +64,12 @@
           echo htmlspecialchars($inmate->ReleaseDate, ENT_QUOTES, 'UTF-8'); ?>
         </td>
         <td>
-          <?php if (isset($inmate->Lawyer)) 
-          echo htmlspecialchars($inmate->Lawyer, ENT_QUOTES, 'UTF-8'); ?>
+          <?php if (isset($inmate->LawyerId))
+          echo htmlspecialchars($inmate->LawyerId, ENT_QUOTES, 'UTF-8'); ?>
+        </td>
+        <td>
+          <a href="<?php echo URL . 'inmates/edit/' . $inmate->Id; ?>" disabled>edit</a>
+          <a href="<?php echo URL . 'inmates/delete/' . $inmate->Id; ?>" onclick="return confirm('Are you sure you want to delete?');">delete</a>
         </td>
       </tr>
     <?php } ?>

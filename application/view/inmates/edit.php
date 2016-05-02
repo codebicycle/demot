@@ -6,7 +6,8 @@
 
 <div class="container">
   <h3>Edit inmate</h3>
-    <form action="<?php echo URL . 'inmates/create'; ?>" method="POST" id="demot-form" novalidate >
+    <form action="<?php echo URL . 'inmates/update'; ?>" method="POST" id="demot-form" novalidate >
+        <input type="hidden" name="Id" value="<?php cached_value('Id', $cache) ?>" />
         <?php
             validation_hint($validation_errors, 'Id');
             validation_hint($validation_errors, 'FirstName'); 
@@ -20,7 +21,8 @@
          
         <?php validation_hint($validation_errors, 'CNP')  ?>
         <label for="CNP">CNP</label>
-        <input type="text" name="CNP" id="CNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('CNP', $cache) ?>" required />
+        <input type="text" id="CNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('CNP', $cache) ?>" required disabled />
+        <input type="hidden" name="CNP" value="<?php cached_value('CNP', $cache) ?>" />
         
         <?php validation_hint($validation_errors, 'DOB') ?>
         <label for="DOB">Date Of Birth</label>
@@ -60,10 +62,14 @@
         <label for="LawyerCNP">Lawyer CNP</label>
         <input type="text" name="LawyerCNP" id="LawyerCNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('LawyerCNP', $cache) ?>" />
 
-        <input type="submit" name="Create" value="Create" />
+        <label for="LawyerId">Lawyer id</label>
+        <input type="text" id="LawyerId" value="<?php cached_value('LawyerId', $cache) ?>" disabled />
+        <input type="hidden" name="LawyerId" value="<?php cached_value('LawyerId', $cache) ?>" />
+
+        <input type="submit" name="Update" value="Update" />
     </form>
 </div>
 
 <pre>
-    <?php print_r($inmate ?? null); ?>
+  <?php print_r($inmate ?? null); ?>
 </pre>
