@@ -56,10 +56,13 @@ html {
     padding-top: 10px;
     margin-top: 30px;
 }
-.container input {
+.container input, .container textarea {
     background-color: #f5f5f5;
     border: 0;
     padding: 5px 10px;
+}
+.container label {
+    padding: 5px 0;
 }
 .container input[type="submit"],
 .container input[type="button"] {
@@ -67,7 +70,7 @@ html {
     cursor: pointer;
 }
 .container input[type="submit"]:hover,
-.container input[type="button"]:hover  {
+.container input[type="button"]:hover {
     background-color: #222;
     color: #fff;
 }
@@ -82,25 +85,10 @@ html {
     color: #fff;
 }
 
-#demot-form {
-    width: 24rem;
-}
-
-#demot-form label {
-    display: inline-block;
-    width: 11rem;
-    text-align: right;
-}
-
-#demot-form input {
-    width: 10rem;
-    margin-bottom: .5em;
-}
-
-#demot-form > input[type="button"],
-#demot-form > input[type="submit"] {
+.container > input[type="button"],
+.container > input[type="submit"] {
     width: initial;
-    margin-left: 11.2rem;
+    margin-left: 10rem;
 }
 
 .validation_error {
@@ -127,24 +115,39 @@ legend {
 
 dl {
     width: 24em;
-    overflow: hidden;
     padding: 0.5em;
     padding-top: 0;
     margin: 0;
+    overflow: hidden;
     display: inline-block;
 }
 
-dt {
+dt, label {
     float: left;
     clear: left;
-    width: 7rem;
+    width: 9rem;
     text-align: right;
-    color:#888;
+    color: #888;
 }
 
 dd {
-    margin: 0 0 0 8rem;
-    padding: 0 0 0.5em 0;
+    padding: 0;
+}
+
+dd, input {
+    margin: 0;
+    margin-left: 10rem;
+    margin-bottom: 0.5em;
+    max-width: 10rem;
+    display: block;
+}
+
+
+textarea {
+    margin-left: 10rem;
+    margin-bottom: 0.5em;
+    width: 18rem;
+    display: block;
 }
 
 .title {
@@ -153,4 +156,56 @@ dd {
     overflow: hidden;
     color: #ddd;
     font-size: 3em;
+}
+
+.star-rating {
+  font-size: 0;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  width: 15rem;
+  height: 3rem;
+  position: relative;
+  background: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIwIDIwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjREREREREIiBwb2ludHM9IjEwLDAgMTMuMDksNi41ODMgMjAsNy42MzkgMTUsMTIuNzY0IDE2LjE4LDIwIDEwLDE2LjU4MyAzLjgyLDIwIDUsMTIuNzY0IDAsNy42MzkgNi45MSw2LjU4MyAiLz48L3N2Zz4=');
+  background-size: contain;
+}
+.star-rating i {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 20%;
+  z-index: 1;
+  background: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIwIDIwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjRkZERjg4IiBwb2ludHM9IjEwLDAgMTMuMDksNi41ODMgMjAsNy42MzkgMTUsMTIuNzY0IDE2LjE4LDIwIDEwLDE2LjU4MyAzLjgyLDIwIDUsMTIuNzY0IDAsNy42MzkgNi45MSw2LjU4MyAiLz48L3N2Zz4=');
+  background-size: contain;
+}
+.star-rating input {
+  opacity: 0;
+  display: inline-block;
+  width: 20%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 2;
+  position: relative;
+}
+/* i element right after input element (next sibling) */
+.star-rating input:hover + i,
+.star-rating input:checked + i {
+  opacity: 1;
+}
+/* an i element following an i element (siblings) */
+.star-rating i ~ i {
+  width: 40%;
+}
+/* i following another i that follows yet another i (siblings) */
+.star-rating i ~ i ~ i {
+  width: 60%;
+}
+.star-rating i ~ i ~ i ~ i {
+  width: 80%;
+}
+.star-rating i ~ i ~ i ~ i ~ i {
+  width: 100%;
 }
