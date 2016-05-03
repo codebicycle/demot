@@ -6,7 +6,7 @@
 
 <div class="container">
     <form action="<?php echo URL . 'visits/create'; ?>" id="demot-form" method="POST" novalidate >
-        <span class="background">Appointment</span>
+        <span class="title">Appointment</span>
         <dl>
             <dt>Date</dt>
             <dd><?php e($appointment->DateOfAppointment); ?></dd>
@@ -14,7 +14,7 @@
             <dd><?php e($appointment->TimeOfAppointment); ?></dd>
         </dl>
 
-        <span class="background">Inmate</span>
+        <span class="title">Inmate</span>
         <dl>
             <dt>FirstName</dt>
             <dd><?php e($inmate->FirstName); ?></dd>
@@ -25,7 +25,7 @@
         </dl>
 
 
-        <span class="background">Visitor</span>
+        <span class="title">Visitor</span>
         <img src="<?php echo URL . $picture->Location; ?>" width="100" height="100" />
         <dl>
             <dt>FirstName</dt>
@@ -40,7 +40,7 @@
         </dl>
 
         <?php if (!empty($appointment->Visitor2CNP)) { ?>
-            <span class="background">2nd Visitor</span>
+            <span class="title">2nd Visitor</span>
             <dl>
                 <dt>FirstName</dt>
                 <dd><?php e($appointment->Visitor2FirstName); ?></dd>
@@ -58,7 +58,8 @@
 
 
         <?php if (!empty($appointment->Visitor3CNP)) { ?>
-            <span class="background">3rd Visitor</span>
+            <span class="title">3rd Visitor</span>
+            <span class="title">3rd Visitor</span>
             <dl>
                 <dt>FirstName</dt>
                 <dd><?php e($appointment->Visitor3FirstName); ?></dd>
