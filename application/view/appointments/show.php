@@ -5,16 +5,18 @@
 ?>
 
 <div class="container">
-    <form action="<?php echo URL . 'visits/create'; ?>" id="demot-form" method="POST" novalidate >
-        <span class="background">Appointment</span>
+    <form action="<?php echo URL . 'visits/create'; ?>" method="POST" novalidate >
+        <span class="title">Appointment</span>
         <dl>
             <dt>Date</dt>
             <dd><?php e($appointment->DateOfAppointment); ?></dd>
             <dt>Time</dt>
             <dd><?php e($appointment->TimeOfAppointment); ?></dd>
+
+            <input type="submit" name="No-Show" value="No-Show" />
         </dl>
 
-        <span class="background">Inmate</span>
+        <span class="title">Inmate</span>
         <dl>
             <dt>FirstName</dt>
             <dd><?php e($inmate->FirstName); ?></dd>
@@ -25,7 +27,7 @@
         </dl>
 
 
-        <span class="background">Visitor</span>
+        <span class="title">Visitor</span>
         <img src="<?php echo URL . $picture->Location; ?>" width="100" height="100" />
         <dl>
             <dt>FirstName</dt>
@@ -34,13 +36,14 @@
             <dd><?php e($visitor->LastName); ?></dd>
             <dt>CNP</dt>
             <dd><?php e($visitor->CNP ?? null); ?></dd>
-            <!--  <?php validation_hint($validation_errors, 'Relationship') ?> -->
+            <?php validation_hint($validation_errors, 'Relationship') ?>
             <label for="Relationship">Relationship</label>
             <input type="text" name="Relationship" id="Relationship" required />
         </dl>
+        
 
         <?php if (!empty($appointment->Visitor2CNP)) { ?>
-            <span class="background">2nd Visitor</span>
+            <span class="title">2nd Visitor</span>
             <dl>
                 <dt>FirstName</dt>
                 <dd><?php e($appointment->Visitor2FirstName); ?></dd>
@@ -49,7 +52,7 @@
                 <dt>CNP</dt>
                 <dd><?php e($appointment->Visitor2CNP ?? null); ?></dd>
 
-                <label for="SecondVisitor">Did not show</label>
+                <label for="SecondVisitor">No Show</label>
                 <input type="checkbox" name="SecondVisitor" id="SecondVisitor" value="absent">
             </dl>
         <?php } else { ?>
@@ -58,7 +61,7 @@
 
 
         <?php if (!empty($appointment->Visitor3CNP)) { ?>
-            <span class="background">3rd Visitor</span>
+            <span class="title">3rd Visitor</span>
             <dl>
                 <dt>FirstName</dt>
                 <dd><?php e($appointment->Visitor3FirstName); ?></dd>
@@ -67,7 +70,7 @@
                 <dt>CNP</dt>
                 <dd><?php e($appointment->Visitor3CNP ?? null); ?></dd>
 
-                <label for="ThirdVisitor">Did not show</label>
+                <label for="ThirdVisitor">No Show</label>
                 <input type="checkbox" name="ThirdVisitor" id="ThirdVisitor" value="absent">
             </dl>
         <?php } else { ?>
@@ -96,18 +99,26 @@
 
         <?php validation_hint($validation_errors, 'Comments') ?>
         <label for="Comments">Comments</label>
-        <textarea name="Comments" id="Comments" value="<?php cached_value('Comments', $cache) ?>" required></textarea>
+        <textarea name="Comments" rows="3" id="Comments" value="<?php cached_value('Comments', $cache) ?>" required></textarea>
 
-        <?php validation_hint($validation_errors, 'InmatePhisicalState')  ?>
         <label for="InmatePhisicalState">Inmate Phisical State</label>
-        <input type="text" name="InmatePhisicalState" id="InmatePhisicalState" inputmode="numeric" value="<?php cached_value('InmatePhisicalState', $cache) ?>" required />
-
-        <?php validation_hint($validation_errors, 'InmateEmotionalState')  ?>
+        <span class="star-rating">
+            <input type="radio" name="InmatePhisicalState" value="1" title="Bad" /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="2" title="Not Good" /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="3" title="Average" /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="4" title="Good" /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="1" title="Excellent" /><i></i>
+        </span>
+        <br />
         <label for="InmateEmotionalState">Inmate Emotional State</label>
-        <input type="text" name="InmateEmotionalState" id="InmateEmotionalState" inputmode="numeric" value="<?php cached_value('InmateEmotionalState', $cache) ?>" required />
-
-        <input type="submit" name="Review" value="Review" />
-        <input type="submit" name="Absent" value="Absent" />
+        <span class="star-rating">
+            <input type="radio" name="InmateEmotionalState" value="1" title="Bad" /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="2" title="Not Good" /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="3" title="Average" /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="4" title="Good" /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="1" title="Exellent" /><i></i>
+        </span>
+        <input type="submit" name="Save" value="Save" />
     </form>
 </div>
 
