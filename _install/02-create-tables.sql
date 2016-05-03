@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `visits` (
   `SecondVisitor` tinyint(1) NOT NULL,
   `ThirdVisitor` tinyint(1) NOT NULL,
   `GivenObjects` varchar(100) NOT NULL,
-  `RecivedObjects` varchar(100) NOT NULL,
+  `ReceivedObjects` varchar(100) NOT NULL,
   `Relationship` varchar(50) NOT NULL,
   `Motive` text NOT NULL,
   `Comments` text NOT NULL,

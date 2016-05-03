@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `visits` (
   `SecondVisitor` tinyint(1) NOT NULL,
   `ThirdVisitor` tinyint(1) NOT NULL,
   `GivenObjects` varchar(100) NOT NULL,
-  `RecivedObjects` varchar(100) NOT NULL,
+  `ReceivedObjects` varchar(100) NOT NULL,
   `Relationship` varchar(50) NOT NULL,
   `Motive` text NOT NULL,
   `Comments` text NOT NULL,
@@ -198,5 +198,5 @@ CREATE TABLE IF NOT EXISTS `visits` (
 -- Dumping data for table `visits`
 --
 
-INSERT INTO `visits` (`Id`, `AppointmentId`, `Done`, `SecondVisitor`, `ThirdVisitor`, `GivenObjects`, `RecivedObjects`, `Relationship`, `Motive`, `Comments`, `Duration`, `InmatePhisicalState`, `InmateEmotionalState`) VALUES
+INSERT INTO `visits` (`Id`, `AppointmentId`, `Done`, `SecondVisitor`, `ThirdVisitor`, `GivenObjects`, `ReceivedObjects`, `Relationship`, `Motive`, `Comments`, `Duration`, `InmatePhisicalState`, `InmateEmotionalState`) VALUES
 (1, 2, 1, 0, 0, 'Nu a dat nimic', 'Nu a primit nimic', 'Frate', 'Vizita de adio', 'Nu s-a intamplat nimic important', '00:10:10', 'buna', 'buna');

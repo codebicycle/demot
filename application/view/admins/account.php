@@ -72,7 +72,7 @@ if($Rank==0)
         <td>Second visitor</td>
         <td>Third visitor</td>
         <td>Given objects</td>
-        <td>Recived objects</td>
+        <td>Received objects</td>
         <td>Relationship</td>
         <td>Motive</td>
         <td>Comments</td>
@@ -109,8 +109,8 @@ if($Rank==0)
           echo htmlspecialchars($visit->GivenObjects, ENT_QUOTES, 'UTF-8'); ?>
         </td>
         <td>
-          <?php if (isset($visit->RecivedObjects)) 
-          echo htmlspecialchars($visit->RecivedObjects, ENT_QUOTES, 'UTF-8'); ?>
+          <?php if (isset($visit->ReceivedObjects)) 
+          echo htmlspecialchars($visit->ReceivedObjects, ENT_QUOTES, 'UTF-8'); ?>
         </td>
         <td>
           <?php if (isset($visit->Relationship)) 

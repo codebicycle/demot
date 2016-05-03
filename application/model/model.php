@@ -18,7 +18,8 @@ class Model
 
       public function getAllVisits() {
 
-            $sql = "SELECT Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, RecivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState FROM visits";
+            $sql = "SELECT Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
+            FROM visits";
             $query = $this->db->prepare($sql);
             $query->execute();
 
@@ -70,7 +71,7 @@ class Model
               $csv_data['SecondVisitor']=$visit->SecondVisitor;  
               $csv_data['ThirdVisitor']=$visit->ThirdVisitor;  
               $csv_data['GivenObjects']=$visit->GivenObjects;  
-              $csv_data['RecivedObjects']=$visit->RecivedObjects;  
+              $csv_data['ReceivedObjects']=$visit->ReceivedObjects;  
               $csv_data['Relationship']=$visit->Relationship;  
               $csv_data['Motive']=$visit->Motive;  
               $csv_data['Comments']=$visit->Comments;  
@@ -98,7 +99,7 @@ class Model
               $json_array['SecondVisitor']=$visit->SecondVisitor;  
               $json_array['ThirdVisitor']=$visit->ThirdVisitor;  
               $json_array['GivenObjects']=$visit->GivenObjects;  
-              $json_array['RecivedObjects']=$visit->RecivedObjects;  
+              $json_array['ReceivedObjects']=$visit->ReceivedObjects;  
               $json_array['Relationship']=$visit->Relationship;  
               $json_array['Motive']=$visit->Motive;  
               $json_array['Comments']=$visit->Comments;  
@@ -133,6 +134,7 @@ class Model
           echo "</thead>";
           echo "<tbody>";
       }
+      
       public function getAppointments($state)
       {
 
@@ -616,6 +618,68 @@ class AdminsModel extends Model {
 	
 }
 
+class VisitsModel extends Model {
+    public $AppointmentId;
+    public $GivenObjects;
+    public $ReceivedObjects;
+    public $Duration;
+    public $Motive;
+    public $Comments;
+    public $InmatePhisicalState;
+    public $InmateEmotionalState;
+    public $Relationship;
+    // public $Id;
+    public $Done;
+    public $SecondVisitor;
+    public $ThirdVisitor;
+
+
+    public function initialize($AppointmentId, $GivenObjects, $ReceivedObjects, $Duration, $Motive, $Comments, $InmatePhisicalState, $InmateEmotionalState, $Relationship, $SecondVisitor, $ThirdVisitor) {
+        $this->AppointmentId        = $AppointmentId;
+        $this->GivenObjects         = $GivenObjects;
+        $this->ReceivedObjects      = $ReceivedObjects;
+        $this->Duration             = $Duration;
+        $this->Motive               = $Motive;
+        $this->Comments             = $Comments;
+        $this->InmatePhisicalState  = $InmatePhisicalState;
+        $this->InmateEmotionalState = $InmateEmotionalState;
+        $this->Relationship         = $Relationship;
+        $this->SecondVisitor        = $SecondVisitor ? null : 1;
+        $this->ThirdVisitor         = $ThirdVisitor ? null : 1;
+        $this->Done                 = 1;
+    }
+
+
+    public function save() {
+        $valid = $this->is_valid();
+        if (!$valid)
+            return false;
+           
+        // save to database
+        $sql = "INSERT INTO visits(AppointmentId, GivenObjects, ReceivedObjects, Duration, Motive, Comments, InmatePhisicalState, InmateEmotionalState, Relationship, Done, SecondVisitor, ThirdVisitor) 
+                VALUES(:AppointmentId, :GivenObjects, :ReceivedObjects, :Duration, :Motive, :Comments, :InmatePhisicalState, :InmateEmotionalState, :Relationship, :Done, :SecondVisitor, :ThirdVisitor)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('AppointmentId', $this->AppointmentId, PDO::PARAM_INT);
+        $stmt->bindValue('GivenObjects', $this->GivenObjects);
+        $stmt->bindValue('ReceivedObjects', $this->ReceivedObjects);
+        $stmt->bindValue('Duration', $this->Duration, PDO::PARAM_INT);
+        $stmt->bindValue('Motive', $this->Motive);
+        $stmt->bindValue('Comments', $this->Comments);
+        $stmt->bindValue('InmatePhisicalState', $this->InmatePhisicalState);
+        $stmt->bindValue('InmateEmotionalState', $this->InmateEmotionalState);
+        $stmt->bindValue('Relationship', $this->Relationship);
+        $stmt->bindValue('Done', $this->Done, PDO::PARAM_INT);
+        $stmt->bindValue('SecondVisitor', $this->SecondVisitor, PDO::PARAM_INT);
+        $stmt->bindValue('ThirdVisitor', $this->ThirdVisitor, PDO::PARAM_INT);
+        $stmt->execute();
+        return true;
+    }
+
+    public function is_valid() {
+        return true;
+    }
+}
+
 class VisitorsModel extends Model {}
 
 class AppointmentsModel extends Model 
@@ -646,7 +710,7 @@ class AppointmentsModel extends Model
 
 	public function getAppointment($Id)
 	{
-		$sql = "SELECT VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP,Visitor3FirstName, Visitor3LastName, Visitor3CNP, State, InmateId 
+		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP,Visitor3FirstName, Visitor3LastName, Visitor3CNP, State, InmateId 
 				FROM appointments 
 				WHERE Id =:Id";
 		$stmt = $this->db->prepare($sql);
