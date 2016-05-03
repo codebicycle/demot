@@ -18,5 +18,5 @@ function validation_hint($errors, $label) {
 function e($input)
 {
     // Use htmlspecialchars with ENT_QUOTES to escape '.
-    return htmlspecialchars($variable, ENT_QUOTES, 'UTF-8');
+    echo htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
 }

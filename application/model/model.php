@@ -631,6 +631,7 @@ class AppointmentsModel extends Model
 		$stmt->execute();
 		
 	}
+
 	public function reject_appointment($Id)
 	{
 		$sql="UPDATE appointments
@@ -642,6 +643,7 @@ class AppointmentsModel extends Model
 		$stmt->execute();
 		
 	}
+
 	public function getAppointment($Id)
 	{
 		$sql = "SELECT VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP,Visitor3FirstName, Visitor3LastName, Visitor3CNP, State, InmateId 
@@ -650,18 +652,20 @@ class AppointmentsModel extends Model
 		$stmt = $this->db->prepare($sql);
         $stmt->bindValue('Id', $Id);
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return $stmt->fetch();
 	}
+
 	public function getInmate($Id)
 	{
 		$sql = "SELECT FirstName, LastName, CNP, InstId, LawyerId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate
-				FROM Inmates 
+				FROM inmates
 				WHERE Id =:Id";
 		$stmt = $this->db->prepare($sql);
         $stmt->bindValue('Id', $Id);
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return $stmt->fetch();
 	}
+
 	public function getVisitor($Id)
 	{
 		$sql = "SELECT FirstName, LastName, CNP, Email
@@ -670,8 +674,9 @@ class AppointmentsModel extends Model
 		$stmt = $this->db->prepare($sql);
         $stmt->bindValue('Id', $Id);
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return $stmt->fetch();
 	}
+
 	public function getPicture($Id)
 	{
 		$sql = "SELECT Location
@@ -680,7 +685,7 @@ class AppointmentsModel extends Model
 		$stmt = $this->db->prepare($sql);
         $stmt->bindValue('Id', $Id);
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return $stmt->fetch();
 	}
 	
 }

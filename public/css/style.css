@@ -114,6 +114,7 @@ html {
 
 fieldset {
     margin: 1em 0;
+    padding-top: 0;
     padding-left: 0;
     border: 1px solid #ccc;
     display: initial;
@@ -121,4 +122,35 @@ fieldset {
 
 legend {
     margin-left: .5em;
+}
+
+
+dl {
+    width: 24em;
+    overflow: hidden;
+    padding: 0.5em;
+    padding-top: 0;
+    margin: 0;
+    display: inline-block;
+}
+
+dt {
+    float: left;
+    clear: left;
+    width: 7rem;
+    text-align: right;
+    color:#888;
+}
+
+dd {
+    margin: 0 0 0 8rem;
+    padding: 0 0 0.5em 0;
+}
+
+.background {
+    display: block;
+    z-index: -1;
+    overflow: hidden;
+    color: #ddd;
+    font-size: 3em;
 }
