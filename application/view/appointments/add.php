@@ -30,8 +30,13 @@ if(!isset($_SESSION['user_id']))
 
         <?php validation_hint($validation_errors, 'TimeOfAppointment') ?>
         <label for="TimeOfAppointment">Time</label>
-        <input type="time" name="TimeOfAppointment" id="TimeOfAppointment" value="<?php cached_value('TimeOfAppointment') ?>" required />
-
+        <select name="TimeOfAppointment" id="TimeOfAppointment">
+            <option value="12">12:00</option>
+            <option value="13">13:00</option>
+            <option value="14">14:00</option>
+            <option value="15">15:00</option>
+            <option value="16">16:00</option>
+        </select>
 
         <fieldset id="second-visitor">
             <legend>Accompanying Visitor</legend>

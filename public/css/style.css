@@ -71,6 +71,7 @@ html {
     cursor: pointer;
     clear: left;
     margin-left: 10rem;
+    width: initial;
 }
 .container input[type="submit"]:hover,
 .container input[type="button"]:hover {
@@ -105,11 +106,11 @@ html {
 }
 
 fieldset {
-    margin: 1em 0;
-    padding-top: 0;
+    margin: .5rem 0;
     padding-left: 0;
     border: 1px solid #ccc;
-    display: initial;
+    float: left;
+    clear: both;
 }
 
 legend {
@@ -138,15 +139,19 @@ dd {
     padding: 0;
 }
 
-dd, input {
+dd, input, select {
     margin: 0;
     margin-left: 1rem;
     margin-bottom: 0.5em;
-    max-width: 10rem;
+    width: 10rem;
     display: inline-block;
     float: left;
 }
 
+input[type="checkbox"],
+select {
+  width: initial;
+}
 
 textarea {
     margin-left: 1rem;
