@@ -5,7 +5,9 @@
 ?>
 
 <div class="container">
+
     <form action="<?php echo URL . 'visits/create'; ?>" method="POST" novalidate >
+
         <span class="title">Appointment</span>
         <dl>
             <dt>Date</dt>
@@ -62,6 +64,7 @@
 
         <?php if (!empty($appointment->Visitor3CNP)) { ?>
             <span class="title">3rd Visitor</span>
+
             <dl>
                 <dt>FirstName</dt>
                 <dd><?php e($appointment->Visitor3FirstName); ?></dd>

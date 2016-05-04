@@ -672,6 +672,14 @@ class VisitsModel extends Model {
         $stmt->bindValue('SecondVisitor', $this->SecondVisitor, PDO::PARAM_INT);
         $stmt->bindValue('ThirdVisitor', $this->ThirdVisitor, PDO::PARAM_INT);
         $stmt->execute();
+		
+		$sql="UPDATE appointments
+			  SET State= 2
+			  WHERE	Id=:id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $this->AppointmentId);
+		$stmt->execute();
+		
         return true;
     }
 
