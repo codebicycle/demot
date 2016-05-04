@@ -40,7 +40,7 @@
             <label for="Relationship">Relationship</label>
             <input type="text" name="Relationship" id="Relationship" required />
         </dl>
-        
+
 
         <?php if (!empty($appointment->Visitor2CNP)) { ?>
             <span class="title">2nd Visitor</span>
@@ -52,7 +52,7 @@
                 <dt>CNP</dt>
                 <dd><?php e($appointment->Visitor2CNP ?? null); ?></dd>
 
-                <label for="SecondVisitor">No Show</label>
+                <label for="SecondVisitor">No-Show</label>
                 <input type="checkbox" name="SecondVisitor" id="SecondVisitor" value="absent">
             </dl>
         <?php } else { ?>
@@ -81,20 +81,27 @@
         <h3>Visit review</h3>
         <input type="hidden" name="AppointmentId" value="<?php e($appointment->Id); ?>" />
 
-        <?php validation_hint($validation_errors, 'GivenObjects') ?>
-        <label for="GivenObjects">Given Objects</label>
-        <input type="text" name="GivenObjects" id="GivenObjects" value="<?php cached_value('GivenObjects', $cache) ?>" required />
+        <?php validation_hint($validation_errors, 'Duration')  ?>
+        <label for="Duration">Duration</label>
+        <input type="range" min="10" max="120" value="60" step="10" name="Duration" id="Duration" list="time-values" oninput="outputUpdate(value)" required />
+        <datalist id="time-values">
+            <option>30</option>
+            <option>60</option>
+            <option>90</option>
+            <option>120</option>
+        </datalist>
+        <output for="Duration" id="output-duration">60 minutes.</output>
 
         <?php validation_hint($validation_errors, 'ReceivedObjects') ?>
         <label for="ReceivedObjects">Received Objects</label>
         <input type="text" name="ReceivedObjects" id="ReceivedObjects" value="<?php cached_value('ReceivedObjects', $cache) ?>" required />
-         
-        <?php validation_hint($validation_errors, 'Duration')  ?>
-        <label for="Duration">Duration</label>
-        <input type="text" name="Duration" id="Duration" inputmode="numeric" value="<?php cached_value('Duration', $cache) ?>" required />
+
+        <?php validation_hint($validation_errors, 'GivenObjects') ?>
+        <label for="GivenObjects">Given Objects</label>
+        <input type="text" name="GivenObjects" id="GivenObjects" value="<?php cached_value('GivenObjects', $cache) ?>" required />
 
         <?php validation_hint($validation_errors, 'Motive') ?>
-        <label for="Motive">Motive</label>
+        <label for="Motive">Visit Nature</label>
         <input type="text" name="Motive" id="Motive" value="<?php cached_value('Motive', $cache) ?>" required />
 
         <?php validation_hint($validation_errors, 'Comments') ?>
@@ -105,19 +112,21 @@
         <span class="star-rating">
             <input type="radio" name="InmatePhisicalState" value="1" title="Bad" /><i></i>
             <input type="radio" name="InmatePhisicalState" value="2" title="Not Good" /><i></i>
-            <input type="radio" name="InmatePhisicalState" value="3" title="Average" /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="3" title="Average" checked /><i></i>
             <input type="radio" name="InmatePhisicalState" value="4" title="Good" /><i></i>
-            <input type="radio" name="InmatePhisicalState" value="1" title="Excellent" /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="5" title="Excellent" /><i></i>
         </span>
         <br />
+
         <label for="InmateEmotionalState">Inmate Emotional State</label>
         <span class="star-rating">
             <input type="radio" name="InmateEmotionalState" value="1" title="Bad" /><i></i>
             <input type="radio" name="InmateEmotionalState" value="2" title="Not Good" /><i></i>
-            <input type="radio" name="InmateEmotionalState" value="3" title="Average" /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="3" title="Average" checked /><i></i>
             <input type="radio" name="InmateEmotionalState" value="4" title="Good" /><i></i>
-            <input type="radio" name="InmateEmotionalState" value="1" title="Exellent" /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="5" title="Exellent" /><i></i>
         </span>
+
         <input type="submit" name="Save" value="Save" />
     </form>
 </div>
@@ -131,3 +140,9 @@
     print_r($picture);
   ?>
 </pre>
+
+<script type="text/javascript">
+    function outputUpdate(vol) {
+        document.querySelector('#output-duration').value = vol + " minutes.";
+    }
+</script>

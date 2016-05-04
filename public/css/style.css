@@ -36,6 +36,7 @@ html {
     border: 1px solid #ddd;
     padding: 20px;
     margin: 33px;
+    overflow: hidden;
 }
 .container a {
     color: #222;
@@ -62,12 +63,14 @@ html {
     padding: 5px 10px;
 }
 .container label {
-    padding: 5px 0;
+    padding: 0.2rem 0;
 }
 .container input[type="submit"],
 .container input[type="button"] {
     background-color: #ccc;
     cursor: pointer;
+    clear: left;
+    margin-left: 10rem;
 }
 .container input[type="submit"]:hover,
 .container input[type="button"]:hover {
@@ -89,6 +92,7 @@ html {
 .container > input[type="submit"] {
     width: initial;
     margin-left: 10rem;
+    clear: both;
 }
 
 .validation_error {
@@ -136,17 +140,19 @@ dd {
 
 dd, input {
     margin: 0;
-    margin-left: 10rem;
+    margin-left: 1rem;
     margin-bottom: 0.5em;
     max-width: 10rem;
-    display: block;
+    display: inline-block;
+    float: left;
 }
 
 textarea {
-    margin-left: 10rem;
+    margin-left: 1rem;
     margin-bottom: 0.5em;
     width: 18rem;
-    display: block;
+    display: inline-block;
+    float:left;
 }
 
 .title {
@@ -162,11 +168,12 @@ textarea {
   margin-left: 1rem;
   margin-bottom: 1rem;
   display: inline-block;
-  width: 15rem;
-  height: 3rem;
+  width: 10rem;
+  height: 2rem;
   position: relative;
   background: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIwIDIwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjREREREREIiBwb2ludHM9IjEwLDAgMTMuMDksNi41ODMgMjAsNy42MzkgMTUsMTIuNzY0IDE2LjE4LDIwIDEwLDE2LjU4MyAzLjgyLDIwIDUsMTIuNzY0IDAsNy42MzkgNi45MSw2LjU4MyAiLz48L3N2Zz4=');
   background-size: contain;
+  float: left;
 }
 .star-rating i {
   opacity: 0;
@@ -207,4 +214,11 @@ textarea {
 }
 .star-rating i ~ i ~ i ~ i ~ i {
   width: 100%;
+}
+
+output {
+    padding: 0.2rem 0;
+    margin-left: 1rem;
+    display: inline-block;
+    color: #888;
 }
