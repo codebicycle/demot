@@ -13,3 +13,4 @@
     DeMoT
   </div>
 
+  <?php require APP . 'view/_templates/navigation.php'; ?>
