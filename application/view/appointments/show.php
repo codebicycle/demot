@@ -51,10 +51,10 @@
                 <dt>FirstName</dt>
                 <dd><?php e($appointment->Visitor2FirstName); ?></dd>
                 <dt>LastName</dt>
-                <dd><?php e($appointment->Visitor2LastName); ?></dd>
+                <dd><?php e($appointment->Visitor2LastName);?></dd>
                 <dt>CNP</dt>
                 <dd><?php e($appointment->Visitor2CNP ?? null); ?></dd>
-
+				<input type="hidden" name="SecondVisitor" id="SecondVisitor" value="<?php echo $appointment->Visitor2Id?>">
                 <label for="SecondVisitor">No-Show</label>
                 <input type="checkbox" name="SecondVisitor" id="SecondVisitor" value="absent">
             </dl>
@@ -74,6 +74,7 @@
                 <dt>CNP</dt>
                 <dd><?php e($appointment->Visitor3CNP ?? null);	?></dd>
 
+			    <input type="hidden" name="ThirdVisitor" id="ThirdVisitor" value="<?php echo $appointment->Visitor3Id ?>">
                 <label for="ThirdVisitor">No Show</label>
                 <input type="checkbox" name="ThirdVisitor" id="ThirdVisitor" value="absent">
             </dl>

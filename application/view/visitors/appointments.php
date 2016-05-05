@@ -3,12 +3,12 @@ if(!isset($_SESSION))
     { 
         session_start(); 
     } 
-// if(!isset($_SESSION['user_id']))
-// {
+ if(!isset($_SESSION['user_id']))
+ {
 	
-// 	header('location: '.URL. 'visitors');
-// 	exit;
-// }
+ 	header('location: '.URL. 'visitors/login');
+ 	die();
+ }
 
 
 
@@ -24,7 +24,7 @@ echo ', you are now in your account!';
 
 if(isset($_POST['submit']))
 	$State=$_POST['visits'];
-else $State='accepted';
+else $State='approved';
 		
 		
 ?>	
@@ -32,7 +32,7 @@ else $State='accepted';
 <br/>
 <h3>THIS IS YOUR MENU: </h3>
 <br/>
-<a href="<?php echo URL; ?>visitors/account">New Appointment</a>	
+<a href="<?php echo URL; ?>visitors/index">New Appointment</a>	
 <br/>
 <a href="<?php echo URL; ?>visitors/editaccount">Edit Account</a>
 <br/>
@@ -47,7 +47,7 @@ else $State='accepted';
 <select name="visits" id="visits">
 	<option value="pending">Pending appointments</option>
 	<option value="rejected">Rejected appointments</option>
-	<option value="accepted">Accepted appointments</option>
+	<option value="approved">Accepted appointments</option>
 	<option value="done">Done visits</option>
 	<option value="noshow">No-show appointments</option>
 </select>

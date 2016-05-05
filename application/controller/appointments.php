@@ -8,7 +8,7 @@ class Appointments extends Controller {
         { 
             session_start(); 
         }
-        print_r($_SESSION);
+
         if (isset($_SESSION['user_id'])){
             require APP . 'view/_templates/header.php';
             require APP . 'view/visitors/appointments.php';
@@ -30,7 +30,7 @@ class Appointments extends Controller {
         }
         else if(isset($_SESSION['admin_id']) &&
                 $_SESSION['rank'] == 2) {
-            require APP . 'view/_templates/header.php';
+			require APP . 'view/_templates/header.php';
             require APP . 'view/admins/index.php';
             require APP . 'view/_templates/footer.php';
         }

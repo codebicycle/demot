@@ -6,8 +6,8 @@ if(!isset($_SESSION))
 } 
 if(isset($_SESSION['user_id']))
 {
-	require APP. 'view/visitors/index.php';
-	exit;
+	header('location: ' . URL . 'visitors/index');
+	die();
 }
 
 else if(isset($_POST['submit']))

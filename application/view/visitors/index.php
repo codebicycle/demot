@@ -6,8 +6,8 @@ if(!isset($_SESSION))
     } 
 if(!isset($_SESSION['user_id']))
 {
-	require APP. 'view/visitors/login.php';
-	exit;
+	header('location: ' . URL . 'visitors/login');
+	die();
 }
 
 $row['num']=-1;

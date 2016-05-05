@@ -4,11 +4,11 @@
     { 
         session_start(); 
     } 
-    // if(!isset($_SESSION['user_id']))
-    // {
-    //     header('location: '.URL. 'visitors');
-    //     exit;
-    // }
+    if(!isset($_SESSION['user_id']))
+    {
+        header('location: '.URL. 'visitors/login');
+        exit;
+    }
 
 ?>
 

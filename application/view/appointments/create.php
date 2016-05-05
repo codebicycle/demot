@@ -6,8 +6,8 @@ if(!isset($_SESSION))
     } 
 if(!isset($_SESSION['user_id']))
 {
-	require APP. 'view/visitors/index.php';
-	exit;
+	header('location: ' . URL . 'visitors/login');
+	die();
 }
 
 
@@ -68,9 +68,9 @@ if(!isset($_SESSION['user_id']))
 		$stmt->execute();
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$InstId= $row['Id'];
+		$Visitor2Id=md5($Visitor2CNP . $Visitor2LastName);
+		$Visitor3Id=md5($Visitor3CNP . $Visitor3LastName);
 		
-		
-		echo $InstId;
 		
 		$ok=0;
 		if(isset($_POST['dob']))
@@ -91,14 +91,17 @@ if(!isset($_SESSION['user_id']))
 		$Inmate = $query->fetch(PDO::FETCH_ASSOC);
 		$InmateId=$Inmate['Id'];
 		$VisitorId=$_SESSION['user_id'];
+		$_SESSION['visitor2id']=$Visitor2Id;
+		$_SESSION['visitor3id']=$Visitor3Id;
 		//pana aici am selectat datele de care am nevoie pentru insert urmeaza sa fac insert
 	
-	$State=1;
+	$State='pending';
 	$profile = true ;//check_profile($_SESSION['user_id'])// trebuie o functe pentru a verifica daca profilul este complet
 	
 	if($profile==true)
 	{
-		$sql = "INSERT INTO appointments (VisitorId, DateOfAppointment , TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor3FirstName, Visitor3LastName, Visitor3CNP, State, InmateId) VALUES (:VisitorId, :DateOfAppointment, :TimeOfAppointment, :Visitor2FirstName, :Visitor2LastName, :Visitor2CNP, :Visitor3FirstName, :Visitor3LastName, :Visitor3CNP, :State, :InmateId)";
+		$sql = "INSERT INTO appointments (VisitorId, DateOfAppointment , TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3CNP, Visitor3Id , State, InmateId) 
+		VALUES (:VisitorId, :DateOfAppointment, :TimeOfAppointment, :Visitor2FirstName, :Visitor2LastName, :Visitor2CNP, :Visitor2Id, :Visitor3FirstName, :Visitor3LastName, :Visitor3CNP, :Visitor3Id, :State, :InmateId)";
 		$query = $this->model->db->prepare($sql);
 		$query->bindValue(':VisitorId', $_SESSION['user_id']);
 		$query->bindValue(':DateOfAppointment', $DateOfAppointment);
@@ -106,9 +109,11 @@ if(!isset($_SESSION['user_id']))
 		$query->bindValue(':Visitor2FirstName', $Visitor2FirstName);
 		$query->bindValue(':Visitor2LastName', $Visitor2LastName);
 		$query->bindValue(':Visitor2CNP', $Visitor2CNP);
+		$query->bindValue(':Visitor2Id', $Visitor2Id);
 		$query->bindValue(':Visitor3FirstName', $Visitor3FirstName);
 		$query->bindValue(':Visitor3LastName', $Visitor3LastName);
 		$query->bindValue(':Visitor3CNP', $Visitor3CNP)	;
+		$query->bindValue(':Visitor3Id', $Visitor3Id)	;
 		$query->bindValue(':State', $State);
 		$query->bindValue(':InmateId', $InmateId);
 		$query->execute();

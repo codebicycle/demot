@@ -147,7 +147,7 @@ class Model
               echo "<td>Third visitor Name</td>";
               echo "<td>Date Of Appointment</td>";
               echo "<td>Time Of Appointment</td>";
-              if ($state==3)  
+              if ($state=='rejected')  
                 echo "<td>Motive</td>";
             echo "</tr>";
           echo "</thead>";
@@ -186,7 +186,14 @@ class Model
           $this->getTableHeadAppointments($state);
           
       $VisitorId=$_SESSION['user_id'];
-      $sql = "SELECT Id, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId FROM appointments WHERE VisitorId = :VisitorId AND State = :State";
+      $sql = "SELECT Id, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2Id,Visitor3FirstName, Visitor3LastName, Visitor3Id, InmateId 
+			  FROM appointments 
+			  WHERE VisitorId = :VisitorId 
+			  AND State = :State
+			  OR Visitor2Id= :VisitorId
+			  AND State = :State
+			  OR Visitor3Id= :VisitorId
+			  AND State = :State";
             $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':VisitorId', $VisitorId);
         $stmt->bindValue(':State', $state);
@@ -284,7 +291,7 @@ class Model
               echo htmlspecialchars($appointment->TimeOfAppointment, ENT_QUOTES, 'UTF-8'); 
            echo "</td>";
          
-          if($state==3)   
+          if($state=='rejected')   
         { 
           echo"<td>";
                if (isset($appointment->Id)) 
@@ -618,9 +625,7 @@ class InmatesModel extends Model {
 class AdminsModel extends Model {
 	
 	
-	
 
-	
 	
 }
 
@@ -635,7 +640,7 @@ class VisitsModel extends Model {
     public $InmateEmotionalState;
     public $Relationship;
     // public $Id;
-    public $Done;
+    public $Done=1;
     public $SecondVisitor;
     public $ThirdVisitor;
 	  
@@ -650,8 +655,8 @@ class VisitsModel extends Model {
         $this->InmatePhisicalState  = $InmatePhisicalState;
         $this->InmateEmotionalState = $InmateEmotionalState;
         $this->Relationship         = $Relationship;
-        $this->SecondVisitor        = $SecondVisitor ? null : 1;
-        $this->ThirdVisitor         = $ThirdVisitor ?  null : 1;
+        $this->SecondVisitor        = $SecondVisitor;
+        $this->ThirdVisitor         = $ThirdVisitor;
         
     }
 
@@ -675,12 +680,12 @@ class VisitsModel extends Model {
         $stmt->bindValue('InmateEmotionalState', $this->InmateEmotionalState);
         $stmt->bindValue('Relationship', $this->Relationship);
         $stmt->bindValue('Done', $this->Done, PDO::PARAM_INT);
-        $stmt->bindValue('SecondVisitor', $this->SecondVisitor, PDO::PARAM_INT);
-        $stmt->bindValue('ThirdVisitor', $this->ThirdVisitor, PDO::PARAM_INT);
+        $stmt->bindValue('SecondVisitor', $this->SecondVisitor);
+        $stmt->bindValue('ThirdVisitor', $this->ThirdVisitor);
         $stmt->execute();
 		
 		$sql="UPDATE appointments
-			  SET State= 2
+			  SET State= 'done'
 			  WHERE	Id=:id";
 		$stmt = $this->db->prepare($sql);
         $stmt->bindValue('id', $this->AppointmentId);
@@ -725,13 +730,16 @@ class VisitsModel extends Model {
         $stmt->execute();
         return $stmt->fetchAll();		
 	}
+	
 	public function getAllVisitsByVisitor($user_id)
 	{
 		$sql = "SELECT visits.Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
                 FROM visits
 				JOIN appointments
 				ON visits.AppointmentId=appointments.Id 
-				WHERE appointments.VisitorId=:id ";//OR appointments.Visitor2Id=:id OR appointments.Visitor3Id=:id
+				WHERE appointments.Visitor2Id=:id 
+				OR appointments.VisitorId=:id 
+				OR appointments.Visitor3Id=:id";
 			
 		$stmt = $this->db->prepare($sql);
 		$stmt->bindValue('id', $user_id);
@@ -749,7 +757,7 @@ class AppointmentsModel extends Model
 {
 		
     public function getAllAppointments() {
-        $sql = "SELECT Id, InmateId, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, State
+        $sql = "SELECT Id, InmateId, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3Id, State
                 FROM appointments";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -805,7 +813,7 @@ class AppointmentsModel extends Model
 
 	public function getAppointment($Id)
 	{
-		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP,Visitor3FirstName, Visitor3LastName, Visitor3CNP, State, InmateId 
+		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3CNP, Visitor3Id, State, InmateId 
 				FROM appointments 
 				WHERE Id =:Id";
 		$stmt = $this->db->prepare($sql);

@@ -3,15 +3,15 @@
 class visitors extends Controller {
 
  
-  public function index() {
+  public function login() {
     require APP . 'view/_templates/header.php';
-    require APP . 'view/visitors/index.php';
+    require APP . 'view/visitors/login.php';
     require APP . 'view/_templates/footer.php';
   }
   
-  public function account() {
+  public function index() {
     require APP . 'view/_templates/header.php';
-    require APP . 'view/visitors/account.php';
+    require APP . 'view/visitors/index.php';
     require APP . 'view/_templates/footer.php';
   }
   

@@ -2,7 +2,7 @@
 
 <div class="container">
     <h3>Visits List</h3>
-
+	
     <table>
         <thead>
             <tr>

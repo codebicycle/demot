@@ -11,6 +11,7 @@ class Visits extends Controller {
 		if (isset($_SESSION['user_id']))
 		{
            $visits=$this->model->getAllVisitsByVisitor($_SESSION['user_id']);
+		   
         }
 		
         else if(isset($_SESSION['admin_id']) &&
@@ -51,8 +52,8 @@ class Visits extends Controller {
         $_POST['InmatePhisicalState'],
         $_POST['InmateEmotionalState'],
         $_POST['Relationship'],
-        $_POST['SecondVisitor'] ?? null,
-        $_POST['ThirdVisitor'] ?? null );
+		$_POST['SecondVisitor'],
+        $_POST['ThirdVisitor']);
 
     $success = $visit->save();
 
