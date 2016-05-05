@@ -1,97 +1,195 @@
-<?php
+ <?php
 
 if(!isset($_SESSION)) 
-{ 
-    session_start(); 
-} 
-if(isset($_SESSION['user_id']))
+    { 
+        session_start(); 
+    } 
+if(!isset($_SESSION['user_id']))
 {
-	require APP. 'view/visitors/account.php';
+	require APP. 'view/visitors/login.php';
 	exit;
 }
 
-else if(isset($_POST['submit']))
-{
-	$UserName = $_POST['UserName']??NULL;
-	$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');	
-	$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');		
-	
-	$Password = $_POST['Password']??NULL;
-	$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
-	$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
-				
-	$encpassword = md5($Password);
-		
-	$errMsg='';
-	if($UserName == '')
-			$errMsg .= 'You must enter your Username<br>';
-		
-	if($Password == '')
-		$errMsg .= 'You must enter your Password<br>';
-		
-		
-	if($errMsg == '')
-	{
-		$sql = "SELECT Id, UserName, PwdHash FROM visitors WHERE UserName = :UserName";
-		$stmt = $this->model->db->prepare($sql);
-    
-		$stmt->bindValue(':UserName', $UserName);
-        
-		$stmt->execute();
-    
-		$user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-		if($user === false)
-		{
-			die('Incorrect username / password combination!');
-		} 
-		else
-		{
-			if($encpassword==$user['PwdHash'])
-			{
-				session_destroy();
-				session_start();
-				$_SESSION['user_id'] = $user['Id'];           
-				require APP. 'view/visitors/account.php';
-				exit; 
-			}
-		else
-		{
-            die('Incorrect username / password combination!');
-        }
-		}
-	}
-	else
-	{
-		echo $errMsg;
-	}
-}
- 
+$row['num']=-1;
+
 ?>
+
+<a href="<?php echo URL; ?>visitors/logout">LOGOUT</a> 
+<br/>
+<a href="<?php echo URL; ?>visitors/appointments">Appointments</a> 
+<br/>
+
+
+<?php
+
+$Id=$_SESSION['user_id'];
+$sql = "SELECT UserName FROM visitors WHERE Id = :Id";
+$stmt = $this->model->db->prepare($sql);
+$stmt->bindValue(':Id', $Id);
+$stmt->execute(); 
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+echo 'Welcome ';
+echo $user['UserName'];
+echo ', you are now in your account!';
+
+
+
+if(isset($_POST['search_dob']))
+	{
+		$FirstName=$_POST['FirstName']??NULL;
+		$FirstName = mb_convert_encoding($FirstName, 'UTF-8','UTF-8');
+		$FirstName =htmlentities($FirstName, ENT_QUOTES, 'UTF-8');
+	
+	
+		$LastName=$_POST['LastName']??NULL;
+		$LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
+		$LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
+
+		$InstId=$_POST['Institution']??NULL;
+		
+		
+		
+		$dob=$_POST['dob']??NULL;
+	
+		 $sql = "SELECT COUNT(Id) as num FROM inmates WHERE FirstName = :FirstName AND LastName=:LastName AND InstId=:InstId AND DOB=:dob" ;
+		 
+		$query = $this->model->db->prepare($sql);
+		$query->bindValue(':FirstName', $FirstName);
+		$query->bindValue(':LastName', $LastName);
+		$query->bindValue(':InstId', $InstId);
+		$query->bindValue(':dob', $dob);
+		$query->execute();
+		$row = $query->fetch(PDO::FETCH_ASSOC);
+		if($row['num']==1)
+		{
+			$_SESSION['post_data']=$_POST;
+			header('location: '.URL. 'appointments/add');
+		}
+		else if ($row['num']>1)
+		{
+			
+			echo "There are more inmates with the same Name and date of birth at this institution";
+		}
+		else if ($row['num']==0)
+		{
+			echo "There is no inmate with this name and date of birth at this institution";
+			header('location: '.URL. 'visitors/account');
+		}
+		
+	}	
+ if(isset($_POST['search']))
+{
+	
+	
+	$FirstName=$_POST['FirstName']??NULL;
+	$FirstName = mb_convert_encoding($FirstName, 'UTF-8','UTF-8');
+	$FirstName =htmlentities($FirstName, ENT_QUOTES, 'UTF-8');
+	
+	
+	$LastName=$_POST['LastName']??NULL;
+	$LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
+	$LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
+
+	$option_chosen=$_POST['option_chosen']??NULL;
+	$option_chosen = mb_convert_encoding($option_chosen, 'UTF-8','UTF-8');
+	$option_chosen =htmlentities($option_chosen, ENT_QUOTES, 'UTF-8');
+	
+	
+	$sql = "SELECT Id FROM institutions WHERE Name = :Name";
+    $stmt = $this->model->db->prepare($sql);
+ 
+    $stmt->bindValue(':Name', $option_chosen);
+
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+	$InstId= $row['Id'];
+	
+	
+	
+	
+    $sql = "SELECT COUNT(Id) as num FROM inmates WHERE FirstName = :FirstName AND LastName=:LastName AND InstId=:InstId";
+    $query = $this->model->db->prepare($sql);
+ 
+    $query->bindValue(':FirstName', $FirstName);
+	$query->bindValue(':LastName', $LastName);
+	$query->bindValue(':InstId', $InstId);
+	$query->execute();
+    
+    $row = $query->fetch(PDO::FETCH_ASSOC);
+
+	if($row['num'] > 1)
+	{
+   	 	?>
+		
+		<div class="container">
+		<p>There are more inmates with the name  <?php echo $FirstName;echo" "; echo $LastName;?>  at <?php echo $option_chosen;?> institution. <br/> Please give us <?php echo $FirstName;echo" "; echo $LastName;?>'s date of birth.</p> 
+			
+			<form method="POST" id="add-form">    
+				<input  type="hidden" name="FirstName" id="FirstName" Value="<?php echo $FirstName?>"/>		
+				<input  type="hidden" name="LastName" id="LastName" Value="<?php echo $LastName?>"/>
+				<input type="hidden" name="Institution" id="Institution" Value="<?php echo $InstId?>" />
+				
+				<label for="dob"> Date of Birth</label>
+				<input type="text" name="dob" id="dob" required autofocus />
+				<br/><br/>
+				<input name="search_dob" type="submit" Value="Search Inmate"/>	
+				
+			</form>
+		</div>
+		<?php
+    }
+	if($row['num']==1)
+	{
+			
+			$_SESSION['post_data']=$_POST;
+			header('location: '.URL. 'appointments/add');
+	}
+	if($row['num'] ==0)
+	{
+       echo('There is no inmate with this Name at this institution');
+?>
+		<a href="<?php echo URL; ?>visitors/appointments">HOME</a> 
+	<?php
+	}
+
+}
+
+if($row['num']==-1)
+{	?>
+
+
 <div class="container">
 
-<a href="<?php echo URL; ?>visitors/register">Register</a>
-
-
-<h3>Login</h3> 
+<h3>Search Inmate:  </h3> 
 <br/>
 <br/>
+<form method="POST" id="add-form">    
 
-<form method="POST" id="login-form">    
-
-	<label for="Username">User Name</label>
-	<input type="text" name="UserName" id="UserName"    autofocus />
+	<label for="FirstName"> First Name</label>
+	<input type="text" name="FirstName" id="FirstName" pattern="^[- a-zA-Z]{2,50}$" required autofocus />
+<br/>
+<label for="LastName"> Last Name</label>
+	<input type="text" name="LastName" id="LastName" pattern="^[- a-zA-Z]{2,50}$" required autofocus />
 <br/>
 	
-	<label for="Password">Password:</label>
-	<input type="password"  name="Password" id="Password" />
-<br/>
-
+<label for="Institution">Institution</label>
+<?php
+	$sql = "SELECT Name FROM institutions";
+    $stmt = $this->model->db->prepare($sql);
+    $stmt->execute();
+	$data =$stmt->fetchAll();
+	?>
 	
-	<input name="submit" type="submit" Value="Login" />	
+	<select name="option_chosen">
+<?php foreach ($data as $row): $Name=$row->Name; ?>		
+    <option><?=$Name?></option>
+<?php endforeach ?>
+</select>
+<br/>
+<br/>
+<input name="search" type="submit" Value="Search Inmate"/>	
 
 </form>
-
 </div>
-
-  
+<?php
+}?>

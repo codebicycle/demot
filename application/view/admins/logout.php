@@ -1,6 +1,8 @@
 <?php
 	session_start();
-	session_destroy();
+	
+	if(isset($_SESSION))
+		session_destroy();
 
 	header('location: '.URL. 'admins/');
 	exit;

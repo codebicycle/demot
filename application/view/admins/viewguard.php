@@ -6,15 +6,13 @@ if(!isset($_SESSION))
     } 
 if(!isset($_SESSION['admin_id']))
 {
-	require APP. 'view/admins/index.php';
-	exit;
+	header('location: '.URL. 'admins/login');
+	die();
 }
 ?>
 
 <div class="container">
-	<?php 
-	$State=1;//acceptate
-	?>
+	
 	<h3>Pending Appointments: </h3>
 	
 	<?php	

@@ -4,18 +4,18 @@ class admins extends Controller {
 
  
  
-  public function index() {
-	$visits = $this->model->getAllVisits();
+  public function login() 
+  {
     require APP . 'view/_templates/header.php';
-    require APP . 'view/admins/index.php';
+    require APP . 'view/admins/login.php';
     require APP . 'view/_templates/footer.php';
   }
   
   
-    public function account() {	
+    public function index() {	
 	
     require APP . 'view/_templates/header.php';
-    require APP . 'view/admins/account.php';
+    require APP . 'view/admins/index.php';
     require APP . 'view/_templates/footer.php';
   }
   

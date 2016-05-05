@@ -10,8 +10,8 @@ if(!isset($_SESSION))
 
 if(!isset($_SESSION['admin_id']))
 {
-	require APP. 'view/admins/index.php';
-	exit;
+	header('location: '.URL. 'admins/login');
+	die();
 }
 
 else if(isset($_POST['submit']))
@@ -54,7 +54,7 @@ else if(isset($_POST['submit']))
 	if($row['num'] < 1){
         echo('There is no admin with this User Name at this institution');
 		?>
-		<a href="<?php echo URL; ?>admins/account">HOME</a> 
+		<a href="<?php echo URL; ?>admins/index">HOME</a> 
 		<?php
 		die;
 	}

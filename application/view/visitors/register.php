@@ -91,9 +91,10 @@ if($UserName==true)
 								{
 									$this->model->uploadPicture($IdHash,"create");
 								}
-								$_SESSION['user_id'] = $IdHash;           
-								require APP. 'view/visitors/account.php';
-								exit; 
+								$_SESSION['user_id'] = $IdHash;  
+								$_SESSION['username'] = $UserName;      
+								header('location: '.URL. 'visitors/index');								
+								die(); 
 							}
 							else 
 							{

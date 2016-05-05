@@ -23,7 +23,7 @@ class Appointments extends Controller {
         }
         else if(isset($_SESSION['admin_id']) &&
                 $_SESSION['rank'] == 1) {
-            $appointments = $this->model->getAllAppointmentsByInstitution(institution-id);
+            $appointments = $this->model->getAllAppointmentsByInstitution($_SESSION['admin_id']);
             require APP . 'view/_templates/header.php';
             require APP . 'view/appointments/index.php';
             require APP . 'view/_templates/footer.php';

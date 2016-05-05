@@ -3,10 +3,35 @@
 class Visits extends Controller {
 
     public function index() {
-        $visits = $this->model->getAllVisits();
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/visits/index.php';
-        require APP . 'view/_templates/footer.php';
+		
+		if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+        }
+		if (isset($_SESSION['user_id']))
+		{
+           $visits=$this->model->getAllVisitsByVisitor($_SESSION['user_id']);
+        }
+		
+        else if(isset($_SESSION['admin_id']) &&
+                $_SESSION['rank'] == 0) {
+             $visits = $this->model->getAllVisits();
+			 
+        }
+		else if(isset($_SESSION['admin_id']) &&
+                $_SESSION['rank'] == 1) {
+             $visits = $this->model->getAllVisitsByInstitution($_SESSION['admin_id']);
+			
+        }
+		
+		else {
+            header('location: ' . URL . 'visitors/index');
+            die();
+        }
+		
+		require APP . 'view/_templates/header.php';
+		require APP . 'view/visits/index.php';
+		require APP . 'view/_templates/footer.php';
     }
 
     public function create() {
@@ -14,9 +39,7 @@ class Visits extends Controller {
         header('location: ' . URL . 'admins/index');
         return;
     }
-    // if(!isset($_POST['Review'])) {
-      
-    // }
+
     $visit = $this->model;
     $visit->initialize(
         $_POST['AppointmentId'],

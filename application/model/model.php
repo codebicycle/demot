@@ -2,6 +2,9 @@
 
 class Model
 {
+	
+	
+	
     public $validation_errors = array();
 
     /**
@@ -16,15 +19,7 @@ class Model
         }
     }
 
-      public function getAllVisits() {
-
-            $sql = "SELECT Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
-            FROM visits";
-            $query = $this->db->prepare($sql);
-            $query->execute();
-
-            return $query->fetchAll();
-        }
+    
       
 
       public function export_form()
@@ -115,7 +110,31 @@ class Model
           } 
         }
       }
-      
+    
+		public function getApprovedAppointments() 
+	{
+		
+		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId 
+				FROM appointments 
+				WHERE State = 'approved'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+	return $stmt->fetchAll();
+	}
+	
+	public function getPendingAppointments()
+	{
+		
+		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId 
+                FROM appointments 
+				WHERE State = 'pending'";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+	    return $stmt->fetchAll();
+	}
+	
+
+	
       public function getTableHeadAppointments($state)
       {
         echo "<table>";
@@ -138,7 +157,7 @@ class Model
       public function getAppointments($state)
       {
 
-        if($state=='accepted')
+        if($state=='approved')
         {
           echo "<h3>ACCEPTED APPOINTMENTS: </h3>";
           echo"<br/>";
@@ -599,27 +618,8 @@ class InmatesModel extends Model {
 class AdminsModel extends Model {
 	
 	
-	public function getPendingAppointments()
-	{
-		
-		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId 
-                FROM appointments 
-				WHERE State = 1";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-	    return $stmt->fetchAll();
-	}
-	public function getApprovedAppointments() 
-	{
-		
-		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId 
-				FROM appointments 
-				WHERE State = 0 AND DateOfAppointment>=CURDATE()";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-	return $stmt->fetchAll();
-	}
 	
+
 	
 	
 }
@@ -638,7 +638,7 @@ class VisitsModel extends Model {
     public $Done;
     public $SecondVisitor;
     public $ThirdVisitor;
-
+	  
 
     public function initialize($AppointmentId, $GivenObjects, $ReceivedObjects, $Duration, $Motive, $Comments, $InmatePhisicalState, $InmateEmotionalState, $Relationship, $SecondVisitor, $ThirdVisitor) {
         $this->AppointmentId        = $AppointmentId;
@@ -651,8 +651,8 @@ class VisitsModel extends Model {
         $this->InmateEmotionalState = $InmateEmotionalState;
         $this->Relationship         = $Relationship;
         $this->SecondVisitor        = $SecondVisitor ? null : 1;
-        $this->ThirdVisitor         = $ThirdVisitor ? null : 1;
-        $this->Done                 = 1;
+        $this->ThirdVisitor         = $ThirdVisitor ?  null : 1;
+        
     }
 
 
@@ -692,13 +692,62 @@ class VisitsModel extends Model {
     public function is_valid() {
         return true;
     }
+	
+	public function getAllVisits() {
+        $sql = "SELECT Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
+        FROM visits";
+        $query = $this->db->prepare($sql);
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+	public function getAllVisitsByInstitution($admin_id)
+	{
+		
+		$sql ="SELECT InstId 
+			   FROM admins
+			   WHERE Id=:id";
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue('id', $admin_id);
+        $stmt->execute();
+		$instid= $stmt->fetch()->InstId;
+		
+		$sql = "SELECT visits.Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
+                FROM visits
+				JOIN appointments
+				ON visits.AppointmentId=appointments.Id 
+				JOIN inmates
+				ON appointments.InmateId=inmates.Id
+				WHERE inmates.InstId=:id";
+			
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue('id', $instid);
+        $stmt->execute();
+        return $stmt->fetchAll();		
+	}
+	public function getAllVisitsByVisitor($user_id)
+	{
+		$sql = "SELECT visits.Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
+                FROM visits
+				JOIN appointments
+				ON visits.AppointmentId=appointments.Id 
+				WHERE appointments.VisitorId=:id ";//OR appointments.Visitor2Id=:id OR appointments.Visitor3Id=:id
+			
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue('id', $user_id);
+        $stmt->execute();
+        return $stmt->fetchAll();			
+	}
+
+	
+	
 }
 
 class VisitorsModel extends Model {}
 
 class AppointmentsModel extends Model 
 {
-	
+		
     public function getAllAppointments() {
         $sql = "SELECT Id, InmateId, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, State
                 FROM appointments";
@@ -706,29 +755,36 @@ class AppointmentsModel extends Model
         $stmt->execute();
         return $stmt->fetchAll();
     }
+	public function getAllAppointmentsByInstitution($admin_id)
+	{
+		
+		$sql ="SELECT InstId 
+			   FROM admins
+			   WHERE Id=:id";
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue('id', $admin_id);
+        $stmt->execute();
+		$instid= $stmt->fetch()->InstId;
+		
+		$sql = "SELECT appointments.Id, InmateId, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, State
+                FROM appointments
+				JOIN inmates
+				ON (appointments.InmateId=inmates.Id)
+				WHERE inmates.InstId=:id";
+			
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue('id', $instid);
+        $stmt->execute();
+        return $stmt->fetchAll();
+	}
 
 	public function approve_appointment($Id)
 	{
-		// $sql="UPDATE appointments
-		// 	  SET State= 0
-		// 	  WHERE	Id=:id";
-		// $stmt = $this->db->prepare($sql);
-  //       $stmt->bindValue('id', $Id);
-		// $stmt->execute();
-
 		$this->setState($Id, 'approved');
 	}
 
 	public function reject_appointment($Id)
 	{
-		// $sql="UPDATE appointments
-		// 	  SET State= 3
-		// 	  WHERE	Id=:id"; // eventual motiv pentru respingere
-		// $stmt = $this->db->prepare($sql);
-  //       $stmt->bindValue('id', $Id);
-		
-		// $stmt->execute();
-
         $this->setState($Id, 'rejected');
 	}
     

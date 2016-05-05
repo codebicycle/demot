@@ -8,8 +8,7 @@
                <td>3rd visitor</td>
                <td>Date </td>
                <td>Time</td>
-              <?php if ($State==3){  ?>
-			  <td>Motive</td><?php }?>
+        
              </tr>
            </thead>
            <tbody>

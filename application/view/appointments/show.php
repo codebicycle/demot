@@ -72,7 +72,7 @@
                 <dt>LastName</dt>
                 <dd><?php e($appointment->Visitor3LastName); ?></dd>
                 <dt>CNP</dt>
-                <dd><?php e($appointment->Visitor3CNP ?? null); ?></dd>
+                <dd><?php e($appointment->Visitor3CNP ?? null);	?></dd>
 
                 <label for="ThirdVisitor">No Show</label>
                 <input type="checkbox" name="ThirdVisitor" id="ThirdVisitor" value="absent">
