@@ -1,6 +1,5 @@
 <div class="container">
-
-  <a href="<?php echo URL; ?>inmates/add">Add Inmate</a>
+  <a href="<?php echo URL . 'inmates/add' ?>">Add Inmate</a>
   <h3>Inmates List</h3>
   
   <table>

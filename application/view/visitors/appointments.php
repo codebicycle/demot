@@ -3,12 +3,12 @@ if(!isset($_SESSION))
     { 
         session_start(); 
     } 
-if(!isset($_SESSION['user_id']))
-{
+// if(!isset($_SESSION['user_id']))
+// {
 	
-	header('location: '.URL. 'visitors');
-	exit;
-}
+// 	header('location: '.URL. 'visitors');
+// 	exit;
+// }
 
 
 
@@ -24,13 +24,7 @@ echo ', you are now in your account!';
 
 if(isset($_POST['submit']))
 	$State=$_POST['visits'];
-else $State=0;
-	///state este valoarea data de optiunea selectata din drop down menu. 
-		//0 pentru accepted
-		//1 pentru pending
-		//2 pentru efectuate
-		//eventual 3 pentru refuzate aici trebuie vazut cum facem... ori facem un camp nou in appointments unde setam ceva cand vizita este respinsa automat
-		//  si bagam un motiv cand este respinsa de gardian / admin sau alta modalitate prin care sa spunem ca a fost respinsa si de ce.
+else $State='accepted';
 		
 		
 ?>	
@@ -51,10 +45,11 @@ else $State=0;
 
 <form method="POST">    
 <select name="visits" id="visits">
-<option value="0">Accepted appointments</option>
-<option value="1">Pending appointments</option>
-<option value="2">Done visits</option>
-<option value="3">Rejected appointments</option>
+	<option value="pending">Pending appointments</option>
+	<option value="rejected">Rejected appointments</option>
+	<option value="accepted">Accepted appointments</option>
+	<option value="done">Done visits</option>
+	<option value="noshow">No-show appointments</option>
 </select>
 <br/>
 <br/>

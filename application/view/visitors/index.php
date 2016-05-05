@@ -1,9 +1,9 @@
 <?php
 
 if(!isset($_SESSION)) 
-    { 
-        session_start(); 
-    } 
+{ 
+    session_start(); 
+} 
 if(isset($_SESSION['user_id']))
 {
 	require APP. 'view/visitors/account.php';
@@ -49,6 +49,8 @@ else if(isset($_POST['submit']))
 		{
 			if($encpassword==$user['PwdHash'])
 			{
+				session_destroy();
+				session_start();
 				$_SESSION['user_id'] = $user['Id'];           
 				require APP. 'view/visitors/account.php';
 				exit; 

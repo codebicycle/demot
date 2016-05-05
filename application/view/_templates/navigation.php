@@ -5,5 +5,5 @@
   <a href="<?php echo URL . 'visits/index' ?>">visits</a>
   <a href="<?php echo URL . 'admins/index' ?>">admins</a>
   <a href="<?php echo URL . 'statistics/index' ?>">stats</a>
-  <a href="<?php echo URL . 'logout' ?>">logout</a>
+  <a href="<?php echo URL . 'visitors/logout' ?>">logout</a>
 </div>

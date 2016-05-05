@@ -2,7 +2,14 @@
 
 class Visits extends Controller {
 
-  public function create() {
+    public function index() {
+        $visits = $this->model->getAllVisits();
+        require APP . 'view/_templates/header.php';
+        require APP . 'view/visits/index.php';
+        require APP . 'view/_templates/footer.php';
+    }
+
+    public function create() {
     if(!$_POST) {
         header('location: ' . URL . 'admins/index');
         return;

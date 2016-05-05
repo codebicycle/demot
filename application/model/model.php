@@ -138,22 +138,27 @@ class Model
       public function getAppointments($state)
       {
 
-        if($state==0)
+        if($state=='accepted')
         {
           echo "<h3>ACCEPTED APPOINTMENTS: </h3>";
           echo"<br/>";
         }
-        else if($state==1)
+        else if($state=='pending')
         {
           echo"<h3>PENDING APPOINTMENTS: </h3>";
           echo"<br/>";
         }
-        else if($state==2)
+        else if($state=='done')
         {
           echo"<h3>DONE VISITS: </h3>";
           echo "<br/>";
         }
-        else if($state==3)
+        else if($state=='noshow')
+        {
+          echo"<h3>NO-SHOW VISITS: </h3>";
+          echo "<br/>";
+        }
+        else if($state=='rejected')
         {
           echo"<h3>REJECTED APPOINTMENTS: </h3>";
           echo"<br/>";
@@ -597,11 +602,12 @@ class AdminsModel extends Model {
 	public function getPendingAppointments()
 	{
 		
-		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId FROM appointments 
+		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId 
+                FROM appointments 
 				WHERE State = 1";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-	return $stmt->fetchAll();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+	    return $stmt->fetchAll();
 	}
 	public function getApprovedAppointments() 
 	{
@@ -693,28 +699,53 @@ class VisitorsModel extends Model {}
 class AppointmentsModel extends Model 
 {
 	
+    public function getAllAppointments() {
+        $sql = "SELECT Id, InmateId, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, State
+                FROM appointments";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
 	public function approve_appointment($Id)
 	{
-		$sql="UPDATE appointments
-			  SET State= 0
-			  WHERE	Id=:id";
-		$stmt = $this->db->prepare($sql);
-        $stmt->bindValue('id', $Id);
-		$stmt->execute();
-		
+		// $sql="UPDATE appointments
+		// 	  SET State= 0
+		// 	  WHERE	Id=:id";
+		// $stmt = $this->db->prepare($sql);
+  //       $stmt->bindValue('id', $Id);
+		// $stmt->execute();
+
+		$this->setState($Id, 'approved');
 	}
 
 	public function reject_appointment($Id)
 	{
-		$sql="UPDATE appointments
-			  SET State= 3
-			  WHERE	Id=:id"; // eventual motiv pentru respingere
-		$stmt = $this->db->prepare($sql);
-        $stmt->bindValue('id', $Id);
+		// $sql="UPDATE appointments
+		// 	  SET State= 3
+		// 	  WHERE	Id=:id"; // eventual motiv pentru respingere
+		// $stmt = $this->db->prepare($sql);
+  //       $stmt->bindValue('id', $Id);
 		
-		$stmt->execute();
-		
+		// $stmt->execute();
+
+        $this->setState($Id, 'rejected');
 	}
+    
+
+    public function setState($id, $state) {
+        $valid_states = ['pending', 'rejected', 'approved', 'noshow', 'done'];
+
+        if ( in_array($state, $valid_states)) {
+            $sql="UPDATE appointments
+                  SET State = :state
+                  WHERE Id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue('id', $id);
+            $stmt->bindValue('state', $state);
+            $stmt->execute();
+        }
+    }
 
 	public function getAppointment($Id)
 	{

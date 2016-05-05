@@ -35,7 +35,8 @@ else if(isset($_POST['submit']))
 	
     if($errMsg == '') 
 	{
-		$sql = "SELECT Id, UserName, PwdHash FROM admins WHERE UserName = :UserName";
+		$sql = "SELECT Id, UserName, PwdHash, Rank
+						FROM admins WHERE UserName = :UserName";
 		$stmt = $this->model->db->prepare($sql);
 		$stmt->bindValue(':UserName', $UserName);
 		$stmt->execute();
@@ -50,7 +51,10 @@ else if(isset($_POST['submit']))
 
 			if($encpassword==$user['PwdHash'])
 			{
-				$_SESSION['admin_id'] = $user['Id'];         
+				session_destroy();
+				session_start();
+				$_SESSION['admin_id'] = $user['Id']; 
+				$_SESSION['rank'] = 
 				require APP. 'view/admins/account.php';
 				exit;
 			}

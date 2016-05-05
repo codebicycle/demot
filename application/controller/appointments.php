@@ -3,10 +3,41 @@
 class Appointments extends Controller {
 
     public function index() {
-        $appointments = $this->model->getAllAppointments();
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/appointments/index.php';
-        require APP . 'view/_templates/footer.php';
+
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+        }
+        print_r($_SESSION);
+        if (isset($_SESSION['user_id'])){
+            require APP . 'view/_templates/header.php';
+            require APP . 'view/visitors/appointments.php';
+            require APP . 'view/_templates/footer.php';
+        }
+        else if(isset($_SESSION['admin_id']) &&
+                $_SESSION['rank'] == 0) {
+            $appointments = $this->model->getAllAppointments();
+            require APP . 'view/_templates/header.php';
+            require APP . 'view/appointments/index.php';
+            require APP . 'view/_templates/footer.php';
+        }
+        else if(isset($_SESSION['admin_id']) &&
+                $_SESSION['rank'] == 1) {
+            $appointments = $this->model->getAllAppointmentsByInstitution(institution-id);
+            require APP . 'view/_templates/header.php';
+            require APP . 'view/appointments/index.php';
+            require APP . 'view/_templates/footer.php';
+        }
+        else if(isset($_SESSION['admin_id']) &&
+                $_SESSION['rank'] == 2) {
+            require APP . 'view/_templates/header.php';
+            require APP . 'view/admins/index.php';
+            require APP . 'view/_templates/footer.php';
+        }
+        else {
+            header('location: ' . URL . 'visitors/index');
+            die();
+        }
     }
 
     public function add() {
@@ -37,18 +68,27 @@ class Appointments extends Controller {
         require APP . 'view/_templates/footer.php';
     
 	}
+
 	public function approve($id)
 	{
 		$this->model->approve_appointment($id);
 		header('location: ' . URL . 'admins'); 
 		die();
 	}
+    
 	public function reject($id)
 	{
 		$this->model->reject_appointment($id);
 		header('location: ' . URL . 'admins'); 
 		die();
 	}
+
+    public function noshow($id) {
+        $this->model->setState($id, 'noshow');
+        header('location: ' . URL . 'admins'); 
+        die();
+    }
+
 	public function show($Id)
 	{
 		$appointment = $this->model->getAppointment($Id);
@@ -57,8 +97,6 @@ class Appointments extends Controller {
 		$picture=$this->model->getPicture($appointment->VisitorId) ;
 		require APP . 'view/_templates/header.php';
         require APP . 'view/appointments/show.php';
-        require APP . 'view/_templates/footer.php';
-		 
-		
+        require APP . 'view/_templates/footer.php';	
 	}
 }

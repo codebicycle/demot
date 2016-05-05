@@ -5,7 +5,7 @@
 ?>
 
 <div class="container">
-  <h3>Edit inmate</h3>
+  <h3>Add inmate</h3>
     <form action="<?php echo URL . 'inmates/create'; ?>" method="POST" id="demot-form" novalidate >
         <?php
             validation_hint($validation_errors, 'Id');

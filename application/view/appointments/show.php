@@ -15,8 +15,9 @@
             <dt>Time</dt>
             <dd><?php e($appointment->TimeOfAppointment); ?></dd>
 
-            <input type="submit" name="No-Show" value="No-Show" />
+            <input type="submit" name="No-Show" value="No-Show" formaction="<?php echo URL . 'appointments/noshow/' . $appointment->Id; ?>" />
         </dl>
+
 
         <span class="title">Inmate</span>
         <dl>
@@ -145,7 +146,7 @@
 </pre>
 
 <script type="text/javascript">
-    function outputUpdate(vol) {
-        document.querySelector('#output-duration').value = vol + " minutes.";
+    function outputUpdate(val) {
+        document.querySelector('#output-duration').value = val + " minutes.";
     }
 </script>
