@@ -1,5 +1,5 @@
 <?php 
-    require APP . 'libs/helpers.php';
+  //  require APP . 'libs/helpers.php';
     $validation_errors = $validation_errors ?? null;
     $cache = $cache ?? null;
 ?>
@@ -53,13 +53,11 @@
                 <dt>LastName</dt>
                 <dd><?php e($appointment->Visitor2LastName);?></dd>
                 <dt>CNP</dt>
-                <dd><?php e($appointment->Visitor2CNP ?? null); ?></dd>
-				<input type="hidden" name="SecondVisitor" id="SecondVisitor" value="<?php echo $appointment->Visitor2Id?>">
-                <label for="SecondVisitor">No-Show</label>
-                <input type="checkbox" name="SecondVisitor" id="SecondVisitor" value="absent">
+                <dd><?php e($appointment->Visitor2CNP); ?></dd>
+				<label for="SecondVisitor">No-Show</label>
+				<input type="hidden" name="SecondVisitor" id="SecondVisitor" value="<?php echo $appointment->Visitor2Id ?>">
+                <input type="checkbox" name="SecondVisitor" id="SecondVisitor" value="">
             </dl>
-        <?php } else { ?>
-            <input type="hidden" name="ThirdVisitor" value="absent">
         <?php } ?>
 
 
@@ -72,14 +70,12 @@
                 <dt>LastName</dt>
                 <dd><?php e($appointment->Visitor3LastName); ?></dd>
                 <dt>CNP</dt>
-                <dd><?php e($appointment->Visitor3CNP ?? null);	?></dd>
+                <dd><?php e($appointment->Visitor3CNP);	?></dd>
 
+				<label for="ThirdVisitor">No-Show</label>
 			    <input type="hidden" name="ThirdVisitor" id="ThirdVisitor" value="<?php echo $appointment->Visitor3Id ?>">
-                <label for="ThirdVisitor">No Show</label>
-                <input type="checkbox" name="ThirdVisitor" id="ThirdVisitor" value="absent">
+                <input type="checkbox" name="ThirdVisitor" id="ThirdVisitor" value="">
             </dl>
-        <?php } else { ?>
-            <input type="hidden" name="ThirdVisitor" value="absent">
         <?php } ?>
 
 
@@ -131,7 +127,7 @@
             <input type="radio" name="InmateEmotionalState" value="4" title="Good" /><i></i>
             <input type="radio" name="InmateEmotionalState" value="5" title="Exellent" /><i></i>
         </span>
-
+		<input type="hidden" name="GuardId" value="<?php echo $_SESSION['admin_id'] ?>" >
         <input type="submit" name="Save" value="Save" />
     </form>
 </div>

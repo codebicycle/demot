@@ -1,4 +1,4 @@
-<?php require APP . 'libs/helpers.php'; ?>
+<?php// require APP . 'libs/helpers.php'; ?>
 
 <div class="container">
     <h3>Visits List</h3>

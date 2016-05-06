@@ -1,17 +1,3 @@
-<?php require APP . 'libs/helpers.php'; 
-
-    if(!isset($_SESSION)) 
-    { 
-        session_start(); 
-    } 
-    if(!isset($_SESSION['user_id']))
-    {
-        header('location: '.URL. 'visitors/login');
-        exit;
-    }
-
-?>
-
 <div class="container">
   <h3>Appointments List</h3>
   

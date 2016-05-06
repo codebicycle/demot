@@ -116,6 +116,7 @@ if(!isset($_SESSION['user_id']))
 		$query->bindValue(':Visitor3Id', $Visitor3Id)	;
 		$query->bindValue(':State', $State);
 		$query->bindValue(':InmateId', $InmateId);
+		
 		$query->execute();
 		header('location: '.URL. 'visitors/appointments');
 	}

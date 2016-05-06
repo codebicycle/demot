@@ -70,15 +70,19 @@ class Appointments extends Controller {
 	}
 
 	public function approve($id)
-	{
-		$this->model->approve_appointment($id);
+	{	
+		session_start();
+		$GuardId=$_SESSION['admin_id'];
+		$this->model->approve_appointment($id, $GuardId);
 		header('location: ' . URL . 'admins'); 
 		die();
 	}
     
 	public function reject($id)
 	{
-		$this->model->reject_appointment($id);
+		session_start();
+		$GuardId=$_SESSION['admin_id'];
+		$this->model->reject_appointment($id,$GuardId);
 		header('location: ' . URL . 'admins'); 
 		die();
 	}

@@ -14,7 +14,7 @@ if(!isset($_SESSION['user_id']))
 
 
 
-    require APP . 'libs/helpers.php';
+  //  require APP . 'libs/helpers.php';
     $validation_errors = $validation_errors ?? null;
 	
 ?>
@@ -26,7 +26,7 @@ if(!isset($_SESSION['user_id']))
      
         <?php validation_hint($validation_errors, 'DateOfAppointment') ?>
         <label for="DateOfAppointment">Date</label>
-        <input type="date" name="DateOfAppointment" id="DateOfAppointment" placeholder="yyyy-mm-dd" pattern="\d{4}[/-]\d{1,2}[/-]\d{1,2}" value="<?php cached_value('DateOfAppointment') ?>" required />
+        <input type="date" name="DateOfAppointment" id="DateOfAppointment" placeholder="yyyy-mm-dd" pattern="\d{4}[/-]\d{1,2}[/-]\d{1,2}" min="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d', strtotime("+3 months", strtotime(date('Y-m-d')))); ?>" value="<?php cached_value('DateOfAppointment') ?>" required />
 
         <?php validation_hint($validation_errors, 'TimeOfAppointment') ?>
         <label for="TimeOfAppointment">Time</label>

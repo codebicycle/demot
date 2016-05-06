@@ -52,8 +52,9 @@ class Visits extends Controller {
         $_POST['InmatePhisicalState'],
         $_POST['InmateEmotionalState'],
         $_POST['Relationship'],
-		$_POST['SecondVisitor'],
-        $_POST['ThirdVisitor']);
+		$_POST['SecondVisitor']??null,
+        $_POST['ThirdVisitor']??null,
+		$_POST['GuardId']);
 
     $success = $visit->save();
 

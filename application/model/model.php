@@ -643,9 +643,10 @@ class VisitsModel extends Model {
     public $Done=1;
     public $SecondVisitor;
     public $ThirdVisitor;
+	public $GuardId;
 	  
 
-    public function initialize($AppointmentId, $GivenObjects, $ReceivedObjects, $Duration, $Motive, $Comments, $InmatePhisicalState, $InmateEmotionalState, $Relationship, $SecondVisitor, $ThirdVisitor) {
+    public function initialize($AppointmentId, $GivenObjects, $ReceivedObjects, $Duration, $Motive, $Comments, $InmatePhisicalState, $InmateEmotionalState, $Relationship, $SecondVisitor, $ThirdVisitor, $GuardId) {
         $this->AppointmentId        = $AppointmentId;
         $this->GivenObjects         = $GivenObjects;
         $this->ReceivedObjects      = $ReceivedObjects;
@@ -657,7 +658,7 @@ class VisitsModel extends Model {
         $this->Relationship         = $Relationship;
         $this->SecondVisitor        = $SecondVisitor;
         $this->ThirdVisitor         = $ThirdVisitor;
-        
+        $this->GuardId				= $GuardId;
     }
 
 
@@ -667,8 +668,8 @@ class VisitsModel extends Model {
             return false;
            
         // save to database
-        $sql = "INSERT INTO visits(AppointmentId, GivenObjects, ReceivedObjects, Duration, Motive, Comments, InmatePhisicalState, InmateEmotionalState, Relationship, Done, SecondVisitor, ThirdVisitor) 
-                VALUES(:AppointmentId, :GivenObjects, :ReceivedObjects, :Duration, :Motive, :Comments, :InmatePhisicalState, :InmateEmotionalState, :Relationship, :Done, :SecondVisitor, :ThirdVisitor)";
+        $sql = "INSERT INTO visits(AppointmentId, GivenObjects, ReceivedObjects, Duration, Motive, Comments, InmatePhisicalState, InmateEmotionalState, Relationship, Done, SecondVisitor, ThirdVisitor, GuardId) 
+                VALUES(:AppointmentId, :GivenObjects, :ReceivedObjects, :Duration, :Motive, :Comments, :InmatePhisicalState, :InmateEmotionalState, :Relationship, :Done, :SecondVisitor, :ThirdVisitor, :GuardId)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('AppointmentId', $this->AppointmentId, PDO::PARAM_INT);
         $stmt->bindValue('GivenObjects', $this->GivenObjects);
@@ -682,6 +683,7 @@ class VisitsModel extends Model {
         $stmt->bindValue('Done', $this->Done, PDO::PARAM_INT);
         $stmt->bindValue('SecondVisitor', $this->SecondVisitor);
         $stmt->bindValue('ThirdVisitor', $this->ThirdVisitor);
+		$stmt->bindValue('GuardId', $this->GuardId);
         $stmt->execute();
 		
 		$sql="UPDATE appointments
@@ -737,9 +739,9 @@ class VisitsModel extends Model {
                 FROM visits
 				JOIN appointments
 				ON visits.AppointmentId=appointments.Id 
-				WHERE appointments.Visitor2Id=:id 
-				OR appointments.VisitorId=:id 
-				OR appointments.Visitor3Id=:id";
+				WHERE appointments.VisitorId=:id 
+				OR (appointments.Visitor2Id=:id AND visits.SecondVisitor=:id) 
+				OR (appointments.Visitor3Id=:id AND visits.ThirdVisitor=:id)";
 			
 		$stmt = $this->db->prepare($sql);
 		$stmt->bindValue('id', $user_id);
@@ -786,15 +788,27 @@ class AppointmentsModel extends Model
         return $stmt->fetchAll();
 	}
 
-	public function approve_appointment($Id)
+	public function approve_appointment($Id, $GuardId)
 	{
 		$this->setState($Id, 'approved');
+		$this->setGuard($Id, $GuardId);
 	}
 
-	public function reject_appointment($Id)
+	public function reject_appointment($Id, $GuardId)
 	{
         $this->setState($Id, 'rejected');
+		$this->setGuard($Id, $GuardId);
 	}
+	 public function setGuard($id, $guardid) {
+        
+		$sql="UPDATE appointments
+			  SET GuardId = :GuardId
+              WHERE Id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $id);
+        $stmt->bindValue('GuardId', $guardid);
+        $stmt->execute();
+    }
     
 
     public function setState($id, $state) {
@@ -813,7 +827,7 @@ class AppointmentsModel extends Model
 
 	public function getAppointment($Id)
 	{
-		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3CNP, Visitor3Id, State, InmateId 
+		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3CNP, Visitor3Id, State, InmateId
 				FROM appointments 
 				WHERE Id =:Id";
 		$stmt = $this->db->prepare($sql);
