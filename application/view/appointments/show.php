@@ -109,6 +109,7 @@
         <label for="Comments">Comments</label>
         <textarea name="Comments" rows="3" id="Comments" value="<?php cached_value('Comments', $cache) ?>" required></textarea>
 
+        <?php validation_hint($validation_errors, 'InmatePhisicalState') ?>
         <label for="InmatePhisicalState">Inmate Phisical State</label>
         <span class="star-rating">
             <input type="radio" name="InmatePhisicalState" value="1" title="Bad" /><i></i>
@@ -119,6 +120,7 @@
         </span>
         <br />
 
+        <?php validation_hint($validation_errors, 'InmateEmotionalState') ?>
         <label for="InmateEmotionalState">Inmate Emotional State</label>
         <span class="star-rating">
             <input type="radio" name="InmateEmotionalState" value="1" title="Bad" /><i></i>

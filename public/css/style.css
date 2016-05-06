@@ -99,6 +99,7 @@ html {
 .validation_error {
     margin-bottom: 0;
     color: tomato;
+    clear: both;
 }
 
 .remove {

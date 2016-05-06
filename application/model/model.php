@@ -321,6 +321,7 @@ class Model
       echo"</table>";
         
       }
+
 	  public function uploadPicture($id,$type)
 	  {
 		  
@@ -345,6 +346,51 @@ class Model
 			$stmt->execute();
 			
 	  }
+
+    public function getAppointment($Id)
+    {
+        $sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3CNP, Visitor3Id, State, InmateId
+                FROM appointments 
+                WHERE Id =:Id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('Id', $Id);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    public function getInmate($appointmentId)
+    {
+        $sql = "SELECT FirstName, LastName, CNP, InstId, LawyerId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate
+                FROM inmates
+                WHERE Id =:Id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('Id', $appointmentId);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    public function getVisitor($appointmentId)
+    {
+        $sql = "SELECT FirstName, LastName, CNP, Email
+                FROM visitors 
+                WHERE Id =:Id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('Id', $appointmentId);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    public function getPicture($appointmentId)
+    {
+        $sql = "SELECT Location
+                FROM pictures 
+                WHERE UserId =:Id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('Id', $appointmentId);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
 }
 
 // Model naming convention: Controller_name + 'Model'
@@ -448,6 +494,42 @@ class Validator {
         if ($exists)
             return true;
         return false;
+    }
+
+    public static function validate_integer_between($model, $key, $min, $max) {
+        $message = "Expected integer between $min and $max.";
+        $result = filter_var(
+            $model->$key, 
+            FILTER_VALIDATE_INT, 
+            array(
+                'options' => array(
+                    'min_range' => $min, 
+                    'max_range' => $max
+                )
+            )
+        );
+        if ($result === false) {
+            $model->validation_errors[$key] = $message; 
+        }
+    }
+
+    public static function validate_string_length($model, $key, $min=1, $max=1000) {
+        $message_short = "Input too short. Type at least $min characters.";
+        $message_long = "Input too long. The limit is $max characters.";
+        $len = strlen($model->$key);
+        if ($len < $min) {
+            $model->validation_errors[$key] = $message_short; 
+        }
+        else if ($len > $max) {
+            $model->validation_errors[$key] = $message_long;
+        }
+    }
+
+    public static function validate_required($model, $key) {
+        $message = 'Required field.';
+        if(empty($model->$key)) {
+            $model->validation_errors[$key] = $message; 
+        }
     }
 }
 
@@ -668,8 +750,8 @@ class VisitsModel extends Model {
             return false;
            
         // save to database
-        $sql = "INSERT INTO visits(AppointmentId, GivenObjects, ReceivedObjects, Duration, Motive, Comments, InmatePhisicalState, InmateEmotionalState, Relationship, Done, SecondVisitor, ThirdVisitor, GuardId) 
-                VALUES(:AppointmentId, :GivenObjects, :ReceivedObjects, :Duration, :Motive, :Comments, :InmatePhisicalState, :InmateEmotionalState, :Relationship, :Done, :SecondVisitor, :ThirdVisitor, :GuardId)";
+        $sql = "INSERT INTO visits(AppointmentId, GivenObjects, ReceivedObjects, Duration, Motive, Comments, InmatePhisicalState, InmateEmotionalState, Relationship, SecondVisitor, ThirdVisitor, GuardId) 
+                VALUES(:AppointmentId, :GivenObjects, :ReceivedObjects, :Duration, :Motive, :Comments, :InmatePhisicalState, :InmateEmotionalState, :Relationship, :SecondVisitor, :ThirdVisitor, :GuardId)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('AppointmentId', $this->AppointmentId, PDO::PARAM_INT);
         $stmt->bindValue('GivenObjects', $this->GivenObjects);
@@ -680,7 +762,6 @@ class VisitsModel extends Model {
         $stmt->bindValue('InmatePhisicalState', $this->InmatePhisicalState);
         $stmt->bindValue('InmateEmotionalState', $this->InmateEmotionalState);
         $stmt->bindValue('Relationship', $this->Relationship);
-        $stmt->bindValue('Done', $this->Done, PDO::PARAM_INT);
         $stmt->bindValue('SecondVisitor', $this->SecondVisitor);
         $stmt->bindValue('ThirdVisitor', $this->ThirdVisitor);
 		$stmt->bindValue('GuardId', $this->GuardId);
@@ -697,7 +778,33 @@ class VisitsModel extends Model {
     }
 
     public function is_valid() {
-        return true;
+        // TODO: validate relationship
+        Validator::validate_integer_between($this, 'Duration', 10, 120);
+        Validator::validate_integer_between($this, 'InmatePhisicalState', 1, 5);
+        Validator::validate_integer_between($this, 'InmateEmotionalState', 1, 5);
+
+        Validator::validate_required($this, 'Relationship');
+        if (!isset($this->validation_errors['Relationship'])) {
+            Validator::validate_string_length($this, 'Relationship', 3, 50);
+        }
+
+        if (!empty($this->Comments)) {
+            Validator::validate_string_length($this, 'Comments', 3);
+        }
+
+        if (!empty($this->ReceivedObjects)) {
+            Validator::validate_string_length($this, 'ReceivedObjects', 2, 100);
+        }
+
+        if (!empty($this->GivenObjects)) {
+            Validator::validate_string_length($this, 'GivenObjects', 2, 100);
+        }
+
+        if (!empty($this->Motive)) {
+            Validator::validate_string_length($this, 'Motive', 3);
+        }
+
+        return count($this->validation_errors) === 0;
     }
 	
 	public function getAllVisits() {
@@ -825,48 +932,6 @@ class AppointmentsModel extends Model
         }
     }
 
-	public function getAppointment($Id)
-	{
-		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3CNP, Visitor3Id, State, InmateId
-				FROM appointments 
-				WHERE Id =:Id";
-		$stmt = $this->db->prepare($sql);
-        $stmt->bindValue('Id', $Id);
-		$stmt->execute();
-		return $stmt->fetch();
-	}
-
-	public function getInmate($Id)
-	{
-		$sql = "SELECT FirstName, LastName, CNP, InstId, LawyerId, DOB, Sentence, Crime, IncarcerationDate, ReleaseDate
-				FROM inmates
-				WHERE Id =:Id";
-		$stmt = $this->db->prepare($sql);
-        $stmt->bindValue('Id', $Id);
-		$stmt->execute();
-		return $stmt->fetch();
-	}
-
-	public function getVisitor($Id)
-	{
-		$sql = "SELECT FirstName, LastName, CNP, Email
-				FROM visitors 
-				WHERE Id =:Id";
-		$stmt = $this->db->prepare($sql);
-        $stmt->bindValue('Id', $Id);
-		$stmt->execute();
-		return $stmt->fetch();
-	}
-
-	public function getPicture($Id)
-	{
-		$sql = "SELECT Location
-				FROM pictures 
-				WHERE UserId =:Id";
-		$stmt = $this->db->prepare($sql);
-        $stmt->bindValue('Id', $Id);
-		$stmt->execute();
-		return $stmt->fetch();
-	}
+	
 	
 }

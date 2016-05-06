@@ -66,10 +66,13 @@ class Visits extends Controller {
         // die();
     }
     else {
-        // redisplay filled form and validation hints
+        $appointment = $this->model->getAppointment($visit->AppointmentId);
+        $visitor = $this->model->getVisitor($appointment->VisitorId);
+        $inmate=$this->model->getInmate($appointment->InmateId);
+        $picture=$this->model->getPicture($appointment->VisitorId) ;
         $validation_errors = $visit->validation_errors;
         require APP . 'view/_templates/header.php';
-        require APP . 'view/appointments/show' . $visit->AppointmentId .'.php';
+        require APP . 'view/appointments/show.php';
         require APP . 'view/_templates/footer.php';
     }    
   }
