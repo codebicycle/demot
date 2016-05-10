@@ -8,6 +8,21 @@ class Validator {
         }
     }
 
+	public static function validate_email($model, $key, $err_label=null)
+	{
+		$pattern = "/@.+\./";
+		$message ="Please fill in a valid E-mail.";
+		
+		// functie pentru validare email
+	}
+	public static function validate_passwords_match($model, $key1, $key2)
+	{
+		 $pwd = $model->$key1;
+		 $rpwd = $model->$key2;
+		///verificare daca parolele corespund 
+		
+	}
+	
     public static function validate_name($model, $key, $err_label=null) {
         $pattern = "/^[- 'a-zA-Z]{2,50}$/";
         $message = "Only letters, spaces, minus and single quote characters are permitted. Must have two or more characters.";
@@ -73,7 +88,8 @@ class Validator {
         $model->validation_errors[$key2] = $message;
       }
     }
-
+	
+	
     public static function validate_not_empty($model, $key, $err_label=null) {
         $pattern = "/.+/";
         $message = "Field can not be empty.";

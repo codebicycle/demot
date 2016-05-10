@@ -726,10 +726,63 @@ class VisitsModel extends Model {
 	
 }
 
-class VisitorsModel extends Model {}
+class VisitorsModel extends Model 
+{
+	public $VisitorId;
+	public $UserName;
+	public $FirstName;
+	public $LastName;
+	public $Email;
+	public $CNP;
+	public $Password;
+	public $RepeatPassword;
+	public $uploadImage;
 
-
-
+	
+	public function initialize($VisitorId, $UserName, $FirstName, $LastName, $Email, $CNP, $Password, $RepeatPassword, $UploadImage)
+	{
+		$this->VisitorId		= $VisitorId;
+		$this->UserName			= $UserName;
+		$this->FirstName		= $FirstName;
+		$this->LastName			= $LastName;
+		$this->Email			= $Email;
+		$this->CNP				= $CNP;
+		$this->Password			= $Password;
+		$this->RepeatPassword	= $RepeatPassword;
+		$this->UploadImage		= $UploadImage;	
+	}
+	
+	 public function save() 
+	 {
+        $valid = $this->is_valid();
+        if (!$valid)
+            return false;
+	
+	/////////aici am ramas
+	
+	//sql
+	 return true;
+    }
+	
+	public function is_valid() 
+	{
+		Validator::validate_visitorId_exists($this, 'VisitorId');
+		Validator::validate_name($this, 'UserName');
+		Validator::validate_name($this, 'FirstName');
+		Validator::validate_name($this, 'LastName');
+		Validator::validate_email($this, 'Email');
+		Validator::validate_cnp($this, 'CNP');
+		Validator::validate_string_length($this, 'Password', 4, 16);
+		//trebuie facuta functia de validare parole
+		if(!isset($this->validation_errors['Password']));
+			Validator::validate_string_length($this, 'RepeatPassword', 4, 16);
+		if(!isset($this->validation_errors['RepeatPassword']));
+			Validator::validate_passwords_match($this, 'Password', 'RepeatPassword');
+		Validator::validate_not_empty($this, 'UploadImage');
+		
+		return count($this->validation_errors) === 0;
+	}
+}
 
 class AppointmentsModel extends Model 
 {

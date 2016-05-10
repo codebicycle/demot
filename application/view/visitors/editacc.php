@@ -27,40 +27,42 @@ if(isset($_POST['submit'])){
 			$picture = $query->fetch(PDO::FETCH_ASSOC);
 			$oldPictureLocation=$picture['Location'];
     
-	$UserName = $_POST['UserName']??NULL;
-	$UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
-	$UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');
+	// $UserName = $_POST['UserName']??NULL;
+	// $UserName = mb_convert_encoding($UserName, 'UTF-8','UTF-8');
+	// $UserName =htmlentities($UserName, ENT_QUOTES, 'UTF-8');
 
-	$FirstName = $_POST['FirstName']??NULL;
-	$FirstName = mb_convert_encoding($FirstName, 'UTF-8','UTF-8');
-	$FirstName =htmlentities($FirstName, ENT_QUOTES, 'UTF-8');
-
-
-	$LastName =$_POST['LastName']??NULL;
-	$LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
-	$LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
-
-	$Email =$_POST["Email"]??NULL;
-
-	$CNP=$_POST['CNP']??NULL;
-	$CNP = mb_convert_encoding($CNP, 'UTF-8','UTF-8');
-	$CNP =htmlentities($CNP, ENT_QUOTES, 'UTF-8');
+	// $FirstName = $_POST['FirstName']??NULL;
+	// $FirstName = mb_convert_encoding($FirstName, 'UTF-8','UTF-8');
+	// $FirstName =htmlentities($FirstName, ENT_QUOTES, 'UTF-8');
 
 
-	$Password = $_POST['Password']??NULL;
-	$Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
-	$Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
+	// $LastName =$_POST['LastName']??NULL;
+	// $LastName = mb_convert_encoding($LastName, 'UTF-8','UTF-8');
+	// $LastName =htmlentities($LastName, ENT_QUOTES, 'UTF-8');
+
+	// $Email =$_POST["Email"]??NULL;
+
+	// $CNP=$_POST['CNP']??NULL;
+	// $CNP = mb_convert_encoding($CNP, 'UTF-8','UTF-8');
+	// $CNP =htmlentities($CNP, ENT_QUOTES, 'UTF-8');
+
+
+	// $Password = $_POST['Password']??NULL;
+	// $Password = mb_convert_encoding($Password, 'UTF-8','UTF-8');
+	// $Password =htmlentities($Password, ENT_QUOTES, 'UTF-8');
 	
 	$PasswordLength=strlen($Password);
 	
-	$RepeatPassword = $_POST['RepeatPassword']??NULL;
-	$RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
-	$RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
+	// $RepeatPassword = $_POST['RepeatPassword']??NULL;
+	// $RepeatPassword = mb_convert_encoding($RepeatPassword, 'UTF-8','UTF-8');
+	// $RepeatPassword =htmlentities($RepeatPassword, ENT_QUOTES, 'UTF-8');
 	
 	
 	
-	$uploadImage=$_FILES['uploadImage']??NULL;
+	// $uploadImage=$_FILES['uploadImage']??NULL;
     	
+		
+		//////aici am ramas 
 	$PasswordHash = md5($Password);
 	$RepeatPasswordHash=md5($RepeatPassword);
 	
