@@ -1,7 +1,6 @@
 <?php 
   //  require APP . 'libs/helpers.php';
     $validation_errors = $validation_errors ?? null;
-    $cache = $cache ?? null;
 ?>
 
 <div class="container">
@@ -31,21 +30,21 @@
 
 
         <span class="title">Visitor</span>
-        <img src="<?php echo URL . $picture->Location; ?>" width="100" height="100" />
+        <img src="<?php e(URL . $picture->Location); ?>" width="100" height="100" />
         <dl>
             <dt>FirstName</dt>
             <dd><?php e($visitor->FirstName); ?></dd>
             <dt>LastName</dt>
             <dd><?php e($visitor->LastName); ?></dd>
             <dt>CNP</dt>
-            <dd><?php e($visitor->CNP ?? null); ?></dd>
+            <dd><?php e($visitor->CNP); ?></dd>
             <?php validation_hint($validation_errors, 'Relationship') ?>
             <label for="Relationship">Relationship</label>
-            <input type="text" name="Relationship" id="Relationship" required />
+            <input type="text" name="Relationship" id="Relationship" value="<?php cached_value('Relationship') ?>" required />
         </dl>
 
 
-        <?php if (!empty($appointment->Visitor2CNP)) { ?>
+        <?php if (!empty($appointment->Visitor2Id)) { ?>
             <span class="title">2nd Visitor</span>
             <dl>
                 <dt>FirstName</dt>
@@ -55,13 +54,13 @@
                 <dt>CNP</dt>
                 <dd><?php e($appointment->Visitor2CNP); ?></dd>
 				<label for="SecondVisitor">No-Show</label>
-				<input type="hidden" name="SecondVisitor" id="SecondVisitor" value="<?php echo $appointment->Visitor2Id ?>">
-                <input type="checkbox" name="SecondVisitor" id="SecondVisitor" value="">
+				<input type="hidden" name="SecondVisitor" id="SecondVisitor" value="<?php e($appointment->Visitor2Id); ?>">
+                <input type="checkbox" name="SecondVisitor" id="SecondVisitor" value=""<?php cb_cache('SecondVisitor'); ?> >
             </dl>
         <?php } ?>
 
 
-        <?php if (!empty($appointment->Visitor3CNP)) { ?>
+        <?php if (!empty($appointment->Visitor3Id)) { ?>
             <span class="title">3rd Visitor</span>
 
             <dl>
@@ -73,8 +72,8 @@
                 <dd><?php e($appointment->Visitor3CNP);	?></dd>
 
 				<label for="ThirdVisitor">No-Show</label>
-			    <input type="hidden" name="ThirdVisitor" id="ThirdVisitor" value="<?php echo $appointment->Visitor3Id ?>">
-                <input type="checkbox" name="ThirdVisitor" id="ThirdVisitor" value="">
+			    <input type="hidden" name="ThirdVisitor" id="ThirdVisitor" value="<?php e($appointment->Visitor3Id); ?>">
+                <input type="checkbox" name="ThirdVisitor" id="ThirdVisitor" value="" <?php cb_cache('ThirdVisitor'); ?> >
             </dl>
         <?php } ?>
 
@@ -84,50 +83,50 @@
 
         <?php validation_hint($validation_errors, 'Duration')  ?>
         <label for="Duration">Duration</label>
-        <input type="range" min="10" max="120" value="60" step="10" name="Duration" id="Duration" list="time-values" oninput="outputUpdate(value)" required />
+        <input type="range" min="10" max="120" step="10" value="<?php cached_value('Duration', null, 60); ?>" name="Duration" id="Duration" list="time-values" oninput="outputUpdate(value)" required />
         <datalist id="time-values">
             <option>30</option>
             <option>60</option>
             <option>90</option>
             <option>120</option>
         </datalist>
-        <output for="Duration" id="output-duration">60 minutes.</output>
+        <output for="Duration" id="output-duration"><?php cached_value('Duration', null, 60); ?> minutes.</output>
 
         <?php validation_hint($validation_errors, 'ReceivedObjects') ?>
         <label for="ReceivedObjects">Received Objects</label>
-        <input type="text" name="ReceivedObjects" id="ReceivedObjects" value="<?php cached_value('ReceivedObjects', $cache) ?>" required />
+        <input type="text" name="ReceivedObjects" id="ReceivedObjects" value="<?php cached_value('ReceivedObjects') ?>" required />
 
         <?php validation_hint($validation_errors, 'GivenObjects') ?>
         <label for="GivenObjects">Given Objects</label>
-        <input type="text" name="GivenObjects" id="GivenObjects" value="<?php cached_value('GivenObjects', $cache) ?>" required />
+        <input type="text" name="GivenObjects" id="GivenObjects" value="<?php cached_value('GivenObjects') ?>" required />
 
         <?php validation_hint($validation_errors, 'Motive') ?>
         <label for="Motive">Visit Nature</label>
-        <input type="text" name="Motive" id="Motive" value="<?php cached_value('Motive', $cache) ?>" required />
+        <input type="text" name="Motive" id="Motive" value="<?php cached_value('Motive') ?>" required />
 
         <?php validation_hint($validation_errors, 'Comments') ?>
         <label for="Comments">Comments</label>
-        <textarea name="Comments" rows="3" id="Comments" value="<?php cached_value('Comments', $cache) ?>" required></textarea>
+        <textarea name="Comments" rows="3" id="Comments" required><?php cached_value('Comments'); ?></textarea>
 
         <?php validation_hint($validation_errors, 'InmatePhisicalState') ?>
         <label for="InmatePhisicalState">Inmate Phisical State</label>
         <span class="star-rating">
-            <input type="radio" name="InmatePhisicalState" value="1" title="Bad" /><i></i>
-            <input type="radio" name="InmatePhisicalState" value="2" title="Not Good" /><i></i>
-            <input type="radio" name="InmatePhisicalState" value="3" title="Average" checked /><i></i>
-            <input type="radio" name="InmatePhisicalState" value="4" title="Good" /><i></i>
-            <input type="radio" name="InmatePhisicalState" value="5" title="Excellent" /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="1" title="Bad" <?php radio_cache('InmatePhisicalState', "1"); ?> /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="2" title="Not Good" <?php radio_cache('InmatePhisicalState', "2"); ?>  /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="3" title="Average" <?php radio_cache('InmatePhisicalState', "3", "checked"); ?> /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="4" title="Good" <?php radio_cache('InmatePhisicalState', "4"); ?>  /><i></i>
+            <input type="radio" name="InmatePhisicalState" value="5" title="Excellent" <?php radio_cache('InmatePhisicalState', "5"); ?>  /><i></i>
         </span>
         <br />
 
         <?php validation_hint($validation_errors, 'InmateEmotionalState') ?>
         <label for="InmateEmotionalState">Inmate Emotional State</label>
         <span class="star-rating">
-            <input type="radio" name="InmateEmotionalState" value="1" title="Bad" /><i></i>
-            <input type="radio" name="InmateEmotionalState" value="2" title="Not Good" /><i></i>
-            <input type="radio" name="InmateEmotionalState" value="3" title="Average" checked /><i></i>
-            <input type="radio" name="InmateEmotionalState" value="4" title="Good" /><i></i>
-            <input type="radio" name="InmateEmotionalState" value="5" title="Exellent" /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="1" title="Bad" <?php radio_cache('InmateEmotionalState', "1"); ?>  /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="2" title="Not Good" <?php radio_cache('InmateEmotionalState', "2"); ?>  /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="3" title="Average" <?php radio_cache('InmateEmotionalState', "3", "checked"); ?> /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="4" title="Good" <?php radio_cache('InmateEmotionalState', "4"); ?>  /><i></i>
+            <input type="radio" name="InmateEmotionalState" value="5" title="Exellent" <?php radio_cache('InmateEmotionalState', "5"); ?>  /><i></i>
         </span>
 		<input type="hidden" name="GuardId" value="<?php echo $_SESSION['admin_id'] ?>" >
         <input type="submit" name="Save" value="Save" />
@@ -135,13 +134,18 @@
 </div>
 
 <pre>
-  <?php 
-    //verific daca primesc datele
-    print_r($appointment);
-    print_r($visitor);
-    print_r($inmate);
-    print_r($picture);
-  ?>
+<?php
+echo "appointment\n";
+print_r($appointment);
+echo "visitor\n";
+print_r($visitor);
+echo "inamte\n";
+print_r($inmate);
+echo "picture\n";
+print_r($picture);
+echo "POST\n";
+print_r($_POST);
+?>
 </pre>
 
 <script type="text/javascript">

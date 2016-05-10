@@ -1,10 +1,24 @@
 <?php
 
-function cached_value($label, $data=null) {
+function cached_value($label, $data=null, $default=null) {
     if (isset($_POST[$label]))
-        echo htmlentities($_POST[$label]);
+        e($_POST[$label]);
     else if (isset($data[$label]))
-        echo htmlentities($data[$label]);
+        e($data[$label]);
+    else if (!is_null($default))
+        e($default);
+}
+
+function cb_cache($label) {
+    if (isset($_POST[$label]) && $_POST[$label] === '')
+        echo 'checked';
+}
+
+function radio_cache($label, $input_value, $checked=null) {
+    if (isset($_POST[$label])  && $_POST[$label] === $input_value)
+        echo 'checked';
+    else if($checked === "checked")
+        echo 'checked';
 }
 
 function validation_hint($errors, $label) {

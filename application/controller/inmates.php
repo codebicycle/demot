@@ -41,7 +41,6 @@ class Inmates extends Controller {
         $success = $inmate->save();
 
         if ($success) {
-            // require APP . 'view/inmates/create.php';
             header('location: ' . URL . 'inmates/index');
             die();
         }
