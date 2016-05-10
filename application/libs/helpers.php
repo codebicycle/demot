@@ -17,7 +17,7 @@ function cb_cache($label) {
 function radio_cache($label, $input_value, $checked=null) {
     if (isset($_POST[$label])  && $_POST[$label] === $input_value)
         echo 'checked';
-    else if($checked === "checked")
+    else if(!isset($_POST[$label]) && $checked === "checked")
         echo 'checked';
 }
 
