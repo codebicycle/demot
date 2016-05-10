@@ -45,7 +45,23 @@ class Validator {
             return;
         $model->validation_errors[$err_label ?? $key] = $message;
     }
-
+	
+	 public static function validate_date_not_in_past ($model, $key, $err_label=null) {
+        $message = "Date can not be in the past.";
+        $date = $model->$key;
+        if(Validator::is_valid_date($date) &&
+            strtotime($date) > time() )
+            return;
+        $model->validation_errors[$err_label ?? $key] = $message;
+    }
+	public static function validate_date_no_more_than ($model, $key, $err_label=null) {
+		$message = "Date can not be in the future with more than 3 months.";
+        $date = $model->$key;
+		 if(Validator::is_valid_date($date) &&
+            strtotime($date) < strtotime("+3 months") )
+            return;
+        $model->validation_errors[$err_label ?? $key] = $message;
+	}
     public static function is_date1_before_date2($date1, $date2) {
         return strtotime($date1) <= strtotime($date2);
     }
@@ -85,7 +101,7 @@ class Validator {
             $model->validation_errors[$err_label ?? $key] = $message; 
         }
     }
-
+	
     private static function instId_exists($model, $id) {
         $sql = "SELECT Id FROM institutions WHERE id=:id LIMIT 1";
         $query = $model->db->prepare($sql);
@@ -97,6 +113,42 @@ class Validator {
         return false;
     }
 
+	public static function validate_visitorId_exists($model, $key, $err_label=null) {
+        $exists = Validator::visitorId_exists($model, $model->$key);
+        if (!$exists) {
+            $message = "Not a valid Visitor id.";
+            $model->validation_errors[$err_label ?? $key] = $message; 
+        }
+    } 
+	private static function visitorId_exists($model, $id) {
+        $sql = "SELECT Id FROM visitors WHERE id=:id LIMIT 1";
+        $query = $model->db->prepare($sql);
+        $query->bindValue(':id', $id);
+        $query->execute();
+        $exists = $query->fetchColumn();
+        if ($exists)
+            return true;
+        return false;
+    }
+	
+	public static function validate_inmateId_exists($model, $key, $err_label=null) {
+        $exists = Validator::inmateId_exists($model, $model->$key);
+        if (!$exists) {
+            $message = "Not a valid Inmate.";
+            $model->validation_errors[$err_label ?? $key] = $message; 
+        }
+    } 
+	private static function inmateId_exists($model, $id) {
+        $sql = "SELECT Id FROM inmates WHERE id=:id LIMIT 1";
+        $query = $model->db->prepare($sql);
+        $query->bindValue(':id', $id);
+        $query->execute();
+        $exists = $query->fetchColumn();
+        if ($exists)
+            return true;
+        return false;
+    }
+	
     public static function validate_integer_between($model, $key, $min, $max) {
         $message = "Expected integer between $min and $max.";
         $result = filter_var(

@@ -46,29 +46,6 @@ class Appointments extends Controller {
         require APP . 'view/_templates/footer.php';
     }
 
-    public function create() {
-        if(!$_POST || !isset($_POST['Create'])) {
-            header('location: ' . URL . 'appointments/add');
-            return;
-        }
-
-        require APP . 'view/_templates/header.php';
-
-        $success = true;
-
-        if ($success) {
-            require APP . 'view/appointments/create.php';
-        }
-        else {
-            // redisplay filled form and validation hints
-            $validation_errors = $this->model->validation_errors;
-            require APP . 'view/appointments/add.php';
-        }
-
-        require APP . 'view/_templates/footer.php';
-    
-	}
-
 	public function approve($id)
 	{	
 		session_start();
@@ -102,5 +79,44 @@ class Appointments extends Controller {
 		require APP . 'view/_templates/header.php';
         require APP . 'view/appointments/show.php';
         require APP . 'view/_templates/footer.php';	
+	}
+	
+	
+	public function create() {
+		if(!$_POST) {
+			header('location: ' . URL . 'appointments/add');
+			return;
+		}
+
+        require APP . 'view/_templates/header.php';
+
+		$appointment = $this->model;
+		$appointment->initialize(
+		$_SESSION['user_id'],
+        $_POST['DateOfAppointment'],
+        $_POST['TimeOfAppointment'],
+        $_POST['Visitor2FirstName'],
+        $_POST['Visitor2LastName'],
+        $_POST['Visitor2CNP'],
+        $_POST['Visitor3FirstName'],
+        $_POST['Visitor3LastName'],
+        $_POST['Visitor3CNP']);
+		       
+		$success = $appointment->save();
+		
+
+        if ($success) {
+			header('location: '.URL. 'visitors/appointments');
+        }
+		
+		
+        else {
+            // redisplay filled form and validation hints
+            $validation_errors = $this->model->validation_errors;
+            require APP . 'view/appointments/add.php';
+        }
+
+        require APP . 'view/_templates/footer.php';
+    
 	}
 }

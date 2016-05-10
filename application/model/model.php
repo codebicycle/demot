@@ -728,10 +728,106 @@ class VisitsModel extends Model {
 
 class VisitorsModel extends Model {}
 
+
+
+
 class AppointmentsModel extends Model 
 {
+	public $VisitorId;
+	public $DateOfAppointment;
+	public $TimeOfAppointment;
+	public $Visitor2FirstName;
+	public $Visitor2LastName;
+	public $Visitor2CNP;
+	public $Visitor2Id;
+	public $Visitor3FirstName;
+	public $Visitor3LastName;
+	public $Visitor3CNP;
+	public $Visitor3Id;
+	public $InmateId;
+	
+
+	public function initialize($VisitorId, $DateOfAppointment, $TimeOfAppointment, $Visitor2FirstName, $Visitor2LastName, $Visitor2CNP, $Visitor3FirstName, $Visitor3LastName, $Visitor3CNP) 
+	{
+		$this->VisitorId			= $VisitorId;
+		$this->DateOfAppointment	= $DateOfAppointment;
+		$this->TimeOfAppointment	= $TimeOfAppointment;
+		$this->Visitor2FirstName	= $Visitor2FirstName;
+		$this->Visitor2LastName		= $Visitor2LastName;
+		$this->Visitor2CNP			= $Visitor2CNP;
+		$this->Visitor2Id			= ($this->Visitor2CNP && $this->Visitor2LastName)? md5($this->Visitor2CNP . $this->Visitor2LastName): NULL;
+		$this->Visitor3FirstName	= $Visitor3FirstName;
+		$this->Visitor3LastName		= $Visitor3LastName;
+		$this->Visitor3CNP			= $Visitor3CNP;
+		$this->Visitor3Id			=($this->Visitor3CNP && $this->Visitor3LastName)? md5($this->Visitor3CNP . $this->Visitor3LastName): NULL;
+		$_POST=$_SESSION['post_data'];
+		$this->InmateId 			= $this->getInmateId($_POST['option_chosen'], $_POST['FirstName'], $_POST['LastName'], $_POST['dob']??NULL);
+	}
+	
+	
+	public function save()
+	{
+		$valid = $this->is_valid();
+        if (!$valid)
+            return false;
 		
-    public function getAllAppointments() {
+		$sql = "INSERT INTO appointments (VisitorId, DateOfAppointment , TimeOfAppointment, Visitor2FirstName, Visitor2LastName, Visitor2CNP, Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3CNP, Visitor3Id , State, InmateId) 
+		VALUES (:VisitorId, :DateOfAppointment, :TimeOfAppointment, :Visitor2FirstName, :Visitor2LastName, :Visitor2CNP, :Visitor2Id, :Visitor3FirstName, :Visitor3LastName, :Visitor3CNP, :Visitor3Id, :State, :InmateId)";
+		$query = $this->db->prepare($sql);
+		$query->bindValue(':VisitorId', $_SESSION['user_id']);
+		$query->bindValue(':DateOfAppointment', $this->DateOfAppointment);
+		$query->bindValue(':TimeOfAppointment', $this->TimeOfAppointment);
+		$query->bindValue(':Visitor2FirstName', $this->Visitor2FirstName);
+		$query->bindValue(':Visitor2LastName', $this->Visitor2LastName);
+		$query->bindValue(':Visitor2CNP', $this->Visitor2CNP);
+		$query->bindValue(':Visitor2Id', $this->Visitor2Id);
+		$query->bindValue(':Visitor3FirstName', $this->Visitor3FirstName);
+		$query->bindValue(':Visitor3LastName', $this->Visitor3LastName);
+		$query->bindValue(':Visitor3CNP', $this->Visitor3CNP)	;
+		$query->bindValue(':Visitor3Id', $this->Visitor3Id)	;
+		$query->bindValue(':State', 'pending');
+		$query->bindValue(':InmateId', $this->InmateId);
+		
+		$query->execute();
+		return true;	
+	}
+	 public function is_valid() 
+	 {
+		Validator::validate_visitorId_exists($this, 'VisitorId');
+		
+		Validator::validate_date($this, 'DateOfAppointment');
+		if(!isset($this->validation_errors['DateOfAppointment']))
+            Validator::validate_date_not_in_past($this, 'DateOfAppointment');
+		if(!isset($this->validation_errors['DateOfAppointment']))
+			Validator::validate_date_no_more_than($this, 'DateOfAppointment');
+		
+		//validate timeofapp
+		//timpul e luat ca secunde din dropdown
+		
+		 if (!empty($this->Visitor2FirstName) ||
+            !empty($this->Visitor2LastName)  ||
+            !empty($this->Visitor2CNP)) 
+		{
+            Validator::validate_name($this, 'Visitor2FirstName');
+            Validator::validate_name($this, 'Visitor2LastName');
+            Validator::validate_cnp($this, 'Visitor2CNP');
+		}
+		if (!empty($this->Visitor3FirstName) ||
+            !empty($this->Visitor3LastName)  ||
+            !empty($this->Visitor3CNP)) 
+		{
+            Validator::validate_name($this, 'Visitor3FirstName');
+            Validator::validate_name($this, 'Visitor3LastName');
+            Validator::validate_cnp($this, 'Visitor3CNP');
+		}
+		
+		Validator::validate_inmateId_exists($this, 'InmateId');
+		
+	 return count($this->validation_errors) === 0;
+	 }
+	
+    public function getAllAppointments() 
+	{
         $sql = "SELECT Id, InmateId, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3Id, State
                 FROM appointments";
         $stmt = $this->db->prepare($sql);
@@ -798,6 +894,38 @@ class AppointmentsModel extends Model
         }
     }
 
-	
+	public function getInmateId($InstName, $FirstName, $LastName, $dob)
+	{
+		$InstId=$this->getInstId($InstName);
+		$ok=0;
+		if($dob!=NULL)
+		{
+			$ok=1;
+			$sql ="SELECT Id FROM inmates WHERE FirstName = :FirstName AND LastName=:LastName AND InstId=:InstId AND DOB=:dob" ;
+		}
+		else 
+			$sql ="SELECT Id FROM inmates WHERE FirstName = :FirstName AND LastName=:LastName AND InstId=:InstId" ;
+		$query = $this->db->prepare($sql);
+		$query->bindValue(':FirstName', $FirstName);
+		$query->bindValue(':LastName', $LastName);
+		$query->bindValue(':InstId', $InstId);
+		if($ok==1)
+			$query->bindValue(':dob', $dob);
+		$query->execute();
+		$Inmate = $query->fetch(PDO::FETCH_ASSOC);
+		return $Inmate['Id'];		
+	}
+
+
+	public function getInstId($name)
+	{
+		$sql = "SELECT Id FROM institutions WHERE Name = :Name";
+		$stmt = $this->db->prepare($sql);
+ 		$stmt->bindValue(':Name', $name);
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $row['Id'];
+	}
+		
 	
 }
