@@ -12,9 +12,6 @@ if(!isset($_SESSION['user_id']))
 
 
 
-
-
-  //  require APP . 'libs/helpers.php';
     $validation_errors = $validation_errors ?? null;
 	
 ?>

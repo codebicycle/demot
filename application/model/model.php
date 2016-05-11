@@ -761,6 +761,7 @@ class VisitorsModel extends Model
 		$this->CNP				= $CNP;
 		$this->Password			= $Password;
 		$this->RepeatPassword	= $RepeatPassword;
+		$this->PasswordHash		= md5($Password);
 		$this->UploadImage		= $UploadImage;	
 	}
 	
@@ -769,10 +770,37 @@ class VisitorsModel extends Model
         $valid = $this->is_valid();
         if (!$valid)
             return false;
-	
-	/////////aici am ramas
-	
-	//sql
+		
+		if($this->Password!==NULL)
+		{
+			$sql = "UPDATE `visitors` SET `FirstName`=:FirstName,`LastName`=:LastName,`CNP`=:CNP,`UserName`=:UserName,`PwdHash`=:PwdHash,`Email`=:Email WHERE Id=:Id";
+		}
+		else 
+			$sql = "UPDATE `visitors` SET `FirstName`=:FirstName,`LastName`=:LastName,`CNP`=:CNP,`UserName`=:UserName,`Email`=:Email WHERE Id=:Id";
+		$stmt = $this->db->prepare($sql); 			
+		$stmt->bindValue(':FirstName', $this->FirstName);
+		$stmt->bindValue(':LastName', $this->LastName);
+		$stmt->bindValue(':CNP', $this->CNP);
+		$stmt->bindValue(':UserName', $this->UserName);
+		if($this->Password!==NULL)
+		{
+			$stmt->bindValue(':PwdHash', $this->PasswordHash);
+		}
+		$stmt->bindValue(':Email', $this->Email);
+		$stmt->bindValue(':Id', $this->VisitorId);
+		$result = $stmt->execute();
+			
+	if($result)
+	{		
+		if($uploadImage)
+			{
+				$oldPictureLocation=find_picture_by_id($VisitorId);
+				
+				if($oldPictureLocation==NULL)
+					$this->uploadPicture($this->VisitorId,"create");
+				else $this->uploadPicture($this->VisitorId,"update");
+			}
+	}
 	 return true;
     }
 	
@@ -784,16 +812,39 @@ class VisitorsModel extends Model
 		Validator::validate_name($this, 'LastName');
 		Validator::validate_email($this, 'Email');
 		Validator::validate_cnp($this, 'CNP');
-		Validator::validate_string_length($this, 'Password', 4, 16);
-		//trebuie facuta functia de validare parole
-		if(!isset($this->validation_errors['Password']));
-			Validator::validate_string_length($this, 'RepeatPassword', 4, 16);
-		if(!isset($this->validation_errors['RepeatPassword']));
-			Validator::validate_passwords_match($this, 'Password', 'RepeatPassword');
-		Validator::validate_not_empty($this, 'UploadImage');
+		// if($this->Password==NULL)
+		// {	Validator::validate_string_length($this, 'Password', 2, 32);
+			// if(!isset($this->validation_errors['Password']));
+				// Validator::validate_string_length($this, 'RepeatPassword', 2, 32);
+			// if(!isset($this->validation_errors['RepeatPassword']));
+				// Validator::validate_passwords_match($this, 'Password', 'RepeatPassword');
+		// }
+		// Validator::validate_not_empty($this, 'UploadImage');
 		
 		return count($this->validation_errors) === 0;
 	}
+
+	
+	    public function find_by_id($id) {
+        $sql = "SELECT Id, FirstName, LastName, CNP, UserName, Email
+                FROM visitors
+                WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+	public function find_picture_by_id($id) {
+        $sql = "SELECT Location
+                FROM pictures
+                WHERE VisitorId = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
 }
 
 class AppointmentsModel extends Model 
@@ -826,6 +877,7 @@ class AppointmentsModel extends Model
 		$this->Visitor3CNP			= $Visitor3CNP;
 		$this->Visitor3Id			=($this->Visitor3CNP && $this->Visitor3LastName)? md5($this->Visitor3CNP . $this->Visitor3LastName): NULL;
 		$_POST=$_SESSION['post_data'];
+		
 		$this->InmateId 			= $this->getInmateId($_POST['option_chosen'], $_POST['FirstName'], $_POST['LastName'], $_POST['dob']??NULL);
 	}
 	

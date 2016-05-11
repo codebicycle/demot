@@ -26,16 +26,31 @@ class Visitors extends Controller {
         require APP . 'view/_templates/footer.php';
     }
 
+	
+	 public function edit() 
+	 {
+		 session_start();
+		 
+        $visitor_db = $this->model->find_by_id($_SESSION['user_id']);
+        $cache = (array) $visitor_db;
+        require APP . 'view/_templates/header.php';
+        require APP . 'view/visitors/edit.php';
+        require APP . 'view/_templates/footer.php';
+    }
+	
     public function editaccount() 
 	{	
-		if(!$_POST) 
-		{
-			header('location: ' . URL . 'visitors/editaccount');
-			return;
-		}
-	
-		$edit=$this->model;
-		$edit->initialize(
+		
+		session_start();
+		 
+		 if(!$_POST || !isset($_POST['Update'])) 
+		 {
+            header('location: ' . URL . 'visitors/edit');
+            return;
+		  }
+		
+		$visitor=$this->model;
+		$visitor->initialize(
 		$_SESSION['user_id'],
 		$_POST['UserName'],
 		$_POST['FirstName'],
@@ -44,26 +59,24 @@ class Visitors extends Controller {
 		$_POST['CNP'],
 		$_POST['Password'],
 		$_POST['RepeatPassword'],
-		$_FILES['uploadImage']);
+		$_FILES['uploadImage']['name']??NULL);
 	
-		$success = $edit->save();
+		$success = $visitor->save();
 		
 		if($success)
 		{
-		//old page
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/visitors/editaccount.php';
-        require APP . 'view/_templates/footer.php';
+			 header('location: ' . URL . 'visitors/edit');
+			die();
 		}
 		
 		else
-		{
-			
+		{ 
+			$validation_errors = $visitor->validation_errors;
+            require APP . 'view/_templates/header.php';
+            require APP . 'view/visitors/edit.php';			
 		}
-		
-		
-		
-		
+		require APP . 'view/_templates/footer.php';
+	
     }
 
     public function logout() {

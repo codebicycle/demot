@@ -7,20 +7,29 @@ class Validator {
             $model->validation_errors[$err_label ?? $key] = $message;
         }
     }
+	
+	
+	public static function validate_email($model, $key) {
+        $message ="Please fill in a valid E-mail.";
+        $result = filter_var(
+            $model->$key, 
+            FILTER_VALIDATE_EMAIL);
+        if ($result === false) {
+            $model->validation_errors[$key] = $message; 
+        }
+    }
 
-	public static function validate_email($model, $key, $err_label=null)
-	{
-		$pattern = "/@.+\./";
-		$message ="Please fill in a valid E-mail.";
-		
-		// functie pentru validare email
-	}
+	
 	public static function validate_passwords_match($model, $key1, $key2)
 	{
-		 $pwd = $model->$key1;
-		 $rpwd = $model->$key2;
-		///verificare daca parolele corespund 
-		
+		$pwd = $model->$key1;
+		$rpwd = $model->$key2;
+		$message="Passwords does not match.";
+		if($pwd!==$rpwd)
+		{	
+			$model->validation_errors[$key1] = $message; 
+			$model->validation_errors[$key2] = $message; 
+		}
 	}
 	
     public static function validate_name($model, $key, $err_label=null) {

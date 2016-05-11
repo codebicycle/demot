@@ -88,9 +88,9 @@ class Appointments extends Controller {
 	
 	
 	public function create() {
-		if(!$_POST) {
+		if(!$_POST|| !isset($_POST['Create'])) {
 			header('location: ' . URL . 'appointments/add');
-			return;
+			die();
 		}
 
         require APP . 'view/_templates/header.php';
@@ -113,10 +113,13 @@ class Appointments extends Controller {
         if ($success) {
 			
 			header('location: '.URL. 'appointments/index');
+			die();
         }
 		
 		
         else {
+			
+			
             // redisplay filled form and validation hints
             $validation_errors = $this->model->validation_errors;
             require APP . 'view/appointments/add.php';
