@@ -720,7 +720,7 @@ class VisitsModel extends Model {
 	
 	public function getAllVisitsByVisitor($user_id)
 	{
-		$sql = "SELECT visits.Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
+		$sql = "SELECT visits.Id, AppointmentId, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
                 FROM visits
 				JOIN appointments
 				ON visits.AppointmentId=appointments.Id 
@@ -902,6 +902,23 @@ class AppointmentsModel extends Model
                 JOIN institutions
                 ON inmates.InstId = institutions.Id";
         $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getAllAppointmentsByVisitor($visitor_id)
+    {
+        $sql = "SELECT appointments.Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId, State, inmates.FirstName as inmate_FirstName, inmates.LastName as inmate_LastName, visitors.FirstName as visitor_FirstName, visitors.LastName as visitor_LastName, institutions.Name as institution_Name, institutions.Location as institution_Location
+                FROM appointments
+                JOIN inmates
+                ON appointments.InmateId = inmates.Id
+                JOIN visitors
+                ON appointments.VisitorId = visitors.Id
+                JOIN institutions
+                ON inmates.InstId = institutions.Id
+                WHERE visitors.Id = :visitorId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('visitorId', $visitor_id);
         $stmt->execute();
         return $stmt->fetchAll();
     }

@@ -10,6 +10,7 @@ class Appointments extends Controller {
         }
 
         if (isset($_SESSION['user_id'])){
+            $appointments = $this->model->getAllAppointmentsByVisitor($_SESSION['user_id']);
             require APP . 'view/_templates/header.php';
             require APP . 'view/visitors/appointments.php';
             require APP . 'view/_templates/footer.php';
