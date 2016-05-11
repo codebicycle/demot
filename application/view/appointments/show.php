@@ -40,7 +40,13 @@
             <dd><?php e($visitor->CNP); ?></dd>
             <?php validation_hint($validation_errors, 'Relationship') ?>
             <label for="Relationship">Relationship</label>
-            <input type="text" name="Relationship" id="Relationship" value="<?php cached_value('Relationship') ?>" required />
+            <input type="text" name="Relationship" id="Relationship" list="relations" value="<?php cached_value('Relationship') ?>" required />
+            <datalist id="relations">
+                <option value="family">
+                <option value="friends">
+                <option value="colleagues">
+                <option value="professional">
+            </datalist>
         </dl>
 
 
@@ -94,19 +100,40 @@
 
         <?php validation_hint($validation_errors, 'ReceivedObjects') ?>
         <label for="ReceivedObjects">Received Objects</label>
-        <input type="text" name="ReceivedObjects" id="ReceivedObjects" value="<?php cached_value('ReceivedObjects') ?>" required />
+        <input type="text" name="ReceivedObjects" id="ReceivedObjects" list="received" value="<?php cached_value('ReceivedObjects') ?>" />
+        <datalist id="received">
+            <option value="books">
+            <option value="food">
+            <option value="money">
+            <option value="clothing">
+            <option value="photos">
+        </datalist>
 
         <?php validation_hint($validation_errors, 'GivenObjects') ?>
         <label for="GivenObjects">Given Objects</label>
-        <input type="text" name="GivenObjects" id="GivenObjects" value="<?php cached_value('GivenObjects') ?>" required />
+        <input type="text" name="GivenObjects" id="GivenObjects" list="given" value="<?php cached_value('GivenObjects') ?>" />
+        <datalist id="given">
+            <option value="books">
+            <option value="letters">
+            <option value="manuscripts">
+            <option value="drawings">
+            <option value="paintings">
+            <option value="hand-made gifts">
+        </datalist>
 
         <?php validation_hint($validation_errors, 'Motive') ?>
         <label for="Motive">Visit Nature</label>
-        <input type="text" name="Motive" id="Motive" value="<?php cached_value('Motive') ?>" required />
+        <input type="text" name="Motive" id="Motive" list="motives" value="<?php cached_value('Motive') ?>" required />
+        <datalist id="motives">
+            <option value="personal">
+            <option value="counseling">
+            <option value="educational">
+            <option value="business">
+        </datalist>
 
         <?php validation_hint($validation_errors, 'Comments') ?>
         <label for="Comments">Comments</label>
-        <textarea name="Comments" rows="3" id="Comments" required><?php cached_value('Comments'); ?></textarea>
+        <textarea name="Comments" rows="3" id="Comments"><?php cached_value('Comments'); ?></textarea>
 
         <?php validation_hint($validation_errors, 'InmatePhisicalState') ?>
         <label for="InmatePhisicalState">Inmate Phisical State</label>
