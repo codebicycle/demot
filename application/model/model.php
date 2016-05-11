@@ -113,8 +113,14 @@ class Model
 		public function getApprovedAppointments() 
 	{
 		
-		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId 
-				FROM appointments 
+		$sql = "SELECT appointments.Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId, State, inmates.FirstName as inmate_FirstName, inmates.LastName as inmate_LastName, visitors.FirstName as visitor_FirstName, visitors.LastName as visitor_LastName, institutions.Name as institution_Name, institutions.Location as institution_Location
+				FROM appointments
+                JOIN inmates
+                ON appointments.InmateId = inmates.Id
+                JOIN visitors
+                ON appointments.VisitorId = visitors.Id
+                JOIN institutions
+                ON inmates.InstId = institutions.Id
 				WHERE State = 'approved'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -124,8 +130,14 @@ class Model
 	public function getPendingAppointments()
 	{
 		
-		$sql = "SELECT Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId 
-                FROM appointments 
+		$sql = "SELECT appointments.Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId, State, inmates.FirstName as inmate_FirstName, inmates.LastName as inmate_LastName, visitors.FirstName as visitor_FirstName, visitors.LastName as visitor_LastName, institutions.Name as institution_Name, institutions.Location as institution_Location
+                FROM appointments
+                JOIN inmates
+                ON appointments.InmateId = inmates.Id
+                JOIN visitors
+                ON appointments.VisitorId = visitors.Id
+                JOIN institutions
+                ON inmates.InstId = institutions.Id
 				WHERE State = 'pending'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -881,12 +893,19 @@ class AppointmentsModel extends Model
 	
     public function getAllAppointments() 
 	{
-        $sql = "SELECT Id, InmateId, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor2Id, Visitor3FirstName, Visitor3LastName, Visitor3Id, State
-                FROM appointments";
+        $sql = "SELECT appointments.Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId, State, inmates.FirstName as inmate_FirstName, inmates.LastName as inmate_LastName, visitors.FirstName as visitor_FirstName, visitors.LastName as visitor_LastName, institutions.Name as institution_Name, institutions.Location as institution_Location
+                FROM appointments
+                JOIN inmates
+                ON appointments.InmateId = inmates.Id
+                JOIN visitors
+                ON appointments.VisitorId = visitors.Id
+                JOIN institutions
+                ON inmates.InstId = institutions.Id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
     }
+
 	public function getAllAppointmentsByInstitution($admin_id)
 	{
 		
@@ -898,10 +917,14 @@ class AppointmentsModel extends Model
         $stmt->execute();
 		$instid= $stmt->fetch()->InstId;
 		
-		$sql = "SELECT appointments.Id, InmateId, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, State
+		$sql = "SELECT appointments.Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId, State, inmates.FirstName as inmate_FirstName, inmates.LastName as inmate_LastName, visitors.FirstName as visitor_FirstName, visitors.LastName as visitor_LastName, institutions.Name as institution_Name, institutions.Location as institution_Location
                 FROM appointments
-				JOIN inmates
-				ON (appointments.InmateId=inmates.Id)
+                JOIN inmates
+                ON appointments.InmateId = inmates.Id
+                JOIN visitors
+                ON appointments.VisitorId = visitors.Id
+                JOIN institutions
+                ON inmates.InstId = institutions.Id
 				WHERE inmates.InstId=:id";
 			
 		$stmt = $this->db->prepare($sql);
@@ -921,6 +944,7 @@ class AppointmentsModel extends Model
         $this->setState($Id, 'rejected');
 		$this->setGuard($Id, $GuardId);
 	}
+
 	 public function setGuard($id, $guardid) {
         
 		$sql="UPDATE appointments

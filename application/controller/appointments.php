@@ -30,8 +30,12 @@ class Appointments extends Controller {
         }
         else if(isset($_SESSION['admin_id']) &&
                 $_SESSION['rank'] == 2) {
+
+            $ap_pending = $this->model->getPendingAppointments();
+            $ap_for_review = $this->model->getApprovedAppointments();
+            print_r($ap_for_review);
 			require APP . 'view/_templates/header.php';
-            require APP . 'view/admins/index.php';
+            require APP . 'view/admins/appointments-guard.php';
             require APP . 'view/_templates/footer.php';
         }
         else {
@@ -51,7 +55,7 @@ class Appointments extends Controller {
 		session_start();
 		$GuardId=$_SESSION['admin_id'];
 		$this->model->approve_appointment($id, $GuardId);
-		header('location: ' . URL . 'admins'); 
+		header('location: ' . URL . 'appointments/index');
 		die();
 	}
     
@@ -60,13 +64,13 @@ class Appointments extends Controller {
 		session_start();
 		$GuardId=$_SESSION['admin_id'];
 		$this->model->reject_appointment($id,$GuardId);
-		header('location: ' . URL . 'admins'); 
+		header('location: ' . URL . 'appointments/index');
 		die();
 	}
 
     public function noshow($id) {
         $this->model->setState($id, 'noshow');
-        header('location: ' . URL . 'admins'); 
+        header('location: ' . URL . 'appointments/index');
         die();
     }
 

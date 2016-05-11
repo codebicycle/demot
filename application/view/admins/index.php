@@ -46,6 +46,7 @@ if($Rank==1)
 	echo 'Welcome ';
 	echo $UserName;
 	echo ', you are using a ADMIN account';
+}
 ?>
 <br/>
 <br/>
@@ -53,13 +54,3 @@ if($Rank==1)
 <div class="container">
 
 </div>
-
-<?php
-}
-	
-if($Rank==2)
-{
-	require APP. 'view/admins/viewguard.php';	
-
-}	
-?>
