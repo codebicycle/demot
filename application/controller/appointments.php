@@ -111,7 +111,8 @@ class Appointments extends Controller {
 		
 
         if ($success) {
-			header('location: '.URL. 'visitors/appointments');
+			
+			header('location: '.URL. 'appointments/index');
         }
 		
 		

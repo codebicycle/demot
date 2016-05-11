@@ -686,7 +686,7 @@ class VisitsModel extends Model {
     }
 	
 	public function getAllVisits() {
-        $sql = "SELECT Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
+        $sql = "SELECT Id, AppointmentId, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
         FROM visits";
         $query = $this->db->prepare($sql);
         $query->execute();
@@ -704,7 +704,7 @@ class VisitsModel extends Model {
         $stmt->execute();
 		$instid= $stmt->fetch()->InstId;
 		
-		$sql = "SELECT visits.Id, AppointmentId, Done, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
+		$sql = "SELECT visits.Id, AppointmentId, SecondVisitor, ThirdVisitor, GivenObjects, ReceivedObjects, Relationship, Motive, Comments, Duration, InmatePhisicalState, InmateEmotionalState 
                 FROM visits
 				JOIN appointments
 				ON visits.AppointmentId=appointments.Id 
