@@ -796,9 +796,11 @@ class VisitorsModel extends Model
 		$result = $stmt->execute();
 			
 	if($result)
-	{		
-		if($this->UploadImage)
+	{	
+		$_SESSION['username']=$this->UserName;
+		if(!empty($this->UploadImage['name']))
 			{
+				
 				$oldPictureLocation=$this->find_picture_by_id($this->Id);
 				
 				if($oldPictureLocation==NULL)
@@ -806,6 +808,7 @@ class VisitorsModel extends Model
 				
 				else $this->uploadPicture($this->Id,"update");
 			}
+			
 	}
 	 return true;
     }
@@ -831,7 +834,7 @@ class VisitorsModel extends Model
             }
         }
 		
-//Validator::validate_not_empty($this, 'uploadImage');
+		//Validator::validate_not_empty($this, 'uploadImage');
 		
 		return count($this->validation_errors) === 0;
 	}
