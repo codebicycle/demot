@@ -287,8 +287,8 @@ class Validator {
     }
 
     private static function pwdHash_matches($visitor, $hash) {
-        $sql = "SELECT Id, PwdHash 
-                FROM visitors 
+        $sql = "SELECT Id, PwdHash
+                FROM visitors
                 WHERE Id = :id
                 AND   PwdHash = :pwdHash";
         $stmt = $visitor->db->prepare($sql);
@@ -305,6 +305,24 @@ class Validator {
         $message = "Password doesn't match";
         $matches = Validator::pwdHash_matches($model, $model->OldPasswordHash);
         if(!$matches) {
+            $model->validation_errors[$key] = $message;
+        }
+    }
+
+    public static function validate_username_unique($model, $key) {
+        $message = 'This user name is taken.';
+
+        $sql = "SELECT Id, UserName
+                FROM visitors
+                WHERE Id <> :id
+                AND   UserName = :username";
+        $stmt = $model->db->prepare($sql);
+        $stmt->bindValue('id', $model->Id);
+        $stmt->bindValue('username', $model->$key);
+        $stmt->execute();
+
+        $found = $stmt->fetch();
+        if ($found) {
             $model->validation_errors[$key] = $message;
         }
     }

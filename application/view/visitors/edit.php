@@ -44,7 +44,8 @@
         <label for="RepeatPassword">Repeat Password</label>
         <input type="password" name="RepeatPassword" id="RepeatPassword"/>
 
-        <img src="<?php e(URL . $cache['picture_location']); ?>" class="avatar" width="100" height="100" />
+        <input type="hidden" name="picture_location" value="<?php cached_value('picture_location', $cache) ?>"></input>
+        <img src="<?php echo URL; cached_value('picture_location', $cache); ?>" class="avatar" width="100" height="100" />
 
         <?php validation_hint($validation_errors, 'uploadImage') ?>
         <label for="uploadImage">Upload Picture</label>

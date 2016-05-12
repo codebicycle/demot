@@ -816,8 +816,10 @@ class VisitorsModel extends Model
 	public function is_valid() 
 	{
 		Validator::validate_visitorId_exists($this, 'Id');
-        // TODO: validate username (can contain numbers unlike name)
-		// Validator::validate_name($this, 'UserName');
+        Validator::validate_string_length($this, 'UserName',2 , 50);
+        if(!isset($this->validation_errors['UserName'])) {
+            Validator::validate_username_unique($this, 'UserName');
+        }
 		Validator::validate_name($this, 'FirstName');
 		Validator::validate_name($this, 'LastName');
 		Validator::validate_email($this, 'Email');
@@ -833,8 +835,6 @@ class VisitorsModel extends Model
                 Validator::validate_passwords_match($this, 'Password', 'RepeatPassword');
             }
         }
-		
-		//Validator::validate_not_empty($this, 'uploadImage');
 		
 		return count($this->validation_errors) === 0;
 	}
