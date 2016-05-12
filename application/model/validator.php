@@ -216,7 +216,8 @@ class Validator {
         $stmt = $visitor->db->prepare($sql);
         $stmt->bindValue(':id', $visitor->Id);
         $stmt->bindValue(':pwdHash', $hash);
-        $found = $stmt->execute();
+        $stmt->execute();
+        $found = $stmt->fetch();
         if ($found)
             return true;
         return false;

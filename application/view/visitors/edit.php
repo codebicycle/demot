@@ -34,15 +34,15 @@
       
         <?php validation_hint($validation_errors, 'OldPassword') ?>
         <label for="OldPassword">Old Password</label>
-        <input type="text" name="OldPassword" id="OldPassword"  />
+        <input type="password" name="OldPassword" id="OldPassword"  />
 
         <?php validation_hint($validation_errors, 'Password') ?>
         <label for="Password">New Password</label>
-        <input type="text" name="Password" id="Password"  />
+        <input type="password" name="Password" id="Password"  />
 
         <?php validation_hint($validation_errors, 'RepeatPassword') ?>
         <label for="RepeatPassword">Repeat Password</label>
-        <input type="text" name="RepeatPassword" id="RepeatPassword"/>
+        <input type="password" name="RepeatPassword" id="RepeatPassword"/>
 
         <img src="<?php e(URL . $cache['picture_location']); ?>" class="avatar" width="100" height="100" />
 
