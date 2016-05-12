@@ -28,11 +28,11 @@ if(!isset($_SESSION['user_id']))
         <?php validation_hint($validation_errors, 'TimeOfAppointment') ?>
         <label for="TimeOfAppointment">Time</label>
         <select name="TimeOfAppointment" id="TimeOfAppointment">
-            <option value="12">12:00</option>
-            <option value="13">13:00</option>
-            <option value="14">14:00</option>
-            <option value="15">15:00</option>
-            <option value="16">16:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
         </select>
 
         <fieldset id="second-visitor">
