@@ -24,10 +24,8 @@ class Validator {
 	{
 		$pwd = $model->$key1;
 		$rpwd = $model->$key2;
-		$message="Passwords does not match.";
-		if($pwd!==$rpwd)
-		{	
-			$model->validation_errors[$key1] = $message; 
+		$message="Passwords don't match.";
+		if ($pwd !== $rpwd) {
 			$model->validation_errors[$key2] = $message; 
 		}
 	}
@@ -206,7 +204,29 @@ class Validator {
     public static function validate_required($model, $key) {
         $message = 'Required field.';
         if(empty($model->$key)) {
-            $model->validation_errors[$key] = $message; 
+            $model->validation_errors[$key] = $message;
+        }
+    }
+
+    private static function pwdHash_matches($visitor, $hash) {
+        $sql = "SELECT Id, PwdHash 
+                FROM visitors 
+                WHERE Id = :id
+                AND   PwdHash = :pwdHash";
+        $stmt = $visitor->db->prepare($sql);
+        $stmt->bindValue(':id', $visitor->Id);
+        $stmt->bindValue(':pwdHash', $hash);
+        $found = $stmt->execute();
+        if ($found)
+            return true;
+        return false;
+    }
+
+    public static function validate_correct_password($model, $key) {
+        $message = "Password doesn't match";
+        $matches = Validator::pwdHash_matches($model, $model->OldPasswordHash);
+        if(!$matches) {
+            $model->validation_errors[$key] = $message;
         }
     }
 }

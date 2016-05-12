@@ -27,9 +27,8 @@ class Visitors extends Controller {
     }
 
 	
-	 public function edit() 
-	 {
-		 session_start();
+	public function edit() {
+		session_start();
 		 
         $visitor_db = $this->model->find_by_id($_SESSION['user_id']);
         $cache = (array) $visitor_db;
@@ -38,45 +37,39 @@ class Visitors extends Controller {
         require APP . 'view/_templates/footer.php';
     }
 	
-    public function editaccount() 
-	{	
-		
+    public function update() {	
 		session_start();
 		 
-		 if(!$_POST || !isset($_POST['Update'])) 
-		 {
-            header('location: ' . URL . 'visitors/edit');
-            return;
-		  }
-		
-		$visitor=$this->model;
-		$visitor->initialize(
-		$_SESSION['user_id'],
-		$_POST['UserName'],
-		$_POST['FirstName'],
-		$_POST['LastName'],
-		$_POST["Email"],
-		$_POST['CNP'],
-		$_POST['Password'],
-		$_POST['RepeatPassword'],
-		$_FILES['uploadImage']['name']??NULL);
-	
-		$success = $visitor->save();
-		
-		if($success)
-		{
-			 header('location: ' . URL . 'visitors/edit');
+		if (!$_POST || !isset($_POST['Update'])) {
+			header('location: ' . URL . 'visitors/edit');
 			die();
 		}
 		
-		else
-		{ 
+		$visitor = $this->model;
+		$visitor->initialize(
+			$_SESSION['user_id'],
+			$_POST['UserName'],
+			$_POST['FirstName'],
+			$_POST['LastName'],
+			$_POST["Email"],
+			$_POST['CNP'],
+            $_POST['OldPassword'],
+			$_POST['Password'],
+			$_POST['RepeatPassword'],
+			$_FILES['uploadImage']['name'] ?? NULL );
+
+		$success = $visitor->update();
+		
+		if ($success) {
+			header('location: ' . URL . 'visitors/edit');
+			die();
+		}
+		else { 
 			$validation_errors = $visitor->validation_errors;
             require APP . 'view/_templates/header.php';
-            require APP . 'view/visitors/edit.php';			
+            require APP . 'view/visitors/edit.php';
+            require APP . 'view/_templates/footer.php';
 		}
-		require APP . 'view/_templates/footer.php';
-	
     }
 
     public function logout() {

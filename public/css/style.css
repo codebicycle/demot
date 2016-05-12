@@ -108,6 +108,7 @@ html {
 
 fieldset {
     margin: .5rem 0;
+    padding: .5rem;
     padding-left: 0;
     border: 1px solid #ccc;
     float: left;
@@ -233,4 +234,17 @@ output {
 thead {
     background-color: #ddd; 
     font-weight: bold;
+}
+
+.avatar {
+    clear: left;
+    float: left;
+    margin: .5rem;
+    margin-left: 10rem;
+}
+
+input[type="file"] {
+    width: initial;
+    background: initial;
+    padding-left: 0;
 }

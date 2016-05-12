@@ -49,8 +49,8 @@ class Inmates extends Controller {
             $validation_errors = $inmate->validation_errors;
             require APP . 'view/_templates/header.php';
             require APP . 'view/inmates/add.php';
+            require APP . 'view/_templates/footer.php';
         }
-        require APP . 'view/_templates/footer.php';
     }
 
     public function delete($id) {
@@ -76,14 +76,14 @@ class Inmates extends Controller {
         require APP . 'view/_templates/footer.php';
     }
 
-    public function update() {
+    public function update($id) {
         if(!$_POST || !isset($_POST['Update'])) {
             header('location: ' . URL . 'inmates/index');
-            return;
+            die();
         }
         $inmate = $this->model;
         $inmate->initialize(
-            $_POST['Id'],
+            $id,
             $_POST['FirstName'],
             $_POST['LastName'],
             $_POST['CNP'],

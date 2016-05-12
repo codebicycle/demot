@@ -5,8 +5,7 @@
 
 <div class="container">
   <h3>Edit inmate</h3>
-    <form action="<?php echo URL . 'inmates/update'; ?>" method="POST" id="demot-form" novalidate >
-        <input type="hidden" name="Id" value="<?php cached_value('Id', $cache) ?>" />
+    <form action="<?php e(URL . 'inmates/update/' . $id) ?>" method="POST" id="demot-form" novalidate >
         <?php
             validation_hint($validation_errors, 'Id');
             validation_hint($validation_errors, 'FirstName'); 

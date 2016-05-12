@@ -740,65 +740,70 @@ class VisitsModel extends Model {
 
 class VisitorsModel extends Model 
 {
-	public $VisitorId;
+	public $Id;
 	public $UserName;
 	public $FirstName;
 	public $LastName;
 	public $Email;
 	public $CNP;
+    public $OldPassword;
+    public $OldPasswordHash;
 	public $Password;
 	public $RepeatPassword;
+    public $PasswordHash;
 	public $uploadImage;
 
 	
-	public function initialize($VisitorId, $UserName, $FirstName, $LastName, $Email, $CNP, $Password, $RepeatPassword, $UploadImage)
-	{
-		$this->VisitorId		= $VisitorId;
+	public function initialize($Id, $UserName, $FirstName, $LastName, $Email, $CNP, $OldPassword, $Password, $RepeatPassword, $UploadImage) {
+		$this->Id		        = $Id;
 		$this->UserName			= $UserName;
 		$this->FirstName		= $FirstName;
 		$this->LastName			= $LastName;
 		$this->Email			= $Email;
 		$this->CNP				= $CNP;
+        $this->OldPassword      = $OldPassword;
+        $this->OldPasswordHash  = md5($OldPassword);
 		$this->Password			= $Password;
 		$this->RepeatPassword	= $RepeatPassword;
 		$this->PasswordHash		= md5($Password);
 		$this->UploadImage		= $UploadImage;	
 	}
 	
-	 public function save() 
-	 {
+	 public function update() {
         $valid = $this->is_valid();
         if (!$valid)
             return false;
 		
-		if($this->Password!==NULL)
-		{
-			$sql = "UPDATE `visitors` SET `FirstName`=:FirstName,`LastName`=:LastName,`CNP`=:CNP,`UserName`=:UserName,`PwdHash`=:PwdHash,`Email`=:Email WHERE Id=:Id";
+		if(empty($this->Password)) {
+            $sql = "UPDATE `visitors` SET `FirstName`=:FirstName,`LastName`=:LastName,`CNP`=:CNP,`UserName`=:UserName,`Email`=:Email 
+                    WHERE Id=:Id";
 		}
-		else 
-			$sql = "UPDATE `visitors` SET `FirstName`=:FirstName,`LastName`=:LastName,`CNP`=:CNP,`UserName`=:UserName,`Email`=:Email WHERE Id=:Id";
+		else {
+			$sql = "UPDATE `visitors` SET `FirstName`=:FirstName,`LastName`=:LastName,`CNP`=:CNP,`UserName`=:UserName,`Email`=:Email, `PwdHash`=:PwdHash
+                    WHERE Id=:Id";
+        }
+
 		$stmt = $this->db->prepare($sql); 			
 		$stmt->bindValue(':FirstName', $this->FirstName);
 		$stmt->bindValue(':LastName', $this->LastName);
 		$stmt->bindValue(':CNP', $this->CNP);
 		$stmt->bindValue(':UserName', $this->UserName);
-		if($this->Password!==NULL)
-		{
+		if(!empty($this->Password)) {
 			$stmt->bindValue(':PwdHash', $this->PasswordHash);
 		}
 		$stmt->bindValue(':Email', $this->Email);
-		$stmt->bindValue(':Id', $this->VisitorId);
+		$stmt->bindValue(':Id', $this->Id);
 		$result = $stmt->execute();
 			
 	if($result)
 	{		
 		if($uploadImage)
 			{
-				$oldPictureLocation=find_picture_by_id($VisitorId);
+				$oldPictureLocation=find_picture_by_id($Id);
 				
 				if($oldPictureLocation==NULL)
-					$this->uploadPicture($this->VisitorId,"create");
-				else $this->uploadPicture($this->VisitorId,"update");
+					$this->uploadPicture($this->Id,"create");
+				else $this->uploadPicture($this->Id,"update");
 			}
 	}
 	 return true;
@@ -806,12 +811,24 @@ class VisitorsModel extends Model
 	
 	public function is_valid() 
 	{
-		Validator::validate_visitorId_exists($this, 'VisitorId');
-		Validator::validate_name($this, 'UserName');
+		Validator::validate_visitorId_exists($this, 'Id');
+        // TODO: validate username (can contain numbers unlike name)
+		// Validator::validate_name($this, 'UserName');
 		Validator::validate_name($this, 'FirstName');
 		Validator::validate_name($this, 'LastName');
 		Validator::validate_email($this, 'Email');
 		Validator::validate_cnp($this, 'CNP');
+
+        if(!empty($this->Password)) {
+            // validate old password
+            Validator::validate_correct_password($this, 'OldPassword');
+            // validate password length
+            Validator::validate_string_length($this, 'Password', 2, 32);
+            // validate repeat password matches
+            if(!isset($this->validation_errors['Password'])) {
+                Validator::validate_passwords_match($this, 'Password', 'RepeatPassword');
+            }
+        }
 		// if($this->Password==NULL)
 		// {	Validator::validate_string_length($this, 'Password', 2, 32);
 			// if(!isset($this->validation_errors['Password']));
@@ -826,9 +843,12 @@ class VisitorsModel extends Model
 
 	
 	    public function find_by_id($id) {
-        $sql = "SELECT Id, FirstName, LastName, CNP, UserName, Email
+        $sql = "SELECT visitors.Id, FirstName, LastName, CNP, UserName, Email, pictures.Location as picture_location
                 FROM visitors
-                WHERE id = :id";
+                JOIN pictures
+                ON pictures.UserId = visitors.Id
+                WHERE visitors.Id = :id
+                LIMIT 1";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('id', $id);
         $stmt->execute();
