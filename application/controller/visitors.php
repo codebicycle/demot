@@ -48,7 +48,7 @@ class Visitors extends Controller {
 		$visitor = $this->model;
 		$visitor->initialize(
 			$_SESSION['user_id'],
-			$_POST['UserName'],
+			trim($_POST['UserName']),
 			$_POST['FirstName'],
 			$_POST['LastName'],
 			$_POST["Email"],

@@ -2,7 +2,7 @@
 
 function cached_value($label, $data=null, $default=null) {
     if (isset($_POST[$label]))
-        e($_POST[$label]);
+        e(trim($_POST[$label]));
     else if (isset($data[$label]))
         e($data[$label]);
     else if (!is_null($default))
