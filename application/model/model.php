@@ -751,7 +751,7 @@ class VisitorsModel extends Model
 	public $Password;
 	public $RepeatPassword;
     public $PasswordHash;
-	public $uploadImage;
+	public $UploadImage;
 
 	
 	public function initialize($Id, $UserName, $FirstName, $LastName, $Email, $CNP, $OldPassword, $Password, $RepeatPassword, $UploadImage) {
@@ -797,12 +797,13 @@ class VisitorsModel extends Model
 			
 	if($result)
 	{		
-		if($uploadImage)
+		if($this->UploadImage)
 			{
-				$oldPictureLocation=find_picture_by_id($Id);
+				$oldPictureLocation=$this->find_picture_by_id($this->Id);
 				
 				if($oldPictureLocation==NULL)
 					$this->uploadPicture($this->Id,"create");
+				
 				else $this->uploadPicture($this->Id,"update");
 			}
 	}
@@ -829,14 +830,8 @@ class VisitorsModel extends Model
                 Validator::validate_passwords_match($this, 'Password', 'RepeatPassword');
             }
         }
-		// if($this->Password==NULL)
-		// {	Validator::validate_string_length($this, 'Password', 2, 32);
-			// if(!isset($this->validation_errors['Password']));
-				// Validator::validate_string_length($this, 'RepeatPassword', 2, 32);
-			// if(!isset($this->validation_errors['RepeatPassword']));
-				// Validator::validate_passwords_match($this, 'Password', 'RepeatPassword');
-		// }
-		// Validator::validate_not_empty($this, 'UploadImage');
+		
+//Validator::validate_not_empty($this, 'uploadImage');
 		
 		return count($this->validation_errors) === 0;
 	}
@@ -858,7 +853,7 @@ class VisitorsModel extends Model
 	public function find_picture_by_id($id) {
         $sql = "SELECT Location
                 FROM pictures
-                WHERE VisitorId = :id";
+                WHERE UserId = :id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('id', $id);
         $stmt->execute();
