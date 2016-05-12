@@ -8,6 +8,43 @@ class Validator {
         }
     }
 	
+	public static function validate_profile($model, $key)
+	{
+		$message="Account incomplete. Please fill all the fields in your Profile to be able to make appointments.";
+		 
+		if (Validator::check_profile($model, $model->$key))
+            return;
+        $model->validation_errors[$key] = $message;
+	}
+	
+	public static function check_profile($model, $id)
+	{
+		$sql = "SELECT Id,FirstName, LastName, CNP, UserName, Email 
+				FROM visitors 
+				WHERE id=:id LIMIT 1";
+        $query = $model->db->prepare($sql);
+        $query->bindValue(':id', $id);
+        $query->execute();
+        $visitor = $query->fetchAll();
+		
+		$sql = "SELECT Location
+				FROM Pictures
+				WHERE id=:id LIMIT 1";
+		$query = $model->db->prepare($sql);
+        $query->bindValue(':id', $id);
+        $query->execute();
+        $picture = $query->fetchAll();
+		if( !empty($visitor['FirstName']) AND
+			!empty($visitor['LastName']) AND
+			!empty($visitor['CNP']) AND
+			!empty($visitor['UserName']) AND
+			!empty($visitor['Email']) AND
+			!empty($picture['Location']))
+		{
+			return true;
+		}
+		return false;
+	}
 	
 	public static function validate_email($model, $key) {
         $message ="Please fill in a valid E-mail.";

@@ -927,7 +927,13 @@ class AppointmentsModel extends Model
 		return true;	
 	}
 	 public function is_valid() 
-	 {
+	 {		 
+		 	//validare in functie de profil
+		Validator::validate_profile($this, 'VisitorId');
+			
+		
+		///
+		
 		Validator::validate_visitorId_exists($this, 'VisitorId');
 		
 		Validator::validate_date($this, 'DateOfAppointment');
