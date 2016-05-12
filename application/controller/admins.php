@@ -33,6 +33,47 @@ class Admins extends Controller {
         require APP . 'view/_templates/footer.php';
     }
 
+    public function edit() {
+        session_start();
+
+        $admin_db = $this->model->find_by_id($_SESSION['admin_id']);
+        $cache = (array) $admin_db;
+        require APP . 'view/_templates/header.php';
+        require APP . 'view/admins/edit.php';
+        require APP . 'view/_templates/footer.php';
+    }
+
+    public function update() {
+        session_start();
+
+        if (!$_POST || !isset($_POST['Update'])) {
+            header('location: ' . URL . 'admins/edit');
+            die();
+        }
+
+        $admin = $this->model;
+        $admin->initialize(
+            $_SESSION['admin_id'],
+            trim($_POST['UserName']),
+            $_POST['OldPassword'],
+            $_POST['Password'],
+            $_POST['RepeatPassword']
+        );
+
+        $success = $admin->update();
+
+        if ($success) {
+            header('location: ' . URL . 'admins/edit');
+            die();
+        }
+        else {
+            $validation_errors = $admin->validation_errors;
+            require APP . 'view/_templates/header.php';
+            require APP . 'view/admins/edit.php';
+            require APP . 'view/_templates/footer.php';
+        }
+    }
+
     public function logout() {
         session_start();
         session_destroy();

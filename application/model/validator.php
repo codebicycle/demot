@@ -286,7 +286,7 @@ class Validator {
         }
     }
 
-    private static function pwdHash_matches($visitor, $hash) {
+    private static function visitor_pwdHash_matches($visitor, $hash) {
         $sql = "SELECT Id, PwdHash
                 FROM visitors
                 WHERE Id = :id
@@ -301,19 +301,60 @@ class Validator {
         return false;
     }
 
-    public static function validate_correct_password($model, $key) {
+    private static function admin_pwdHash_matches($visitor, $hash) {
+        $sql = "SELECT Id, PwdHash
+                FROM admins
+                WHERE Id = :id
+                AND   PwdHash = :pwdHash";
+        $stmt = $visitor->db->prepare($sql);
+        $stmt->bindValue(':id', $visitor->Id);
+        $stmt->bindValue(':pwdHash', $hash);
+        $stmt->execute();
+        $found = $stmt->fetch();
+        if ($found)
+            return true;
+        return false;
+    }
+
+    public static function validate_visitor_correct_password($model, $key) {
         $message = "Password doesn't match";
-        $matches = Validator::pwdHash_matches($model, $model->OldPasswordHash);
+        $matches = Validator::visitor_pwdHash_matches($model, $model->OldPasswordHash);
         if(!$matches) {
             $model->validation_errors[$key] = $message;
         }
     }
 
-    public static function validate_username_unique($model, $key) {
+    public static function validate_admin_correct_password($model, $key) {
+        $message = "Password doesn't match";
+        $matches = Validator::admin_pwdHash_matches($model, $model->OldPasswordHash);
+        if(!$matches) {
+            $model->validation_errors[$key] = $message;
+        }
+    }
+
+    public static function validate_visitor_unique_username($model, $key) {
         $message = 'This user name is taken.';
 
         $sql = "SELECT Id, UserName
                 FROM visitors
+                WHERE Id <> :id
+                AND   UserName = :username";
+        $stmt = $model->db->prepare($sql);
+        $stmt->bindValue('id', $model->Id);
+        $stmt->bindValue('username', $model->$key);
+        $stmt->execute();
+
+        $found = $stmt->fetch();
+        if ($found) {
+            $model->validation_errors[$key] = $message;
+        }
+    }
+
+    public static function validate_admin_unique_username($model, $key) {
+        $message = 'This user name is taken.';
+
+        $sql = "SELECT Id, UserName
+                FROM admins
                 WHERE Id <> :id
                 AND   UserName = :username";
         $stmt = $model->db->prepare($sql);

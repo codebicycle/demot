@@ -28,6 +28,7 @@
         <a href="<?php echo URL . 'visits/index' ?>">visits</a>
         <a href="<?php echo URL . 'admins/index' ?>">admins</a>
         <a href="<?php echo URL . 'statistics/index' ?>">stats</a>
+        <a href="<?php echo URL . 'admins/edit' ?>">profile </a>
         <a href="<?php echo URL . 'admins/logout' ?>">logout</a>
         <?php
     }
@@ -40,6 +41,7 @@
         <a href="<?php echo URL . 'visits/index' ?>">visits</a>
         <a href="<?php echo URL . 'admins/index' ?>">admins</a>
         <a href="<?php echo URL . 'statistics/index' ?>">stats</a>
+        <a href="<?php echo URL . 'admins/edit' ?>">profile </a>
         <a href="<?php echo URL . 'admins/logout' ?>">logout</a>
         <?php
     }
@@ -48,6 +50,7 @@
         ?>
         <a href="<?php echo URL ?>">home</a>
         <a href="<?php echo URL . 'appointments/index' ?>">appointments</a>
+        <a href="<?php echo URL . 'admins/edit' ?>">profile </a>
         <a href="<?php echo URL . 'admins/logout' ?>">logout</a>
         <?php
     }

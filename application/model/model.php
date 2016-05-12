@@ -411,7 +411,6 @@ class HomeModel extends Model {}
 class ErrorzModel extends Model {}
 
 
-
 class InmatesModel extends Model {
     public $Id;
     public $FirstName;
@@ -583,12 +582,84 @@ class InmatesModel extends Model {
     }
 }
 
-class AdminsModel extends Model {
-	
-	
 
-	
+class AdminsModel extends Model {
+	public $Id;
+    public $UserName;
+    public $OldPasswordHash;
+    public $Password;
+    public $RepeatPassword;
+    public $PasswordHash;
+
+    public function initialize($Id, $UserName, $OldPassword, $Password, $RepeatPassword) {
+        $this->Id               = $Id;
+        $this->UserName         = $UserName;
+        $this->OldPasswordHash  = md5($OldPassword);
+        $this->Password         = $Password;
+        $this->RepeatPassword   = $RepeatPassword;
+        $this->PasswordHash     = md5($Password);
+    }
+
+    public function is_valid()
+    {
+        Validator::validate_string_length($this, 'UserName',3 , 50);
+        if(!isset($this->validation_errors['UserName'])) {
+            Validator::validate_admin_unique_username($this, 'UserName');
+        }
+        if(!empty($this->Password)) {
+            // validate old password
+            Validator::validate_admin_correct_password($this, 'OldPassword');
+            // validate password length
+            Validator::validate_string_length($this, 'Password', 2, 32);
+            // validate repeat password matches
+            if(!isset($this->validation_errors['Password'])) {
+                Validator::validate_passwords_match($this, 'Password', 'RepeatPassword');
+            }
+        }
+
+        return count($this->validation_errors) === 0;
+    }
+
+    public function update() {
+        $valid = $this->is_valid();
+        if (!$valid)
+            return false;
+
+        if(empty($this->Password)) {
+            $sql = "UPDATE `admins` SET `UserName`=:UserName
+                    WHERE Id=:Id";
+        }
+        else {
+            $sql = "UPDATE `admins` SET `UserName`=:UserName, `PwdHash`=:PwdHash
+                    WHERE Id=:Id";
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':UserName', $this->UserName);
+        if(!empty($this->Password)) {
+            $stmt->bindValue(':PwdHash', $this->PasswordHash);
+        }
+        $stmt->bindValue(':Id', $this->Id);
+        $result = $stmt->execute();
+
+        if($result) {
+            $_SESSION['username'] = $this->UserName;
+        }
+        return true;
+    }
+
+    public function find_by_id($id) {
+        $sql = "SELECT Id, UserName
+                FROM admins
+                WHERE Id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
 }
+
 
 class VisitsModel extends Model {
     public $AppointmentId;
@@ -738,15 +809,14 @@ class VisitsModel extends Model {
 	
 }
 
-class VisitorsModel extends Model 
-{
+
+class VisitorsModel extends Model {
 	public $Id;
 	public $UserName;
 	public $FirstName;
 	public $LastName;
 	public $Email;
 	public $CNP;
-    public $OldPassword;
     public $OldPasswordHash;
 	public $Password;
 	public $RepeatPassword;
@@ -761,7 +831,6 @@ class VisitorsModel extends Model
 		$this->LastName			= $LastName;
 		$this->Email			= $Email;
 		$this->CNP				= $CNP;
-        $this->OldPassword      = $OldPassword;
         $this->OldPasswordHash  = md5($OldPassword);
 		$this->Password			= $Password;
 		$this->RepeatPassword	= $RepeatPassword;
@@ -816,9 +885,9 @@ class VisitorsModel extends Model
 	public function is_valid() 
 	{
 		Validator::validate_visitorId_exists($this, 'Id');
-        Validator::validate_string_length($this, 'UserName',2 , 50);
+        Validator::validate_string_length($this, 'UserName',3 , 50);
         if(!isset($this->validation_errors['UserName'])) {
-            Validator::validate_username_unique($this, 'UserName');
+            Validator::validate_visitor_unique_username($this, 'UserName');
         }
 		Validator::validate_name($this, 'FirstName');
 		Validator::validate_name($this, 'LastName');
@@ -827,7 +896,7 @@ class VisitorsModel extends Model
 
         if(!empty($this->Password)) {
             // validate old password
-            Validator::validate_correct_password($this, 'OldPassword');
+            Validator::validate_visitor_correct_password($this, 'OldPassword');
             // validate password length
             Validator::validate_string_length($this, 'Password', 2, 32);
             // validate repeat password matches
@@ -840,7 +909,7 @@ class VisitorsModel extends Model
 	}
 
 	
-	    public function find_by_id($id) {
+	public function find_by_id($id) {
         $sql = "SELECT visitors.Id, FirstName, LastName, CNP, UserName, Email, pictures.Location as picture_location
                 FROM visitors
                 JOIN pictures
@@ -865,8 +934,8 @@ class VisitorsModel extends Model
 
 }
 
-class AppointmentsModel extends Model 
-{
+
+class AppointmentsModel extends Model {
 	public $VisitorId;
 	public $DateOfAppointment;
 	public $TimeOfAppointment;
