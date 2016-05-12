@@ -56,8 +56,8 @@ class Visitors extends Controller {
             $_POST['OldPassword'],
 			$_POST['Password'],
 			$_POST['RepeatPassword'],
-			$_FILES['uploadImage']['name'] ?? NULL );
-
+			$_FILES['uploadImage']);
+			
 		$success = $visitor->update();
 		
 		if ($success) {
