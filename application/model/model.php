@@ -930,7 +930,8 @@ class AppointmentsModel extends Model
 	 {		 
 		 	//validare in functie de profil
 		Validator::validate_profile($this, 'VisitorId');
-			
+		//validare in functie de vizitele pe care le are detinutul
+		Validator::validate_remaining_visits($this, 'InmateId', 'VisitorId');	
 		
 		///
 		

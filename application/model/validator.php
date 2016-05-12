@@ -8,6 +8,46 @@ class Validator {
         }
     }
 	
+	public static function validate_remaining_visits($model, $key1, $key2)
+	{
+		$message="This inmate is not allowed to be visited";
+		 
+		if (Validator::check_lawyer($model, $model->$key1 ,$model->$key2))
+            return true;
+		if(Validator::check_visits($model, $model->$key1))
+			return true;
+        $model->validation_errors[$key1] = $message;
+	}
+	
+	public static function check_lawyer($inmate, $InmateId, $VisitorId)
+	{
+	
+		$sql = "SELECT LawyerId 
+                FROM inmates 
+                WHERE Id = :id";
+        $stmt = $inmate->db->prepare($sql);
+        $stmt->bindValue(':id', $InmateId);
+        $stmt->execute();
+        $LawyerId = $stmt->fetch();
+		if($LawyerId->LawyerId==$VisitorId)
+			return true;
+		return false;
+	}
+	
+	public static function check_visits($visit, $InmateId)
+	{
+		$sql = "SELECT RemainingVisits 
+                FROM remainingvisits 
+                WHERE InmateId = :id";
+        $stmt = $visit->db->prepare($sql);
+        $stmt->bindValue(':id', $InmateId);
+        $stmt->execute();
+        $remainingvisits = $stmt->fetch();
+		if($remainingvisits->RemainingVisits>0)
+			return true;
+		return false;
+	}
+	
 	public static function validate_profile($model, $key)
 	{
 		$message="Account incomplete. Please fill all the fields in your Profile to be able to make appointments.";
@@ -21,28 +61,29 @@ class Validator {
 	{
 		$sql = "SELECT Id,FirstName, LastName, CNP, UserName, Email 
 				FROM visitors 
-				WHERE id=:id LIMIT 1";
+				WHERE id=:id";
         $query = $model->db->prepare($sql);
         $query->bindValue(':id', $id);
         $query->execute();
         $visitor = $query->fetchAll();
 		
 		$sql = "SELECT Location
-				FROM Pictures
-				WHERE id=:id LIMIT 1";
+				FROM pictures
+				WHERE UserId=:id LIMIT 1";
 		$query = $model->db->prepare($sql);
         $query->bindValue(':id', $id);
         $query->execute();
-        $picture = $query->fetchAll();
-		if( !empty($visitor['FirstName']) AND
-			!empty($visitor['LastName']) AND
-			!empty($visitor['CNP']) AND
-			!empty($visitor['UserName']) AND
-			!empty($visitor['Email']) AND
-			!empty($picture['Location']))
+        $picture = $query->fetchAll();		
+		if( !empty($visitor[0]->FirstName) AND
+			!empty($visitor[0]->LastName) AND
+			!empty($visitor[0]->CNP) AND
+			!empty($visitor[0]->UserName) AND
+			!empty($visitor[0]->Email) AND
+			!empty($picture[0]->Location))
 		{
 			return true;
 		}
+		
 		return false;
 	}
 	
