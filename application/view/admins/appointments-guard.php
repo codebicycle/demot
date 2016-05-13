@@ -45,7 +45,31 @@ if(!isset($_SESSION['admin_id']))
             <td><?php e($appointment->DateOfAppointment); ?></td>
             <td><?php e(substr($appointment->TimeOfAppointment, 0, 5)); ?></td>
             <td>
-                <a href="<?php e(URL . 'appointments/approve/' . $appointment->Id); ?>">Approve</a>
+			
+				<?php
+				$remainingvisits = $this->model->getRemainingVisits($appointment->InmateId);
+				$thismonth = date("n");	
+				$thisyear  = date("Y");
+				$d = date_parse_from_format("Y-m-d", $appointment->DateOfAppointment);	
+				if($remainingvisits>0)	
+                {
+				?>
+					<a href="<?php e(URL . 'appointments/approve/' . $appointment->Id); ?>">Approve</a>
+				<?php
+				}
+				
+				else if( $thismonth <= $d["month"] && $thismonth != $d["month"] && $thisyear<=$d["year"])
+				{
+				?>
+					<a href="<?php e(URL . 'appointments/approve/' . $appointment->Id); ?>">Approve</a>
+				<?php
+				}
+				else
+				{
+					//automatic reject 
+					  header('location: ' . URL . 'appointments/reject/' . $appointment->Id);
+				}
+				?>
                 <a href="<?php e(URL . 'appointments/reject/' . $appointment->Id); ?>">Reject</a>
             </td>
         </tr>

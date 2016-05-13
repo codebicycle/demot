@@ -121,7 +121,8 @@ class Model
                 ON appointments.VisitorId = visitors.Id
                 JOIN institutions
                 ON inmates.InstId = institutions.Id
-				WHERE State = 'approved'";
+				WHERE State = 'approved'
+				ORDER BY DateOfAppointment ASC, TimeOfAppointment ASC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
 	return $stmt->fetchAll();
@@ -138,7 +139,8 @@ class Model
                 ON appointments.VisitorId = visitors.Id
                 JOIN institutions
                 ON inmates.InstId = institutions.Id
-				WHERE State = 'pending'";
+				WHERE State = 'pending'
+				ORDER BY DateOfAppointment ASC, TimeOfAppointment ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
 	    return $stmt->fetchAll();
@@ -989,7 +991,14 @@ class AppointmentsModel extends Model {
 		$query->bindValue(':Visitor3LastName', $this->Visitor3LastName);
 		$query->bindValue(':Visitor3CNP', $this->Visitor3CNP)	;
 		$query->bindValue(':Visitor3Id', $this->Visitor3Id)	;
-		$query->bindValue(':State', 'pending');
+		if(Validator::check_lawyer($this,$this->InmateId, $this->VisitorId))
+		{
+			$query->bindValue(':State', 'approved');
+		}
+		else
+		{
+			$query->bindValue(':State', 'pending');
+		}
 		$query->bindValue(':InmateId', $this->InmateId);
 		
 		$query->execute();
@@ -1011,7 +1020,8 @@ class AppointmentsModel extends Model {
             Validator::validate_date_not_in_past($this, 'DateOfAppointment');
 		if(!isset($this->validation_errors['DateOfAppointment']))
 			Validator::validate_date_no_more_than($this, 'DateOfAppointment');
-		
+		//validez sa nu mai fie o programare la acea ora
+		Validator::validate_double_appointment($this, $this->DateOfAppointment, $this->TimeOfAppointment, $this->InmateId);
 		//validate timeofapp
 		//timpul e luat ca secunde din dropdown
 		
@@ -1051,7 +1061,20 @@ class AppointmentsModel extends Model {
         $stmt->execute();
         return $stmt->fetchAll();
     }
-
+	
+	public function getRemainingVisits($InmateId)
+	{
+		$sql= "SELECT RemainingVisits
+			   FROM remainingvisits
+			   WHERE InmateId =:id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $InmateId);
+        $stmt->execute();
+		$remainingvisits = $stmt->fetch();
+		
+		return $remainingvisits->RemainingVisits;
+	}
+	
     public function getAllAppointmentsByVisitor($visitor_id)
     {
         $sql = "SELECT appointments.Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId, State, inmates.FirstName as inmate_FirstName, inmates.LastName as inmate_LastName, visitors.FirstName as visitor_FirstName, visitors.LastName as visitor_LastName, institutions.Name as institution_Name, institutions.Location as institution_Location
@@ -1062,7 +1085,8 @@ class AppointmentsModel extends Model {
                 ON appointments.VisitorId = visitors.Id
                 JOIN institutions
                 ON inmates.InstId = institutions.Id
-                WHERE visitors.Id = :visitorId";
+                WHERE visitors.Id = :visitorId
+				ORDER BY DateOfAppointment ASC, TimeOfAppointment ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('visitorId', $visitor_id);
         $stmt->execute();
@@ -1088,7 +1112,8 @@ class AppointmentsModel extends Model {
                 ON appointments.VisitorId = visitors.Id
                 JOIN institutions
                 ON inmates.InstId = institutions.Id
-				WHERE inmates.InstId=:id";
+				WHERE inmates.InstId=:id
+				ORDER BY DateOfAppointment ASC, TimeOfAppointment ASC";
 			
 		$stmt = $this->db->prepare($sql);
 		$stmt->bindValue('id', $instid);
@@ -1098,8 +1123,25 @@ class AppointmentsModel extends Model {
 
 	public function approve_appointment($Id, $GuardId)
 	{
+		//trebuie facut ceva pentru appointmet-urile de luna viitoare.
 		$this->setState($Id, 'approved');
 		$this->setGuard($Id, $GuardId);
+		
+		$sql= "SELECT InmateId
+			   FROM appointments
+			   WHERE Id =:id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $Id);
+        $stmt->execute();
+		$InmateId= $stmt->fetch();
+		
+		$sql="UPDATE remainingvisits
+			SET Remainingvisits=Remainingvisits - 1
+			WHERE InmateId = :id";
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue('id',$InmateId->InmateId);
+		$stmt->execute();
+		
 	}
 
 	public function reject_appointment($Id, $GuardId)
