@@ -67,8 +67,8 @@
           echo htmlspecialchars($inmate->LawyerId, ENT_QUOTES, 'UTF-8'); ?>
         </td>
         <td>
-          <a href="<?php echo URL . 'inmates/edit/' . $inmate->Id; ?>" disabled>edit</a>
-          <a href="<?php echo URL . 'inmates/delete/' . $inmate->Id; ?>" onclick="return confirm('Are you sure you want to delete?');">delete</a>
+          <a href="<?php echo URL . 'inmates/edit/' . $inmate->Id; ?>">edit</a>
+          <a href="<?php echo URL . 'inmates/edit_rights/' . $inmate->Id; ?>">visits</a>
         </td>
       </tr>
     <?php } ?>

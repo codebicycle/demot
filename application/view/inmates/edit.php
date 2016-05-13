@@ -19,8 +19,7 @@
          
         <?php validation_hint($validation_errors, 'CNP')  ?>
         <label for="CNP">CNP</label>
-        <input type="text" id="CNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('CNP', $cache) ?>" required disabled />
-        <input type="hidden" name="CNP" value="<?php cached_value('CNP', $cache) ?>" />
+        <input type="text" id="CNP" name="CNP" inputmode="numeric" pattern="\d{13}" value="<?php cached_value('CNP', $cache) ?>" required />
         
         <?php validation_hint($validation_errors, 'DOB') ?>
         <label for="DOB">Date Of Birth</label>
@@ -66,6 +65,9 @@
 
         <input type="submit" name="Update" value="Update" />
     </form>
+    <div class="links">
+        <a href="<?php echo URL . 'inmates/delete/' . $inmate->Id; ?>" onclick="return confirm('Inmate will be removed from the system. Are you sure you want to proceed?');">Remove Inmate</a>
+    </div>
 </div>
 
 <pre>

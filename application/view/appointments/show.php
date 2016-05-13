@@ -30,7 +30,7 @@
 
 
         <span class="title">Visitor</span>
-        <img src="<?php e(URL . $picture->Location); ?>" width="100" height="100" />
+        <img class="avatar-left" src="<?php e(URL . $picture->Location); ?>" width="100" height="100" />
         <dl>
             <dt>FirstName</dt>
             <dd><?php e($visitor->FirstName); ?></dd>

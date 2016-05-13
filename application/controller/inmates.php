@@ -112,4 +112,27 @@ class Inmates extends Controller {
             require APP . 'view/_templates/footer.php';
         }
     }
+
+    public function edit_rights($id) {
+        $inmate = $this->model->find_by_id($id);
+        require APP . 'view/_templates/header.php';
+        require APP . 'view/inmates/edit-rights.php';
+        require APP . 'view/_templates/footer.php';
+    }
+
+    public function ban($id, $string_period) {
+        print_r(func_get_args());
+    }
+
+    public function lift_ban($id) {
+        print_r(func_get_args());
+    }
+
+    public function increment($id) {
+        print_r(func_get_args());
+    }
+
+     public function decrement($id) {
+        print_r(func_get_args());
+    }
 }
