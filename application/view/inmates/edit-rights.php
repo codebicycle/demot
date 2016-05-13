@@ -16,14 +16,16 @@
             <dd><?php e($inmate->DOB); ?></dd>
 
             <dt>Visits Left</dt>
-            <dd>20</dd>
+            <dd><?php e($inmate->RemainingVisits) ?></dd>
 
+            <?php if(strtotime($ban_end_date) > strtotime(date("Y-m-d"))) { ?>
             <dt>Banned until</dt>
-            <dd>2-10-201</dd>
+            <dd><?php e($ban_end_date) ?></dd>
             <dd>
                 <button formaction="<?php e(URL . 'inmates/lift_ban/' . $inmate->Id) ?>">Lift Ban</button>
             </dd>
-
+            <?php } ?>
+            
             <dt>Ban</dt>
             <dd>
                 <button formaction="<?php e(URL . 'inmates/ban/' . $inmate->Id . '/1week') ?>">1 Week</button>

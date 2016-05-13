@@ -115,24 +115,42 @@ class Inmates extends Controller {
 
     public function edit_rights($id) {
         $inmate = $this->model->find_by_id($id);
+        $ban_end_date = $this->model->ban_end_date($id);
+        
         require APP . 'view/_templates/header.php';
         require APP . 'view/inmates/edit-rights.php';
         require APP . 'view/_templates/footer.php';
     }
 
     public function ban($id, $string_period) {
-        print_r(func_get_args());
+        $whitelist = ['1week', '1month', '3months'];
+        $dict = ['1week' => '+1 week',
+                '1month' => '+1 month',
+                '3months' => '+3 month'];
+
+        if (in_array($string_period, $whitelist)) {
+            $result = $this->model->ban($id, $dict[$string_period]);
+        } 
+            
+        header('location: ' . URL . 'inmates/edit_rights/' . $id);
+        die();
     }
 
     public function lift_ban($id) {
-        print_r(func_get_args());
+        $this->model->lift_ban($id);
+        header('location: ' . URL . 'inmates/edit_rights/' . $id);
+        die();
     }
 
     public function increment($id) {
-        print_r(func_get_args());
+        $this->model->increment_visits($id);
+        header('location: ' . URL . 'inmates/edit_rights/' . $id);
+        die();
     }
 
      public function decrement($id) {
-        print_r(func_get_args());
+        $this->model->decrement_visits($id);
+        header('location: ' . URL . 'inmates/edit_rights/' . $id);
+        die();
     }
 }

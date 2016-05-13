@@ -404,6 +404,24 @@ class Model
         return $stmt->fetch();
     }
 
+    public function decrement_visits($id) {
+      $sql="UPDATE remainingvisits
+        SET Remainingvisits=Remainingvisits - 1
+        WHERE InmateId = :id";
+      $stmt = $this->db->prepare($sql);
+      $stmt->bindValue('id',$id);
+      $stmt->execute();
+    }
+
+    public function increment_visits($id) {
+      $sql="UPDATE remainingvisits
+        SET Remainingvisits=Remainingvisits + 1
+        WHERE InmateId = :id";
+      $stmt = $this->db->prepare($sql);
+      $stmt->bindValue('id',$id);
+      $stmt->execute();
+    }
+
 }
 
 // Model naming convention: Controller_name + 'Model'
@@ -538,8 +556,10 @@ class InmatesModel extends Model {
     }
 
     public function find_by_id($id) {
-        $sql = "SELECT Id, FirstName, LastName, CNP, DOB, InstId, Crime, Sentence, IncarcerationDate, ReleaseDate, LawyerId 
+        $sql = "SELECT inmates.Id, FirstName, LastName, CNP, DOB, InstId, Crime, Sentence, IncarcerationDate, ReleaseDate, LawyerId, RemainingVisits
                 FROM inmates
+                JOIN remainingvisits
+                ON inmates.Id = remainingvisits.InmateId
                 WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('id', $id);
@@ -579,6 +599,54 @@ class InmatesModel extends Model {
         $stmt->bindValue('incarcerationDate', $this->IncarcerationDate);
         $stmt->bindValue('releaseDate', $this->ReleaseDate);
         $stmt->bindValue('lawyerId', $this->LawyerId);
+        $stmt->execute();
+        return true;
+    }
+
+    public function lift_ban($id) {
+        $sql = "UPDATE bans
+                SET EndDate = :newEndDate
+                WHERE InmateId = :inmateId
+                AND   EndDate >= :endDate";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('inmateId', $id);
+        $stmt->bindValue('newEndDate', date("Y-m-d", strtotime("-1 day")));
+        $stmt->bindValue('endDate', date("Y-m-d"));
+        $stmt->execute();
+
+        return true;
+    }
+
+    public function ban_end_date($id) {
+        $sql = "SELECT EndDate
+                FROM bans
+                WHERE InmateId = :inmateId
+                ORDER BY EndDate DESC
+                LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('inmateId', $id);
+        $stmt->execute();
+
+        return $stmt->fetch()->EndDate;
+    }
+
+    public function ban($id, $mysql_string_period) {
+        $end_date = $this->ban_end_date($id);
+
+        $sql = "INSERT INTO bans(InmateId, StartDate, EndDate) 
+                VALUES(:inmateId, :startDate, :endDate)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('inmateId', $id);
+        $stmt->bindValue('startDate', date("Y-m-d"));
+
+        $new_end_date = date("Y-m-d", strtotime($mysql_string_period, strtotime($end_date)));
+        if (strtotime($end_date) >= strtotime(date("Y-m-d"))) {
+             $stmt->bindValue('endDate', $new_end_date);
+        }
+        else {
+            $stmt->bindValue('endDate', date("Y-m-d", strtotime($mysql_string_period)));
+        }
+
         $stmt->execute();
         return true;
     }
@@ -1010,9 +1078,7 @@ class AppointmentsModel extends Model {
 		Validator::validate_profile($this, 'VisitorId');
 		//validare in functie de vizitele pe care le are detinutul
 		Validator::validate_remaining_visits($this, 'InmateId', 'VisitorId');	
-		
-		///
-		
+				
 		Validator::validate_visitorId_exists($this, 'VisitorId');
 		
 		Validator::validate_date($this, 'DateOfAppointment');
@@ -1131,18 +1197,14 @@ class AppointmentsModel extends Model {
 			   FROM appointments
 			   WHERE Id =:id";
 		$stmt = $this->db->prepare($sql);
-        $stmt->bindValue('id', $Id);
-        $stmt->execute();
-		$InmateId= $stmt->fetch();
+    $stmt->bindValue('id', $Id);
+    $stmt->execute();
+		$result= $stmt->fetch();
 		
-		$sql="UPDATE remainingvisits
-			SET Remainingvisits=Remainingvisits - 1
-			WHERE InmateId = :id";
-		$stmt = $this->db->prepare($sql);
-		$stmt->bindValue('id',$InmateId->InmateId);
-		$stmt->execute();
-		
+		decrement_visits($result->InmateId);
 	}
+
+  
 
 	public function reject_appointment($Id, $GuardId)
 	{
