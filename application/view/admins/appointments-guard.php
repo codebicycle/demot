@@ -45,7 +45,18 @@ if(!isset($_SESSION['admin_id']))
             <td><?php e($appointment->DateOfAppointment); ?></td>
             <td><?php e(substr($appointment->TimeOfAppointment, 0, 5)); ?></td>
             <td>
-                <a href="<?php e(URL . 'appointments/approve/' . $appointment->Id); ?>">Approve</a>
+			
+				<?php
+				
+				$remainingvisits = $this->model->getRemainingVisits($appointment->InmateId);
+				if($remainingvisits>0)	
+                {
+				?>
+					<a href="<?php e(URL . 'appointments/approve/' . $appointment->Id); ?>">Approve</a>
+				<?php
+				}
+				else echo"No visits for this inmate.";
+				?>
                 <a href="<?php e(URL . 'appointments/reject/' . $appointment->Id); ?>">Reject</a>
             </td>
         </tr>

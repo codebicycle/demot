@@ -1051,7 +1051,20 @@ class AppointmentsModel extends Model {
         $stmt->execute();
         return $stmt->fetchAll();
     }
-
+	
+	public function getRemainingVisits($InmateId)
+	{
+		$sql= "SELECT RemainingVisits
+			   FROM remainingvisits
+			   WHERE InmateId =:id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $InmateId);
+        $stmt->execute();
+		$remainingvisits = $stmt->fetch();
+		
+		return $remainingvisits->RemainingVisits;
+	}
+	
     public function getAllAppointmentsByVisitor($visitor_id)
     {
         $sql = "SELECT appointments.Id, VisitorId, DateOfAppointment, TimeOfAppointment, Visitor2FirstName, Visitor2LastName,Visitor3FirstName, Visitor3LastName, InmateId, State, inmates.FirstName as inmate_FirstName, inmates.LastName as inmate_LastName, visitors.FirstName as visitor_FirstName, visitors.LastName as visitor_LastName, institutions.Name as institution_Name, institutions.Location as institution_Location
@@ -1098,8 +1111,26 @@ class AppointmentsModel extends Model {
 
 	public function approve_appointment($Id, $GuardId)
 	{
+		// cand apelez functia se scade o vizita din remaining visits.
+	// problema e ca scade sub 0. trebuie facuta o validare sau cv de genu
+	// sau sa nu mai apara butonul de accept
 		$this->setState($Id, 'approved');
 		$this->setGuard($Id, $GuardId);
+		
+		$sql= "SELECT InmateId
+			   FROM appointments
+			   WHERE Id =:id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $Id);
+        $stmt->execute();
+		$InmateId= $stmt->fetch();
+		
+		$sql="UPDATE remainingvisits
+			  SET Remainingvisits=Remainingvisits - 1
+              WHERE InmateId = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id',$InmateId->InmateId);
+        $stmt->execute();
 	}
 
 	public function reject_appointment($Id, $GuardId)
