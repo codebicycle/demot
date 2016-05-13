@@ -8,6 +8,26 @@ class Validator {
         }
     }
 	
+	public static function validate_double_appointment($model, $key1, $key2, $key3)
+	{
+		$message="There is already an appointment at that time and date.";
+		$sql = "SELECT COUNT(ID) AS num
+                FROM appointments 
+                WHERE DateOfAppointment =:dateofappointment AND TimeOfAppointment =:timeofappointment AND InmateId =:inmateid";
+        $stmt = $model->db->prepare($sql);
+        $stmt->bindValue(':dateofappointment', $key1);
+		$stmt->bindValue(':timeofappointment', $key2);
+		$stmt->bindValue(':inmateid', $key3);
+        $stmt->execute();
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		 
+		
+		 if($result['num']<1)
+			return true;
+		$model->validation_errors['MultipleAppointments'] = $message;
+		 
+	}
+	
 	public static function validate_remaining_visits($model, $key1, $key2)
 	{
 		$message="This inmate is not allowed to be visited";

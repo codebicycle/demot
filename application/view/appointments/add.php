@@ -21,7 +21,7 @@ if(!isset($_SESSION['user_id']))
 
     <form action="<?php echo URL; ?>appointments/create" method="POST" id="demot-form" novalidate >        
 		<?php validation_hint($validation_errors, 'VisitorId') ?>
-		
+		<?php validation_hint($validation_errors, 'MultipleAppointments') ?>
 		<?php validation_hint($validation_errors, 'InmateId') ?>
         <?php validation_hint($validation_errors, 'DateOfAppointment') ?>
         <label for="DateOfAppointment">Date</label>

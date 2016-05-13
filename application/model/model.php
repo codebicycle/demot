@@ -991,7 +991,14 @@ class AppointmentsModel extends Model {
 		$query->bindValue(':Visitor3LastName', $this->Visitor3LastName);
 		$query->bindValue(':Visitor3CNP', $this->Visitor3CNP)	;
 		$query->bindValue(':Visitor3Id', $this->Visitor3Id)	;
-		$query->bindValue(':State', 'pending');
+		if(Validator::check_lawyer($this,$this->InmateId, $this->VisitorId))
+		{
+			$query->bindValue(':State', 'approved');
+		}
+		else
+		{
+			$query->bindValue(':State', 'pending');
+		}
 		$query->bindValue(':InmateId', $this->InmateId);
 		
 		$query->execute();
@@ -1013,7 +1020,8 @@ class AppointmentsModel extends Model {
             Validator::validate_date_not_in_past($this, 'DateOfAppointment');
 		if(!isset($this->validation_errors['DateOfAppointment']))
 			Validator::validate_date_no_more_than($this, 'DateOfAppointment');
-		
+		//validez sa nu mai fie o programare la acea ora
+		Validator::validate_double_appointment($this, $this->DateOfAppointment, $this->TimeOfAppointment, $this->InmateId);
 		//validate timeofapp
 		//timpul e luat ca secunde din dropdown
 		
@@ -1128,11 +1136,12 @@ class AppointmentsModel extends Model {
 		$InmateId= $stmt->fetch();
 		
 		$sql="UPDATE remainingvisits
-			  SET Remainingvisits=Remainingvisits - 1
-              WHERE InmateId = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue('id',$InmateId->InmateId);
-        $stmt->execute();
+			SET Remainingvisits=Remainingvisits - 1
+			WHERE InmateId = :id";
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue('id',$InmateId->InmateId);
+		$stmt->execute();
+		
 	}
 
 	public function reject_appointment($Id, $GuardId)
