@@ -1,23 +1,11 @@
 <?php
 
 class Visitors extends Controller {
-
-    public function login() {
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/visitors/login.php';
-        require APP . 'view/_templates/footer.php';
-    }
-
     public function index() {
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/visitors/index.php';
-        require APP . 'view/_templates/footer.php';
-    }
-
-    public function register() {
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/visitors/register.php';
-        require APP . 'view/_templates/footer.php';
+        
+        header('location: ' . URL . 'inmates/find');
+		die();
+        
     }
 
     public function appointments() {
@@ -71,6 +59,69 @@ class Visitors extends Controller {
             require APP . 'view/_templates/footer.php';
 		}
     }
+	
+	public function register() {
+		
+		if (!$_POST || !isset($_POST['Register'])) {
+			require APP . 'view/_templates/header.php';
+			require APP . 'view/visitors/register_form.php';
+			die();
+		}
+		
+		$visitor=$this->model;
+		$visitor->initialize_register(
+			trim($_POST['register_UserName']),
+			$_POST['register_FirstName'],
+			$_POST['register_LastName'],
+			$_POST['register_Email'],
+			$_POST['register_CNP'],
+			$_POST['register_Password'],
+			$_POST['register_RepeatPassword'],
+			$_FILES['register_uploadImage']??NULL);
+		$success = $visitor->register();
+		
+		if ($success) 
+		{	
+			header('location: ' . URL . 'visitors/index');
+			die();
+		}
+		else 
+		{ 
+			$validation_errors = $visitor->validation_errors;
+			require APP . 'view/_templates/header.php';
+			require APP . 'view/visitors/register_form.php';
+			require APP . 'view/_templates/footer.php';
+			
+		 }
+    }
+
+	
+	public function login() {
+		if (!$_POST || !isset($_POST['Login'])) {
+			require APP . 'view/_templates/header.php';
+			require APP . 'view/visitors/login_form.php';
+			die();
+		}
+		
+		$visitor = $this->model;
+		$visitor->initialize_login(trim($_POST['login_UserName']) ,$_POST['login_Password']);
+			
+		$success = $visitor->login();
+		
+		if ($success) {
+			header('location: ' . URL . 'visitors/index');
+			die();
+		}
+		else 
+		{ 
+			$validation_errors = $visitor->validation_errors;
+			require APP . 'view/_templates/header.php';
+			require APP . 'view/visitors/login_form.php';
+			require APP . 'view/_templates/footer.php';
+		 }
+        
+    }
+
 
     public function logout() {
         session_start();

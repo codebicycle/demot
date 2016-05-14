@@ -339,12 +339,9 @@ class Model
 	  {
 		  
 			$name = 'Image';
-            $filelocation = 'uploadimg/';
-            $filename=date('Y-m-d.H.i.s').$_FILES["uploadImage"]["name"];
+            $filelocation = 'uploadimg/' . $id;
 			
-			move_uploaded_file($_FILES["uploadImage"]["tmp_name"] , "$filelocation"."$filename");
-			$location="$filelocation"."$filename";
-			
+			move_uploaded_file($_FILES["uploadImage"]["tmp_name"] , $filelocation);
 			if($type=="create")
 			{
 				$sql = "INSERT INTO pictures (UserId, Location) VALUES ( :UserId, :Location)";
@@ -355,7 +352,7 @@ class Model
 			}
 			$stmt = $this->db->prepare($sql);
     		$stmt->bindValue(':UserId', $id);
-			$stmt->bindValue(':Location', $location);
+			$stmt->bindValue(':Location', $filelocation);
 			$stmt->execute();
 			
 	  }
@@ -422,6 +419,33 @@ class Model
       $stmt->execute();
     }
 
+	public function is_banned($id)
+	{
+		return strtotime($this->ban_end_date($id)) > strtotime(date("Y-m-d"));
+		
+	}
+	
+	public function ban_end_date($id) {
+		$sql = "SELECT EndDate
+				FROM bans
+				WHERE InmateId = :inmateId
+				ORDER BY EndDate DESC
+				LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('inmateId', $id);
+        $stmt->execute();
+
+        return $stmt->fetch()['EndDate'];
+    }
+	
+	public function getAllInstitutions() {
+       $sql = "SELECT Id, Name, Location
+               FROM institutions";
+       $stmt = $this->db->prepare($sql);
+       $stmt->execute();
+       return $stmt->fetchAll();
+   }
+	
 }
 
 // Model naming convention: Controller_name + 'Model'
@@ -543,6 +567,14 @@ class InmatesModel extends Model {
         $stmt->bindValue('releaseDate', $this->ReleaseDate);
         $stmt->bindValue('lawyerId', $this->LawyerId);
         $stmt->execute();
+		
+		$sql="INSERT INTO remainingvisits(InmateId,RemainingVisits)
+			  VALUES(:id, :remainingvisits)";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $this->Id);
+        $stmt->bindValue('remainingvisits', '5');
+		$stmt->execute();
+			  
         return true;
     }
 
@@ -565,8 +597,38 @@ class InmatesModel extends Model {
         $stmt->bindValue('id', $id);
         $stmt->execute();
         return $stmt->fetch();
+		
     }
 
+	public function find_inmate_by_name($FirstName, $LastName, $InstId, $dob)
+	{
+		if($dob)
+		{
+			$sql = "SELECT Id
+				FROM inmates 
+				WHERE FirstName = :FirstName 
+				AND LastName=:LastName 
+				AND InstId=:InstId 
+				AND DOB=:dob" ;
+		}
+		else 
+		{
+			$sql = "SELECT Id 
+				FROM inmates 
+				WHERE FirstName = :FirstName 
+				AND LastName=:LastName 
+				AND InstId=:InstId";
+		}
+		$query = $this->db->prepare($sql);
+		$query->bindValue(':FirstName', $FirstName);
+		$query->bindValue(':LastName', $LastName);
+		$query->bindValue(':InstId', $InstId);
+		if($dob)
+			$query->bindValue(':dob', $dob);
+		$query->execute();
+		return $query->fetchAll();
+	}
+	
     public function inmateId_exists($id) {
         $sql = "SELECT 1 FROM inmates WHERE id=:id LIMIT 1";
         $stmt = $this->db->prepare($sql);
@@ -617,18 +679,6 @@ class InmatesModel extends Model {
         return true;
     }
 
-    public function ban_end_date($id) {
-        $sql = "SELECT EndDate
-                FROM bans
-                WHERE InmateId = :inmateId
-                ORDER BY EndDate DESC
-                LIMIT 1";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue('inmateId', $id);
-        $stmt->execute();
-
-        return $stmt->fetch()->EndDate;
-    }
 
     public function ban($id, $mysql_string_period) {
         $end_date = $this->ban_end_date($id);
@@ -892,7 +942,18 @@ class VisitorsModel extends Model {
 	public $RepeatPassword;
     public $PasswordHash;
 	public $UploadImage;
-
+	public $login_UserName;
+	public $login_Password;
+	public $register_UserName;
+	public $register_FirstName;
+	public $register_LastName;
+	public $register_Email;
+	public $register_CNP;
+	public $register_Passwort;
+	public $register_RepeatPassword;
+	public $register_uploadImage;
+	public $register_IdHash;
+	
 	
 	public function initialize($Id, $UserName, $FirstName, $LastName, $Email, $CNP, $OldPassword, $Password, $RepeatPassword, $UploadImage) {
 		$this->Id		        = $Id;
@@ -907,7 +968,7 @@ class VisitorsModel extends Model {
 		$this->PasswordHash		= md5($Password);
 		$this->UploadImage		= $UploadImage;	
 	}
-	
+		
 	 public function update() {
         $valid = $this->is_valid();
         if (!$valid)
@@ -977,6 +1038,129 @@ class VisitorsModel extends Model {
 		
 		return count($this->validation_errors) === 0;
 	}
+	
+	
+	public function initialize_register($UserName, $FirstName, $LastName, $Email, $CNP, $Password, $RepeatPassword, $UploadImage) 
+	{
+		$this->register_UserName		= $UserName;
+		$this->register_FirstName		= $FirstName;
+		$this->register_LastName		= $LastName;
+		$this->register_Email			= $Email;
+		$this->register_CNP				= $CNP;
+		$this->register_Password		= $Password;
+		$this->register_RepeatPassword	= $RepeatPassword;
+		$this->register_PasswordHash	= md5($this->register_Password);
+		$this->register_uploadImage		= $UploadImage;	
+		$this->register_IdHash			= md5($this->register_CNP . $this->register_LastName);
+	}
+	
+	public function register()
+	{
+		$valid = $this->is_valid_register();
+        if (!$valid)
+            return false;
+		
+		$sql="SELECT Id
+			  FROM visitors
+			  WHERE UserName =:username
+			  OR Id =:id " ;
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':username', $this->register_UserName);
+		$stmt->bindValue(':id', $this->register_IdHash);
+		$stmt->execute();
+		$doubleacc=$stmt->fetch();
+		if(empty($doubleacc))
+		{			
+			$sql = "INSERT INTO visitors (Id, FirstName, LastName, CNP, UserName, PwdHash, Email)
+					VALUES (:IdHash, :FirstName, :LastName, :CNP, :UserName, :Password, :Email)";
+			$stmt = $this->db->prepare($sql);
+			$stmt->bindValue(':IdHash', $this->register_IdHash);
+			$stmt->bindValue(':FirstName', $this->register_FirstName);
+			$stmt->bindValue(':LastName', $this->register_LastName);
+			$stmt->bindValue(':CNP', $this->register_CNP);
+			$stmt->bindValue(':UserName', $this->register_UserName);
+			$stmt->bindValue(':Password', $this->register_PasswordHash);
+			$stmt->bindValue(':Email', $this->register_Email);
+			$result = $stmt->execute();
+		
+			if($result)
+			{
+				if(!empty($this->register_uploadImage['name']))
+				{
+					$this->uploadPicture($this->register_IdHash,"create");
+				}
+				session_start();
+				$_SESSION['user_id'] 	= $this->register_IdHash;  
+				$_SESSION['username']	=$this->register_UserName;      
+				return;
+			}
+			else 
+			{
+				$this->validation_errors['registererror']="Couldn`t register";
+				return false;
+			}
+		}
+		else 
+			$this->validation_errors['registererror']="An account with this username or id already exists.";
+			return false;
+		
+	}
+	
+	public function is_valid_register()
+	{
+        Validator::validate_string_length($this, 'register_UserName',3 , 50);
+        if(!isset($this->validation_errors['register_UserName']))
+		{
+            Validator::validate_visitor_unique_username($this, 'register_UserName');
+        }
+				
+		Validator::validate_name($this, 'register_FirstName');
+		Validator::validate_name($this, 'register_LastName');
+		Validator::validate_email($this, 'register_Email');
+		Validator::validate_cnp($this, 'register_CNP');
+        Validator::validate_string_length($this, 'register_Password', 2, 32);
+		if(!isset($this->validation_errors['register_Password'])) 
+		{
+            Validator::validate_passwords_match($this, 'register_Password', 'register_RepeatPassword');
+        }
+		return count($this->validation_errors) === 0;
+	}
+	
+	public function initialize_login($UserName, $Password) {
+		$this->login_UserName = $UserName;
+		$this->login_Password = md5($Password);
+	}
+	public function login()
+	{
+		$valid = $this->is_valid_login();
+        if (!$valid)
+            return false;
+		
+		$sql = "SELECT Id, UserName, PwdHash FROM visitors WHERE UserName = :UserName";
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':UserName', $this->login_UserName);
+		$stmt->execute();
+		$user = $stmt->fetch(PDO::FETCH_ASSOC);
+		
+		if($this->login_Password==$user['PwdHash'])
+		{
+			session_destroy();
+			session_start();
+			$_SESSION['user_id'] = $user['Id'];           
+			$_SESSION['username'] = $user['UserName'];           
+			return true;		 
+		}
+        $this->validation_errors['Novisitor']='Incorrect username / password combination!';
+		return;
+	}
+	
+	public function is_valid_login() 
+	{
+        Validator::validate_string_length($this, 'login_UserName',3 , 50);
+        Validator::validate_string_length($this, 'login_Password', 2, 32);	
+		return count($this->validation_errors) === 0;
+	}
+	
 
 	
 	public function find_by_id($id) {
@@ -1019,7 +1203,6 @@ class AppointmentsModel extends Model {
 	public $Visitor3Id;
 	public $InmateId;
 	
-
 	public function initialize($VisitorId, $DateOfAppointment, $TimeOfAppointment, $Visitor2FirstName, $Visitor2LastName, $Visitor2CNP, $Visitor3FirstName, $Visitor3LastName, $Visitor3CNP) 
 	{
 		$this->VisitorId			= $VisitorId;
@@ -1032,10 +1215,8 @@ class AppointmentsModel extends Model {
 		$this->Visitor3FirstName	= $Visitor3FirstName;
 		$this->Visitor3LastName		= $Visitor3LastName;
 		$this->Visitor3CNP			= $Visitor3CNP;
-		$this->Visitor3Id			=($this->Visitor3CNP && $this->Visitor3LastName)? md5($this->Visitor3CNP . $this->Visitor3LastName): NULL;
-		$_POST=$_SESSION['post_data'];
-		
-		$this->InmateId 			= $this->getInmateId($_POST['option_chosen'], $_POST['FirstName'], $_POST['LastName'], $_POST['dob']??NULL);
+		$this->Visitor3Id			= ($this->Visitor3CNP && $this->Visitor3LastName)? md5($this->Visitor3CNP . $this->Visitor3LastName): NULL;
+		$this->InmateId				= $_SESSION['inmateid']	;
 	}
 	
 	
@@ -1273,3 +1454,4 @@ class AppointmentsModel extends Model {
 		
 	
 }
+ 

@@ -66,6 +66,7 @@
         <input type="submit" name="Update" value="Update" />
     </form>
     <div class="links">
+	
         <a href="<?php echo URL . 'inmates/delete/' . $inmate->Id; ?>" onclick="return confirm('Inmate will be removed from the system. Are you sure you want to proceed?');">Remove Inmate</a>
     </div>
 </div>

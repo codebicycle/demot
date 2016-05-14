@@ -14,6 +14,59 @@ class Inmates extends Controller {
         require APP . 'view/inmates/add.php';
         require APP . 'view/_templates/footer.php';
     }
+	
+	public function search() {
+		$institutions=$this->model->getAllInstitutions();
+        require APP . 'view/_templates/header.php';
+        require APP . 'view/inmates/search_form.php';
+        require APP . 'view/_templates/footer.php';
+    }
+	
+	public function find()
+	{
+		
+		if(!$_POST || !isset($_POST['search'])) {
+            header('location: ' . URL . 'inmates/search');
+            return;
+		}
+		$FirstName = $_POST['FirstName'];
+		$LastName = $_POST['LastName'];
+		$InstitutionId=$_POST['InstitutionId'];
+		$dob=$_POST['dob']??null;
+		$inmate=$this->model->find_inmate_by_name($FirstName, $LastName, $InstitutionId, $dob);
+		$institutions=$this->model->getAllInstitutions();
+		if($inmate)
+		{
+			if(count($inmate)>1 && empty($dob))
+			{	
+				
+				$this->model->validation_errors['MoreInmates']="There are more inmates with this name at this institution. Please Insert his date of birth";
+				$show_dob_field=true;
+				require APP . 'view/_templates/header.php';
+				require APP .  'view/inmates/search_form.php';
+			}
+			else if(count($inmate)>1 && !empty($dob))
+			{
+				$this->model->validation_errors['MoreInmates']="There are more inmates with this name and date of birth at this institution.
+																If you want to visit please present to our institution.";
+				require APP . 'view/_templates/header.php';
+				require APP .  'view/inmates/search_form.php';
+			}
+			else if(count($inmate)===1) 
+			{
+				//nu aveam sesiune aici
+				session_start();
+				$_SESSION['inmateid']=$inmate[0]->Id;		
+				header('location: ' . URL . 'appointments/add');
+			}
+		}
+		else 
+		{
+			$this->model->validation_errors['MoreInmates']="There is no inmate with this name and date of birth at this institution.";
+			require APP . 'view/_templates/header.php';
+			require APP .  'view/inmates/search_form.php';
+		}
+	}
 
     public function create() {
         if(!$_POST || !isset($_POST['Create'])) {
@@ -69,8 +122,8 @@ class Inmates extends Controller {
     public function edit($id) {
         // find id in database
         // show form and populate fields
-        $inmate_db = $this->model->find_by_id($id);
-        $cache = (array) $inmate_db;
+        $inmate = $this->model->find_by_id($id);
+        $cache = (array) $inmate;
         require APP . 'view/_templates/header.php';
         require APP . 'view/inmates/edit.php';
         require APP . 'view/_templates/footer.php';
