@@ -17,7 +17,7 @@ $UserName=$_SESSION['username'];
 
 
 <div class="container">
- <a href="<?php echo URL . 'admins/addadmin' ?>">Add Admin</a>
+ <a href="<?php echo URL . 'admins/add' ?>">Add Admin</a>
 
 
     <h3>Admins List</h3>

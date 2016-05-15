@@ -1,5 +1,4 @@
 <?php
-//
     $validation_errors = $validation_errors ?? null;
     $cache = $cache ?? null;
 ?>

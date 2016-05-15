@@ -714,6 +714,16 @@ class AdminsModel extends Model {
     public $Password;
     public $RepeatPassword;
     public $PasswordHash;
+	public $admin_UserName;
+    public $admin_LastName;
+	public $admin_CNP;
+    public $admin_Password;
+    public $admin_RepeatPassword;
+    public $admin_PasswordHash;
+	public $admin_InstId;
+	public $admin_Rank;
+	public $admin_IdHash;
+	
 
 	public function getAllAdmins()
 	{
@@ -755,6 +765,72 @@ class AdminsModel extends Model {
         return count($this->validation_errors) === 0;
     }
 
+public function initialize_add($UserName, $LastName, $CNP, $Password, $RepeatPassword, $InstId, $Rank) 
+	{
+        $this->admin_UserName         = $UserName;
+        $this->admin_LastName  		  = $LastName;
+		$this->admin_CNP			  = $CNP;
+        $this->admin_Password         = $Password;
+        $this->admin_RepeatPassword   = $RepeatPassword;
+		$this->admin_InstId           = $InstId;
+		$this->admin_Rank	          = $Rank;
+		$this->admin_PasswordHash     = md5($this->admin_Password);
+		$this->admin_IdHash			  = md5($this->admin_CNP . $this->admin_LastName);
+    }
+
+    public function is_valid_add()
+    {
+        Validator::validate_string_length($this, 'admin_UserName',3 , 50);
+        if(!isset($this->validation_errors['admin_UserName'])) 
+		{
+            Validator::validate_admin_unique_username($this, 'admin_UserName');
+        }
+		Validator::validate_string_length($this, 'admin_LastName',3 , 50);
+		Validator::validate_cnp($this, 'admin_CNP');          
+        Validator::validate_string_length($this, 'admin_Password', 2, 32);
+        // validate repeat password matches
+        if(!isset($this->validation_errors['admin_Password']))
+		{
+			Validator::validate_passwords_match($this, 'admin_Password', 'admin_RepeatPassword');
+        }
+       return count($this->validation_errors) === 0;
+    }	
+	
+	public function add_admin()
+	{
+		$valid = $this->is_valid_add();
+        if (!$valid)
+            return false;
+		
+		$sql="SELECT Id
+			  FROM admins
+			  WHERE UserName =:username
+			  OR Id =:id " ;
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':username', $this->admin_UserName);
+		$stmt->bindValue(':id', $this->admin_IdHash);
+		$stmt->execute();
+		$doubleacc=$stmt->fetch();
+		if(empty($doubleacc))
+		{		
+			$sql = "INSERT INTO admins (Id, InstId, UserName, PwdHash, Rank) 
+					VALUES (:IdHash, :InstId, :UserName, :Password, :Rank)";
+			$stmt = $this->db->prepare($sql);
+			$stmt->bindValue(':IdHash', $this->admin_IdHash);
+			$stmt->bindValue(':InstId', $this->admin_InstId);
+			$stmt->bindValue(':UserName', $this->admin_UserName);
+			$stmt->bindValue(':Password', $this->admin_PasswordHash);
+			$stmt->bindValue(':Rank', $this->admin_Rank);
+			$result = $stmt->execute();
+            if($result)
+				return true;
+		}
+		else 
+			$this->validation_errors['adderror']="An account with this username or id already exists.";
+		return false;
+	}
+	
+	
     public function update() {
         $valid = $this->is_valid();
         if (!$valid)
@@ -802,6 +878,17 @@ class AdminsModel extends Model {
         $stmt->execute();
         return boolval($stmt->rowCount());
     }
+	
+	public function getInstId_by_id($id)
+	{
+		$sql = "SELECT InstId
+				FROM admins
+                WHERE Id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
+		return $stmt->fetch();
+	}
 
 }
 

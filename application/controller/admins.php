@@ -17,15 +17,46 @@ class Admins extends Controller {
         require APP . 'view/_templates/footer.php';
     }
 
-    public function addguard() {
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/admins/addguard.php';
-        require APP . 'view/_templates/footer.php';
-    }
-    public function addadmin() {
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/admins/addadmin.php';
-        require APP . 'view/_templates/footer.php';
+    public function add() {
+		$institutions=$this->model->getAllInstitutions();
+		require APP . 'view/_templates/header.php';
+		if (!$_POST || !isset($_POST['AddAdmin'])) {
+            require APP . 'view/admins/addadmin.php';
+            require APP . 'view/_templates/footer.php';
+			die();
+        }
+
+		if(!empty($_POST['InstitutionId']))
+		{
+			$Rank = 1;
+			$InstId = $_POST['InstitutionId'];
+		}
+		else 
+		{
+			$Rank=2;
+			$InstId = $this->model->getInstId_by_id($_SESSION['admin_id']);
+		}
+        $admin = $this->model;
+        $admin->initialize_add(
+			$_POST['admin_UserName'],
+			$_POST['admin_LastName'],
+            $_POST['admin_CNP'],
+            $_POST['admin_Password'],
+            $_POST['admin_RepeatPassword'],
+			$InstId,
+			$Rank);
+
+        $success = $admin->add_admin();
+
+        if ($success) {
+            header('location: ' . URL . 'admins/index');
+            die();
+        }
+        else {
+            $validation_errors = $admin->validation_errors;
+            require APP . 'view/admins/addadmin.php';
+            require APP . 'view/_templates/footer.php';
+        }
     }
 
        public function delete($id) {
