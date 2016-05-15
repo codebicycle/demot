@@ -307,20 +307,24 @@ class Model
           if($state=='rejected')   
         { 
           echo"<td>";
-               if (isset($appointment->Id)) 
+          if (isset($appointment->Id)) 
           {
-            /////aici am luat din vizite facute comentariu si daca nu e am afisat hard codded un mesaj .
-          $appId=$appointment->Id;
-          $sql="SELECT Comments FROM visits WHERE AppointmentId=:AppointmentId";
-          $query = $this->db->prepare($sql);
-          $query->bindValue(':AppointmentId',$appId);
-          $query->execute();      
-          $visit = $query->fetch(PDO::FETCH_ASSOC);
           
-          if(isset($visit['comments']))
-            echo $visit['comments'];
+          $appId=$appointment->Id;
+          $sql="SELECT GuardId 
+				FROM appointments 
+				WHERE Id=:id";
+          $query = $this->db->prepare($sql);
+          $query->bindValue(':id',$appId);
+          $query->execute();      
+          $guard = $query->fetch();
+		  
+          if(!empty($guard->GuardId))
+		  {  
+			echo "By inmate";
+		  }
           else 
-            echo "A fost respinsa fara motiv";
+            echo "Automatic";
           }
           
            echo "</td>";
@@ -711,6 +715,17 @@ class AdminsModel extends Model {
     public $RepeatPassword;
     public $PasswordHash;
 
+	public function getAllAdmins()
+	{
+		$sql="SELECT admins.Id, InstId, UserName, Rank, institutions.Name as InstName
+		      FROM admins
+			  JOIN institutions
+			  ON institutions.Id= admins.InstId";
+		$stmt = $this->db->prepare($sql);			  
+        $stmt->execute();
+		$admins=$stmt->fetchAll();
+		return $admins;		
+	}	
     public function initialize($Id, $UserName, $OldPassword, $Password, $RepeatPassword) {
         $this->Id               = $Id;
         $this->UserName         = $UserName;
@@ -776,6 +791,16 @@ class AdminsModel extends Model {
         $stmt->bindValue('id', $id);
         $stmt->execute();
         return $stmt->fetch();
+    }
+	
+	 public function destroy($id) 
+	 {
+        $sql = "DELETE from admins
+                WHERE Id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
+        return boolval($stmt->rowCount());
     }
 
 }
@@ -1164,12 +1189,29 @@ class VisitorsModel extends Model {
 
 	
 	public function find_by_id($id) {
+		$sql="SELECT Location 
+			  FROM pictures	
+			  WHERE UserId =:id";
+		$stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
+        $loc = $stmt->fetch();
+		if($loc)
+		{
         $sql = "SELECT visitors.Id, FirstName, LastName, CNP, UserName, Email, pictures.Location as picture_location
                 FROM visitors
                 JOIN pictures
                 ON pictures.UserId = visitors.Id
                 WHERE visitors.Id = :id
                 LIMIT 1";
+		}
+		else 
+		{
+			$sql = "SELECT Id, FirstName, LastName, CNP, UserName, Email
+                FROM visitors
+				WHERE visitors.Id = :id
+                LIMIT 1";
+		}
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('id', $id);
         $stmt->execute();

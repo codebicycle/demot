@@ -13,44 +13,35 @@ if(!isset($_SESSION['admin_id']))
 $Rank=$_SESSION['rank'];
 $UserName=$_SESSION['username'];
 
-
-if($Rank==0)
-{
-	echo 'Welcome ';
-	echo $UserName;
-	echo ', you are using a SUPERADMIN account';
-
-	
 ?>	
-<br/>
-<br/>
-<h3>THIS IS YOUR MENU: </h3>
-<br/>
-<a href="<?php echo URL; ?>admins/addadmin">ADD ADMIN</a>	
-<br/>
-<a href="<?php echo URL; ?>admins/deleteadmin">DELETE ADMIN</a>
-<br/>
-<a href="<?php echo URL; ?>admins/stats">STATS</a>
-<br/>
-<a href="<?php echo URL; ?>admins/logout">LOGOUT</a> 
-<br/>
 
 
 <div class="container">
+ <a href="<?php echo URL . 'admins/addadmin' ?>">Add Admin</a>
 
 
-<?php
-} 
-if($Rank==1)
-{
-	echo 'Welcome ';
-	echo $UserName;
-	echo ', you are using a ADMIN account';
-}
-?>
-<br/>
-<br/>
-<a href="<?php echo URL; ?>admins/addguard">ADD GUARD</a>	
-<div class="container">
+    <h3>Admins List</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <td>Id</td>
+                <td>Institution</td>
+                <td>User Name</td>
+                <td>Type</td>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($admins as $admin): ?>
+        <tr>
+            <td><?php e($admin->Id); ?></td>
+            <td><?php e($admin->InstName); ?></td>
+            <td><?php e($admin->UserName); ?></td>
+            <td><?php e($ranks[$admin->Rank]); ?></td>
+			<td><a href="<?php e(URL . 'admins/delete/' . $admin->Id); ?>" onclick="return confirm('Admin will be removed from the system. Are you sure you want to proceed?');">Remove admin</a></td>
+        </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
 
 </div>

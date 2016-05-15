@@ -10,8 +10,9 @@ class Admins extends Controller {
     }
 
     public function index() {	
-
-        require APP . 'view/_templates/header.php';
+		$admins=$this->model->getAllAdmins();
+		$ranks = ['super admin', 'admin', 'guard'];    
+		require APP . 'view/_templates/header.php';
         require APP . 'view/admins/index.php';
         require APP . 'view/_templates/footer.php';
     }
@@ -27,10 +28,17 @@ class Admins extends Controller {
         require APP . 'view/_templates/footer.php';
     }
 
-    public function deleteadmin() {
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/admins/deleteadmin.php';
-        require APP . 'view/_templates/footer.php';
+       public function delete($id) {
+        $success = $this->model->destroy($id);
+        if ($success) {
+            header('location: ' . URL . 'admins/index');
+            die();
+        }
+        else {
+            // TODO: add flash message
+            header('location: ' . URL . 'errorz/index');
+            die();
+        }
     }
 
     public function edit() {
