@@ -12,7 +12,11 @@ if(!isset($_SESSION['admin_id']))
 
 $Rank=$_SESSION['rank'];
 $UserName=$_SESSION['username'];
-
+if($Rank==2)
+{
+	header('location: '.URL. 'appointments/index');
+	die();
+}
 ?>	
 
 

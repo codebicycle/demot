@@ -723,6 +723,8 @@ class AdminsModel extends Model {
 	public $admin_InstId;
 	public $admin_Rank;
 	public $admin_IdHash;
+	public $login_UserName;
+	public $login_Password;
 	
 
 	public function getAllAdmins()
@@ -735,7 +737,25 @@ class AdminsModel extends Model {
         $stmt->execute();
 		$admins=$stmt->fetchAll();
 		return $admins;		
-	}	
+	}
+	
+	public function getAllGuards_by_rank_and_inst($InstId, $Rank)
+	{
+		$sql="SELECT admins.Id, InstId, UserName, Rank, institutions.Name as InstName
+		      FROM admins
+			  JOIN institutions
+			  ON institutions.Id= admins.InstId
+			  WHERE admins.InstId=:id
+			  AND admins.Rank>:rank";
+		$stmt = $this->db->prepare($sql);			  
+		$stmt->bindValue(':id', $InstId);
+		$stmt->bindValue(':rank', $Rank);
+        $stmt->execute();
+		$admins=$stmt->fetchAll();
+		return $admins;
+		
+	}
+	
     public function initialize($Id, $UserName, $OldPassword, $Password, $RepeatPassword) {
         $this->Id               = $Id;
         $this->UserName         = $UserName;
@@ -858,6 +878,45 @@ public function initialize_add($UserName, $LastName, $CNP, $Password, $RepeatPas
         }
         return true;
     }
+	
+	
+	public function initialize_login($UserName, $Password) {
+		$this->login_UserName = $UserName;
+		$this->login_Password = md5($Password);
+	}
+	public function login()
+	{
+		$valid = $this->is_valid_login();
+        if (!$valid)
+            return false;
+		
+		$sql = "SELECT Id, UserName, PwdHash, Rank
+				FROM admins WHERE UserName = :UserName";
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindValue(':UserName', $this->login_UserName);
+		$stmt->execute();
+		$user = $stmt->fetch(PDO::FETCH_ASSOC);
+		
+		if($this->login_Password==$user['PwdHash'])
+		{
+			session_destroy();
+			session_start();
+			$_SESSION['admin_id'] = $user['Id']; 
+			$_SESSION['rank'] = $user['Rank'];
+			$_SESSION['username'] = $user['UserName'];         
+			return true;		 
+		}
+        $this->validation_errors['Noadmin']='Incorrect username / password combination!';
+		return;
+	}
+	
+	public function is_valid_login() 
+	{
+        Validator::validate_string_length($this, 'login_UserName',3 , 50);
+        Validator::validate_string_length($this, 'login_Password', 2, 32);	
+		return count($this->validation_errors) === 0;
+	}
+	
 
     public function find_by_id($id) {
         $sql = "SELECT Id, UserName
