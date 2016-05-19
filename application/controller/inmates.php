@@ -24,7 +24,6 @@ class Inmates extends Controller {
 	
 	public function find()
 	{
-		
 		if(!$_POST || !isset($_POST['search'])) {
             header('location: ' . URL . 'inmates/search');
             return;
@@ -32,23 +31,23 @@ class Inmates extends Controller {
 		$FirstName = $_POST['FirstName'];
 		$LastName = $_POST['LastName'];
 		$InstitutionId=$_POST['InstitutionId'];
-		$dob=$_POST['dob']??null;
+		$dob = $_POST['dob'] ?? null;
 		$inmate=$this->model->find_inmate_by_name($FirstName, $LastName, $InstitutionId, $dob);
 		$institutions=$this->model->getAllInstitutions();
+
 		if($inmate)
 		{
 			if(count($inmate)>1 && empty($dob))
 			{	
 -				
-				$this->model->validation_errors['MoreInmates']="There are more inmates with this name at this institution. Please Insert his date of birth";
-				$show_dob_field=true;
+				$this->model->validation_errors['MoreInmates'] = "More than one inmates match this query. Make sure the name is complete and fill in inmate's date of birth.";
+				$show_dob_field = true;
 				require APP . 'view/_templates/header.php';
 				require APP .  'view/inmates/search_form.php';
 			}
 			else if(count($inmate)>1 && !empty($dob))
 			{
-				$this->model->validation_errors['MoreInmates']="There are more inmates with this name and date of birth at this institution.
-																If you want to visit please present to our institution.";
+				$this->model->validation_errors['MoreInmates'] = "There are more inmates with this name and date of birth at this institution. Please make this appointment by phone.";
 				require APP . 'view/_templates/header.php';
 				require APP .  'view/inmates/search_form.php';
 			}
@@ -62,7 +61,7 @@ class Inmates extends Controller {
 		}
 		else 
 		{
-			$this->model->validation_errors['MoreInmates']="There is no inmate with this name and date of birth at this institution.";
+			$this->model->validation_errors['MoreInmates'] = "There is no inmate with this name at this institution.";
 			require APP . 'view/_templates/header.php';
 			require APP .  'view/inmates/search_form.php';
 		}
