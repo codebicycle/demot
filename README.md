@@ -24,9 +24,12 @@ Written in PHP 7 with only native code, no frameworks or libraries.
     ```
     at the mysql prompt
     ```
+      -- replace database_name with demot
       CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
       GRANT ALL PRIVILEGES ON database_name . * TO 'newuser'@'localhost';
+      GRANT EVENT ON database_name . * TO 'newuser'@'localhost';
     ```
+
 3. Edit the database credentials in `application/config/config.php`
 4. Execute the `.sql` statements in the `_install/` folder (with PHPMyAdmin for example).
 5. Make sure you have `mod_rewrite` activated on your server / in your environment. Some guidelines:
