@@ -57,7 +57,8 @@ class Model
             $file_export  =  $filelocation . $filename;
             $data = fopen($file_export, 'w');
             $csv_data=array();  
-        
+			
+			
             foreach($visits as $visit)
             {  
               $csv_data['Id']=$visit->Id;  
@@ -438,8 +439,9 @@ class Model
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('inmateId', $id);
         $stmt->execute();
-
-        return $stmt->fetch()['EndDate'];
+		
+        return ($stmt->fetch()->EndDate);
+		
     }
 	
 	public function getAllInstitutions() {
