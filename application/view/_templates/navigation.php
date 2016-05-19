@@ -12,6 +12,7 @@
     {
         ?>
         <a href="<?php echo URL ?>">home</a>
+		<a href="<?php echo URL . 'visitors/index' ?>">add appointment</a>
         <a href="<?php echo URL . 'appointments/index' ?>">appointments</a>
         <a href="<?php echo URL . 'visits/index' ?>">visits</a>
         <a href="<?php echo URL . 'visitors/edit' ?>">profile </a>

@@ -43,10 +43,17 @@
         <?php validation_hint($validation_errors, 'RepeatPassword') ?>
         <label for="RepeatPassword">Repeat Password</label>
         <input type="password" name="RepeatPassword" id="RepeatPassword"/>
-
-        <input type="hidden" name="picture_location" value="<?php cached_value('picture_location', $cache) ?>"></input>
+		<input type="hidden" name="picture_location" value="<?php cached_value('picture_location', $cache) ?>"></input>
+		<?php 
+		
+		if(!empty($cache['picture_location'])|| !empty($_POST['picture_location']))
+		{
+		?>
+        
         <img src="<?php echo URL; cached_value('picture_location', $cache); ?>" class="avatar" width="100" height="100" />
-
+		<?php
+		}
+		?>
         <?php validation_hint($validation_errors, 'uploadImage') ?>
         <label for="uploadImage">Upload Picture</label>
 		<input type="file" name="uploadImage" id="uploadImage"/>

@@ -13,36 +13,16 @@ if(!isset($_SESSION))
 
 
 $Id=$_SESSION['user_id'];
-$sql = "SELECT UserName FROM visitors WHERE Id = :Id";
-$stmt = $this->model->db->prepare($sql);
-$stmt->bindValue(':Id', $Id);
-$stmt->execute(); 
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-echo 'Welcome ';
-echo $user['UserName'];
-echo ', you are now in your account!';
-
 if(isset($_POST['submit']))
 	$State=$_POST['visits'];
-else $State='approved';
+else $State='pending';
 		
 		
 ?>	
-<br/>
-<br/>
-<h3>THIS IS YOUR MENU: </h3>
-<br/>
-<a href="<?php echo URL; ?>visitors/index">New Appointment</a>	
-<br/>
-<a href="<?php echo URL; ?>visitors/editaccount">Edit Account</a>
-<br/>
-<a href="<?php echo URL; ?>visitors/logout">LOGOUT</a> 
-<br/>
 
 
-
-<h3>THIS IS YOUR LEFT SIDE MENU: </h3>
-
+<div class="container">
+	
 <form method="POST">    
 <select name="visits" id="visits">
 	<option value="pending">Pending appointments</option>
@@ -57,10 +37,9 @@ else $State='approved';
 </form>
 <br/>
 
-<div class="container">
-	<?php 
-	$this->model->getAppointments($State);
-	?>
+<?php 
+$this->model->getAppointments($State);
+?>
 
 	<h3>Appointments List</h3>
 
