@@ -39,7 +39,7 @@ class Inmates extends Controller {
 		{
 			if(count($inmate)>1 && empty($dob))
 			{	
-				
+-				
 				$this->model->validation_errors['MoreInmates']="There are more inmates with this name at this institution. Please Insert his date of birth";
 				$show_dob_field=true;
 				require APP . 'view/_templates/header.php';

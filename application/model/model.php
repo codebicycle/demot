@@ -441,7 +441,6 @@ class Model
         $stmt->execute();
 		
         return ($stmt->fetch()->EndDate);
-		
     }
 	
 	public function getAllInstitutions() {
@@ -596,7 +595,7 @@ class InmatesModel extends Model {
     public function find_by_id($id) {
         $sql = "SELECT inmates.Id, FirstName, LastName, CNP, DOB, InstId, Crime, Sentence, IncarcerationDate, ReleaseDate, LawyerId, RemainingVisits
                 FROM inmates
-                JOIN remainingvisits
+                LEFT JOIN remainingvisits
                 ON inmates.Id = remainingvisits.InmateId
                 WHERE id = :id";
         $stmt = $this->db->prepare($sql);
