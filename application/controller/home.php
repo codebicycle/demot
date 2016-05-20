@@ -17,9 +17,22 @@ class Home extends Controller
     public function index()
     {
         // load views
-        require APP . 'view/_templates/header.php';
-        require APP . 'view/home/index.php';
-        require APP . 'view/_templates/footer.php';
+		
+		 if(!isset($_SESSION))
+		{
+			session_start();
+		}
+		
+		if(isset($_SESSION['admin_id']))
+		{
+			header('location: '.URL.'admins/index');
+			die();
+		}
+		else
+		{
+			header('location: '.URL.'visitors/index');
+			die();
+		}
     }
     
 }

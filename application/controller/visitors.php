@@ -3,13 +3,16 @@
 class Visitors extends Controller {
     public function index() {
         
+
         header('location: ' . URL . 'inmates/find');
 		die();
         
     }
 
     public function appointments() {
-        require APP . 'view/_templates/header.php';
+        
+		
+		require APP . 'view/_templates/header.php';
         require APP . 'view/visitors/appointments.php';
         require APP . 'view/_templates/footer.php';
     }
@@ -17,7 +20,11 @@ class Visitors extends Controller {
 	
 	public function edit() {
 		session_start();
-		 
+	 if(!isset($_SESSION['user_id']))
+		 {
+			header('location: ' . URL . 'visitors/login');
+			die();	
+		 }
         $visitor_db = $this->model->find_by_id($_SESSION['user_id']);
         $cache = (array) $visitor_db;
         require APP . 'view/_templates/header.php';

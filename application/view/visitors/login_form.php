@@ -1,14 +1,11 @@
 <?php
 
-if(!isset($_SESSION)) 
-{ 
-    session_start(); 
-} 
 if(isset($_SESSION['user_id']))
 {
 	header('location: ' . URL . 'visitors/index');
 	die();
 }
+
 $validation_errors = $this->model->validation_errors ?? null;
 
 ?>

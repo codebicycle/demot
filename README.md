@@ -91,13 +91,13 @@ http://nvie.com/posts/a-successful-git-branching-model/
   - [ ] REST routes HTTP verbs
   - [ ] CSRF prevention
   - [ ] Custom page titles
-  - [ ] Redirect with header() to controller#action (not require)
-    - [ ] Always die() after a redirect
+  - [x] Redirect with header() to controller#action (not require)
+	- [x] Always die() after a redirect
   - [x] Set guard_id on approved/rejected appointments
-  - [ ] Remove debugging statements like print_r($_POST) to prevent XSS attacks
+  - [x] Remove debugging statements like print_r($_POST) to prevent XSS attacks
   - [ ] Flash messages
   - [ ] Password min 8 max 32
-  - [ ] Clean visitors appointments
+  - [x] Clean visitors appointments
   - [ ] Filter appointments
   - [ ] Pagination
   - [ ] Single page for Appointment form

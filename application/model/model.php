@@ -21,6 +21,17 @@ class Model
     }
 
      
+	public function getInstId_by_id($id)
+	{
+		$sql = "SELECT InstId
+				FROM admins
+                WHERE Id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
+		return $stmt->fetch();
+	}
+	 
       public function export_visits($arr, $name,$tablehead)
       { $exp=$_POST['export_press']??NULL;
         $ext=$_POST['extension']??NULL;
@@ -567,7 +578,6 @@ class StatisticsModel extends Model {
 		$stmt->execute();
 		return $stmt->fetchAll();
 	}
-
 }
 
 
@@ -1054,18 +1064,6 @@ public function initialize_add($UserName, $LastName, $CNP, $Password, $RepeatPas
         $stmt->execute();
         return boolval($stmt->rowCount());
     }
-	
-	public function getInstId_by_id($id)
-	{
-		$sql = "SELECT InstId
-				FROM admins
-                WHERE Id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue('id', $id);
-        $stmt->execute();
-		return $stmt->fetch();
-	}
-
 }
 
 

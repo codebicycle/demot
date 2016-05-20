@@ -71,11 +71,6 @@ if(!isset($_SESSION['user_id']))
         <input type="submit" name="Create" value="Make Appointment" />
     </form>
 </div>
-
-<pre>
-    <?php print_r($appointment ?? null); ?>
-</pre>
-
 <script>
 window.onload = function () {
     // hide form fields

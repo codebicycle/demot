@@ -27,9 +27,23 @@
       
 
         <?php validation_hint($validation_errors, 'InstId') ?>
+		
+		<?php 
+		if(isset($InstId))
+		{	
+		?>
+		
+			<input type="hidden" name="InstId" id="InstId" inputmode="numeric" value="<?php e($InstId->InstId) ?>" required />
+		<?php
+		}
+		else 
+		{
+		?>
         <label for="InstId">Institution Id</label>
         <input type="text" name="InstId" id="InstId" inputmode="numeric" value="<?php cached_value('InstId', $cache) ?>" required />
-
+		<?php
+		}
+		?>
         <?php validation_hint($validation_errors, 'Crime') ?>
         <label for="Crime">Crime</label>
         <input type="text" name="Crime" id="Crime" value="<?php cached_value('Crime', $cache) ?>" required />
@@ -62,7 +76,3 @@
         <input type="submit" name="Create" value="Create" />
     </form>
 </div>
-
-<pre>
-    <?php print_r($inmate ?? null); ?>
-</pre>

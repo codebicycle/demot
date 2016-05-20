@@ -3,6 +3,15 @@
 class Inmates extends Controller {
 
     public function index() {
+		if(!isset($_SESSION))
+		{
+			session_start();
+		}
+		if(!isset($_SESSION['admin_id']))
+		 {
+			header('location: ' . URL . 'admins/login');
+			die();	
+		 }
         $inmates = $this->model->getAllInmates();
         require APP . 'view/_templates/header.php';
         require APP . 'view/inmates/index.php';
@@ -10,6 +19,14 @@ class Inmates extends Controller {
     }
 
     public function add() {
+		if(!isset($_SESSION))
+		{
+			session_start();
+		}
+		if($_SESSION['rank']==1)
+		{
+			$InstId=$this->model->getInstId_by_id($_SESSION['admin_id']);
+		}
         require APP . 'view/_templates/header.php';
         require APP . 'view/inmates/add.php';
         require APP . 'view/_templates/footer.php';

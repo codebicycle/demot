@@ -159,22 +159,6 @@
         <input type="submit" name="Save" value="Save" />
     </form>
 </div>
-
-<pre>
-<?php
-echo "appointment\n";
-print_r($appointment);
-echo "visitor\n";
-print_r($visitor);
-echo "inamte\n";
-print_r($inmate);
-echo "picture\n";
-print_r($picture);
-echo "POST\n";
-print_r($_POST);
-?>
-</pre>
-
 <script type="text/javascript">
     function outputUpdate(val) {
         document.querySelector('#output-duration').value = val + " minutes.";

@@ -62,7 +62,3 @@
         <input type="submit" name="Update" value="Update" />
     </form>
 </div>
-
-<pre>
-  <?php print_r($Visitor ?? null); ?>
-</pre>
