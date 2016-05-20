@@ -21,7 +21,7 @@ class Model
     }
 
      
-      public function export_visits($arr, $name)
+      public function export_visits($arr, $name,$tablehead)
       { $exp=$_POST['export_press']??NULL;
         $ext=$_POST['extension']??NULL;
         if($exp)
@@ -29,10 +29,32 @@ class Model
       
           if($ext=="html")
           {
-            echo "EXPORT HTML";
-			//header('location: '.URL. $file_export);
-			//die();
-          }
+            $filelocation = 'export/';
+            $filename     = $name.date('Y-m-d H.i.s').'.html';
+            $file_export  =  $filelocation . $filename;
+            $data = fopen($file_export, 'w');
+			fwrite($data,(string)$tablehead[0]);
+			
+		  foreach($arr as $arr[0])
+		  {
+			fwrite($data,"\t\t\t<tr>\n");
+			foreach($arr[0] as $key=>$val)
+			{
+				fwrite($data,"\t\t\t\t<td>\n\t\t\t\t\t");			
+				fwrite($data, (string) $val);//valoare
+				fwrite($data,"\n\t\t\t\t</td>\n");
+			}
+			fwrite($data,"\t\t\t</tr>\n");
+		  }
+        fwrite($data,"		</tbody>\n	</table>\n</html>");
+		fclose($data);
+		//export
+		header('Content-Type: application/html');
+		header('Content-Disposition: attachment; filename='.$file_export);
+		header('Pragma: no-cache');
+		readfile($file_export);
+		die();
+        }
       
       
       

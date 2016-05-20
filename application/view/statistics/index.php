@@ -4,7 +4,7 @@ if($_SESSION['rank']==0)
 {
 ?>
 
-    <p class="title">Visits Per Institution</p>
+    <h3>Visits Per Institution</h3>
     <table>
         <thead>
             <tr>
@@ -24,10 +24,10 @@ if($_SESSION['rank']==0)
 	
 	<?php require APP . 'view/_templates/_exportSelect.php';?>
 	 <input type="hidden" name="function" value="visits_per_institution">
-	</form>
+	</form><br><br>
 	
 	
-	<p class="title">Average visit duration</p>
+	<h3>Average visit duration</h3>
     <table>
         <thead>
             <tr>
@@ -48,10 +48,10 @@ if($_SESSION['rank']==0)
 	
 	<?php require APP . 'view/_templates/_exportSelect.php';?>
 	 <input type="hidden" name="function" value="average_visit_duration">
-	</form>
+	</form><br><br>
 	
 	
-	    <p class="title">Popular visiting hour</p>
+	    <h3>Popular visiting hour</h3>
     <table>
         <thead>
             <tr>
@@ -68,8 +68,11 @@ if($_SESSION['rank']==0)
         <?php endforeach; ?>
         </tbody>
     </table>
+	<?php require APP . 'view/_templates/_exportSelect.php';?>
+	 <input type="hidden" name="function" value="popular_hour">
+	</form><br><br>
 	
-	<p class="title">Most active visitors</p>
+	<h3>Most active visitors</h3>
     <table>
         <thead>
             <tr>
@@ -86,8 +89,11 @@ if($_SESSION['rank']==0)
         <?php endforeach; ?>
         </tbody>
     </table>
+	<?php require APP . 'view/_templates/_exportSelect.php';?>
+	 <input type="hidden" name="function" value="most_visitors_visits">
+	</form><br><br>
 
-	<p class="title">Most active guards</p>
+	<h3>Most active guards</h3>
     <table>
         <thead>
             <tr>
@@ -104,8 +110,11 @@ if($_SESSION['rank']==0)
         <?php endforeach; ?>
         </tbody>
     </table>
+	<?php require APP . 'view/_templates/_exportSelect.php';?>
+	 <input type="hidden" name="function" value="active_guards">
+	</form><br><br>
 	
-	<p class="title">Most visited Inmates</p>
+	<h3>Most visited Inmates</h3>
     <table>
         <thead>
             <tr>
@@ -130,8 +139,11 @@ if($_SESSION['rank']==0)
         <?php endforeach; ?>
         </tbody>
     </table>
+	<?php require APP . 'view/_templates/_exportSelect.php';?>
+	 <input type="hidden" name="function" value="most_visited">
+	</form><br><br>
 	
-	<p class="title">Most banned Inmates</p>
+	<h3>Most banned Inmates</h3>
     <table>
         <thead>
             <tr>
@@ -150,6 +162,9 @@ if($_SESSION['rank']==0)
         <?php endforeach; ?>
         </tbody>
     </table>
+	<?php require APP . 'view/_templates/_exportSelect.php';?>
+	 <input type="hidden" name="function" value="most_banned_inmates">
+	</form><br><br>
 
 
 
