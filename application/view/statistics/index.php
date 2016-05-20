@@ -1,4 +1,8 @@
 <div class="container">
+<?php 
+if($_SESSION['rank']==0)
+{
+?>
 
     <p class="title">Visits Per Institution</p>
     <table>
@@ -150,5 +154,14 @@
 
 
 	
-
+<?php
+}
+else if($_SESSION['rank']==1)
+	
+{
+?>
+		<p class="title">NO TABLE FOR YOU</p>
+<?php
+}
+?>
 </div>

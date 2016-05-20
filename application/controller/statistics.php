@@ -49,8 +49,13 @@ class Statistics extends Controller {
 			}
 				
 		}
-				
+		else if($_SESSION['rank']==1)
+		{
 		
+			
+			
+			
+		}			
 		require APP . 'view/_templates/header.php';
         require APP . 'view/statistics/index.php';
         require APP . 'view/_templates/footer.php';
