@@ -1,6 +1,8 @@
 <?php
 
+
 require APP . 'model/validator.php';
+
 
 class Model
 {
