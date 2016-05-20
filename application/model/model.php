@@ -20,7 +20,6 @@ class Model
 
     
       
-
       public function export_form()
       {
         
@@ -36,7 +35,7 @@ class Model
       }
 
       
-      public function export_visits($visits)
+      public function export_visits($arr, $name)
       { $exp=$_POST['export_press']??NULL;
         $ext=$_POST['extension']??NULL;
         if($exp)
@@ -45,68 +44,51 @@ class Model
           if($ext=="html")
           {
             echo "EXPORT HTML";
+			//header('location: '.URL. $file_export);
+			//die();
           }
       
       
       
           if($ext=="csv")
           {
-            $name = 'CSVExport';
+            
             $filelocation = 'export/';
             $filename     = $name.date('Y-m-d H.i.s').'.csv';
             $file_export  =  $filelocation . $filename;
             $data = fopen($file_export, 'w');
             $csv_data=array();  
 			
-			
-            foreach($visits as $visit)
+            foreach($arr as $elem)
             {  
-              $csv_data['Id']=$visit->Id;  
-              $csv_data['AppointmentId']=$visit->AppointmentId; 
-              $csv_data['SecondVisitor']=$visit->SecondVisitor;  
-              $csv_data['ThirdVisitor']=$visit->ThirdVisitor;  
-              $csv_data['GivenObjects']=$visit->GivenObjects;  
-              $csv_data['ReceivedObjects']=$visit->ReceivedObjects;  
-              $csv_data['Relationship']=$visit->Relationship;  
-              $csv_data['Motive']=$visit->Motive;  
-              $csv_data['Comments']=$visit->Comments;  
-              $csv_data['Duration']=$visit->Duration;  
-              $csv_data['InmatePhisicalState']=$visit->InmatePhisicalState;  
-              $csv_data['InmateEmotionalState']=$visit->InmateEmotionalState;  
-              fputcsv($data, $csv_data);
-            }
+              fputcsv($data, (array)$elem);
+			}
             fclose($data);
+			header('location: '.URL. $file_export);
+			die();
           }
         
           if($ext=="json")
           {
-            $name = 'JSONExport';
+           
             $filelocation = 'export/';
             $filename     = $name.date('Y-m-d H.i.s').'.json';
             $file_export  =  $filelocation . $filename;
             $data = fopen($file_export, 'w');
             $json_data=array();  
         
-            foreach($visits as $visit)
+            foreach($arr as $elem)
             {  
-              $json_array['Id']=$visit->Id;  
-              $json_array['AppointmentId']=$visit->AppointmentId; 
-              $json_array['SecondVisitor']=$visit->SecondVisitor;  
-              $json_array['ThirdVisitor']=$visit->ThirdVisitor;  
-              $json_array['GivenObjects']=$visit->GivenObjects;  
-              $json_array['ReceivedObjects']=$visit->ReceivedObjects;  
-              $json_array['Relationship']=$visit->Relationship;  
-              $json_array['Motive']=$visit->Motive;  
-              $json_array['Comments']=$visit->Comments;  
-              $json_array['Duration']=$visit->Duration;  
-              $json_array['InmatePhisicalState']=$visit->InmatePhisicalState;  
-              $json_array['InmateEmotionalState']=$visit->InmateEmotionalState;  
-              array_push($json_data,$json_array);  
-      
+              array_push($json_data,(array)$elem);  
             }
-
             fwrite($data, json_encode($json_data));
             fclose($data);
+			header('Content-Type: application/json');
+			header('Content-Disposition: attachment; filename='.$file_export);
+			header('Pragma: no-cache');
+			readfile($file_export);
+					
+			die();
           } 
         }
       }
@@ -452,6 +434,134 @@ class Model
    }
 	
 }
+
+
+class StatisticsModel extends Model {
+
+	public function convertToHoursMins($time, $format = '%02d:%02d') {
+    if ($time < 1) {
+        return;
+    }
+		$hours = floor($time / 60);
+		$minutes = ($time % 60);
+		return sprintf($format, $hours, $minutes);
+	}
+
+	public function get_visits_per_institution()
+	{
+		$sql="SELECT COUNT(1) AS num_visits, institutions.Name, institutions.Location  
+			  FROM visits
+			  JOIN appointments
+			  ON visits.AppointmentId=appointments.Id
+			  JOIN inmates
+			  ON appointments.InmateId = inmates.Id
+			  JOIN institutions
+			  ON institutions.Id=inmates.InstId
+			  GROUP by institutions.Id
+			  ORDER BY num_visits DESC";
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		return $stmt->fetchAll();
+		
+	}
+	public function get_visited_inmates()
+	{
+		$sql="SELECT COUNT(1) AS num_visits_inmate, inmates.FirstName, inmates.LastName, institutions.Name, institutions.Location, AVG(visits.InmateEmotionalState) as emotionalState, AVG(visits.InmatePhisicalState) as phisicalState , AVG(visits.Duration) as duration
+			  FROM visits
+			  JOIN appointments
+			  ON visits.AppointmentId=appointments.Id
+			  JOIN inmates
+			  ON appointments.InmateId = inmates.Id
+			  JOIN institutions
+			  ON institutions.Id=inmates.InstId
+			  GROUP by institutions.Id
+			  ORDER BY num_visits_inmate DESC
+			  LIMIT 3";
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		return $stmt->fetchAll();
+		      
+	}
+	public function get_visitors_visits()
+	{
+		$sql="SELECT COUNT(1) AS visits, visitors.FirstName, visitors.LastName
+			  FROM appointments
+			  JOIN visitors
+			  ON appointments.visitorId = visitors.Id
+			  WHERE State= 'done'
+			  GROUP By appointments.VisitorId
+			  ORDER BY visits DESC
+			  LIMIT 10";
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		return $stmt->fetchAll();	
+	}
+	
+	public function get_banned_inmates()
+	{
+		$sql="SELECT COUNT(1) AS num_bans_inmate, inmates.FirstName, inmates.LastName, institutions.Name, institutions.Location
+			  FROM bans
+			  JOIN inmates
+			  ON bans.InmateId = inmates.Id
+			  JOIN institutions
+			  ON institutions.Id=inmates.InstId
+			  GROUP by inmates.Id
+			  ORDER BY num_bans_inmate DESC
+			  LIMIT 3";
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}
+	public function get_most_active_guard()
+	{
+		
+		//TODO count approved and rejected
+		$sql="SELECT COUNT(1) AS num_active_guard, admins.UserName, institutions.Name, institutions.Location
+			  FROM admins
+			  JOIN appointments
+			  ON admins.Id=appointments.GuardId
+			  JOIN institutions
+			  ON institutions.Id=admins.InstId
+			  GROUP by admins.Id
+			  ORDER BY num_active_guard DESC
+			  LIMIT 3";
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	
+	}
+	public function get_average_visit_duration()
+	{
+		
+		$sql="SELECT AVG(Duration) as duration, institutions.Name, institutions.Location
+			  FROM visits
+			  JOIN appointments
+			  ON visits.AppointmentId=appointments.Id
+			  JOIN inmates
+			  ON appointments.InmateId=inmates.Id
+			  JOIN institutions
+			  ON institutions.Id=inmates.InstId
+			  GROUP by institutions.Id
+			  ORDER BY duration DESC";
+		  
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}
+	public function get_popular_hour()
+	{
+		$sql="SELECT COUNT(1) AS num_hour, TimeOfAppointment
+			  FROM appointments
+			  GROUP BY TimeOfAppointment
+			  ORDER By num_hour DESC
+			  LIMIT 5";
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}
+
+}
+
 
 // Model naming convention: Controller_name + 'Model'
 
@@ -1571,7 +1681,7 @@ class AppointmentsModel extends Model {
     $stmt->execute();
 		$result= $stmt->fetch();
 		
-		decrement_visits($result->InmateId);
+		$this->decrement_visits($result->InmateId);
 	}
 
   
