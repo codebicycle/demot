@@ -719,26 +719,24 @@ class InmatesModel extends Model {
 
 	public function find_inmate_by_name($FirstName, $LastName, $InstId, $dob)
 	{
-		if($dob)
-		{
+		if ($dob) {
 			$sql = "SELECT Id
-				FROM inmates 
-				WHERE FirstName = :FirstName 
-				AND LastName=:LastName 
-				AND InstId=:InstId 
-				AND DOB=:dob" ;
+      				FROM inmates
+      				WHERE FirstName LIKE :FirstName
+      				AND   LastName  LIKE :LastName
+      				AND   InstId = :InstId
+      				AND   DOB = :dob";
 		}
-		else 
-		{
-			$sql = "SELECT Id 
-				FROM inmates 
-				WHERE FirstName = :FirstName 
-				AND LastName=:LastName 
-				AND InstId=:InstId";
+		else {
+			$sql = "SELECT Id
+        			FROM inmates
+        			WHERE FirstName LIKE :FirstName
+        			AND   LastName LIKE :LastName
+        			AND   InstId = :InstId";
 		}
 		$query = $this->db->prepare($sql);
-		$query->bindValue(':FirstName', $FirstName);
-		$query->bindValue(':LastName', $LastName);
+		$query->bindValue(':FirstName', "%$FirstName%");
+		$query->bindValue(':LastName', "%$LastName%");
 		$query->bindValue(':InstId', $InstId);
 		if($dob)
 			$query->bindValue(':dob', $dob);

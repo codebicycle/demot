@@ -24,9 +24,12 @@ Written in PHP 7 with only native code, no frameworks or libraries.
     ```
     at the mysql prompt
     ```
+      -- replace database_name with demot
       CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
       GRANT ALL PRIVILEGES ON database_name . * TO 'newuser'@'localhost';
+      GRANT EVENT ON database_name . * TO 'newuser'@'localhost';
     ```
+
 3. Edit the database credentials in `application/config/config.php`
 4. Execute the `.sql` statements in the `_install/` folder (with PHPMyAdmin for example).
 5. Make sure you have `mod_rewrite` activated on your server / in your environment. Some guidelines:
@@ -75,3 +78,41 @@ http://nvie.com/posts/a-successful-git-branching-model/
 | /inamtes/edit/:id     | inmates#edit(id)  | return a HTML form for editing a specific inmate  |
 | /inmates/update/:id   | inmates#update(id)| update specific inmate                            |
 | /inmates/delete/:id   | inmates#delete(id)| delete a specific inmate                          |
+
+
+### Security Measures
+
+- Sql injection prevention by using bind parameters
+- XSS prevention by using `htmlspecialchars()` when outputting to HTML
+- Parameters whitelisting
+
+
+### TODO:
+  - [ ] REST routes HTTP verbs
+  - [ ] CSRF prevention
+  - [ ] Custom page titles
+  - [ ] Redirect with header() to controller#action (not require)
+    - [ ] Always die() after a redirect
+  - [x] Set guard_id on approved/rejected appointments
+  - [ ] Remove debugging statements like print_r($_POST) to prevent XSS attacks
+  - [ ] Flash messages
+  - [ ] Password min 8 max 32
+  - [ ] Clean visitors appointments
+  - [ ] Filter appointments
+  - [ ] Pagination
+  - [ ] Single page for Appointment form
+  - [ ] Semantic navigation `<nav>`
+  - [ ] Make datalists dynamic (most popular from database)
+  - [x] Update session username when editing profile
+  - [x] Recurring visiting rights reset on start of month
+  - [ ] Limit POST data size
+  - [ ] Inmate statistics
+    - total visits
+    - average visit duration
+    - average physical/emotional state
+    - bans
+    - top visitors
+  - [ ] Visitor statistics
+    - total visits
+    - average visit duration
+    - most visited inmates
