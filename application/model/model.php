@@ -20,23 +20,7 @@ class Model
         }
     }
 
-    
-      
-      public function export_form()
-      {
-        
-        echo "<form name=\"export\" method=\"post\" enctype=\"multipart/form-data\">";
-          echo "<select name=\"extension\">";
-            echo "<option value=\"html\">HTML</option>";
-            echo "<option value=\"csv\">CSV</option>";
-            echo "<option value=\"json\">JSON</option>";
-          echo "</select>"; 
-          echo "<input name=\"export_press\" type=\"submit\" value=\"Export\">";
-        echo "</form>";
-        echo "</br>";
-      }
-
-      
+     
       public function export_visits($arr, $name)
       { $exp=$_POST['export_press']??NULL;
         $ext=$_POST['extension']??NULL;
