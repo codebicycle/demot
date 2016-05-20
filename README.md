@@ -43,11 +43,21 @@ Written in PHP 7 with only native code, no frameworks or libraries.
 
 ## Resources
 
-[PHP Mini][mini], simple MVC skeleton PHP application  
-PHP [PSR-1][psr1] coding standard  
+[PHP Mini][mini], simple MVC skeleton PHP application
 
-[mini]:      https://github.com/panique/mini
-[psr1]:      http://www.php-fig.org/psr/psr-1/
+PHP [PSR-1][psr1] coding standard
+
+[MVC from scratch][2], rewrite rules
+
+Small classes, great overall [answer][4] (codereview)
+
+CSS [star rating][6]
+
+[mini]: https://github.com/panique/mini
+[psr1]: http://www.php-fig.org/psr/psr-1/
+[2]:    http://anantgarg.com/2009/03/13/write-your-own-php-mvc-framework-part-1/
+[4]:    https://codereview.stackexchange.com/questions/61605/pdo-login-register-system-ive-been-working-on
+[6]:    http://blog.iconfinder.com/how-to-create-a-responsive-star-rater-using-css-and-svg/
 
 
 ### Git Cheatsheet
@@ -116,3 +126,9 @@ http://nvie.com/posts/a-successful-git-branching-model/
     - total visits
     - average visit duration
     - most visited inmates
+
+
+## License
+
+This project is licensed under the MIT License.
+This means you can use and modify it for free in private or commercial projects.
