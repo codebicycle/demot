@@ -34,7 +34,7 @@ class Appointments extends Controller {
 
             $ap_pending = $this->model->getPendingAppointments();
             $ap_for_review = $this->model->getApprovedAppointments();
-            print_r($ap_for_review);
+            
 			require APP . 'view/_templates/header.php';
             require APP . 'view/admins/appointments-guard.php';
             require APP . 'view/_templates/footer.php';

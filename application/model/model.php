@@ -121,7 +121,8 @@ class Model
                 ON appointments.VisitorId = visitors.Id
                 JOIN institutions
                 ON inmates.InstId = institutions.Id
-				WHERE State = 'approved'";
+				WHERE State = 'approved'
+				ORDER BY DateOfAppointment ASC, TimeOfAppointment ASC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
 	return $stmt->fetchAll();
@@ -138,7 +139,8 @@ class Model
                 ON appointments.VisitorId = visitors.Id
                 JOIN institutions
                 ON inmates.InstId = institutions.Id
-				WHERE State = 'pending'";
+				WHERE State = 'pending'
+				ORDER BY DateOfAppointment ASC, TimeOfAppointment ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
 	    return $stmt->fetchAll();
@@ -1075,7 +1077,8 @@ class AppointmentsModel extends Model {
                 ON appointments.VisitorId = visitors.Id
                 JOIN institutions
                 ON inmates.InstId = institutions.Id
-                WHERE visitors.Id = :visitorId";
+                WHERE visitors.Id = :visitorId
+				ORDER BY DateOfAppointment ASC, TimeOfAppointment ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue('visitorId', $visitor_id);
         $stmt->execute();
@@ -1101,7 +1104,8 @@ class AppointmentsModel extends Model {
                 ON appointments.VisitorId = visitors.Id
                 JOIN institutions
                 ON inmates.InstId = institutions.Id
-				WHERE inmates.InstId=:id";
+				WHERE inmates.InstId=:id
+				ORDER BY DateOfAppointment ASC, TimeOfAppointment ASC";
 			
 		$stmt = $this->db->prepare($sql);
 		$stmt->bindValue('id', $instid);
@@ -1111,9 +1115,7 @@ class AppointmentsModel extends Model {
 
 	public function approve_appointment($Id, $GuardId)
 	{
-		// cand apelez functia se scade o vizita din remaining visits.
-	// problema e ca scade sub 0. trebuie facuta o validare sau cv de genu
-	// sau sa nu mai apara butonul de accept
+		//trebuie facut ceva pentru appointmet-urile de luna viitoare.
 		$this->setState($Id, 'approved');
 		$this->setGuard($Id, $GuardId);
 		
